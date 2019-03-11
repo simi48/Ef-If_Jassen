@@ -11,3 +11,6 @@ Author:         Simon Thür; Marc Matter
 Copyright © 2019
 """
 
+import tensorflow as tf
+
+print(tf.__version__)
