@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 import imgaug as ia
 from imgaug import augmenters as iaa
 import numpy as np
@@ -8,11 +7,10 @@ import imageio
 
 ia.seed(1)
 
-# Example batch of images.
 # The array has shape (32, 64, 64, 3) and dtype uint8.
-img = imageio.imread("sexy_marc.JPG") #read you image
+img = imageio.imread("sexy_marc.JPG") # image to be manipulated
 images = np.array(
-    [img for _ in range(32)], dtype=np.uint8)  # 32 means create 32 enhanced images using following methods.
+    [img for _ in range(32)], dtype=np.uint8)  # create 32 enhanced images
 
 keypoints_on_images = []
 for img in images:
@@ -23,34 +21,12 @@ for img in images:
     keypoints.append(ia.Keypoint(x=170, y=200))
     keypoints_on_images.append(ia.KeypointsOnImage(keypoints, shape=img.shape))
 
-# Sometimes(0.5, ...) applies the given augmenter in 50% of all cases,
-# e.g. Sometimes(0.5, GaussianBlur(0.3)) would blur roughly every second
-# image.
-    
-def kps_to_BB(kps):
-    """
-        Determine imgaug bounding box from imgaug keypoints
-    """
-    extend=3 # To make the bounding box a little bit bigger
-    kpsx=[kp.x for kp in kps.keypoints]
-    minx=max(0,int(min(kpsx)-extend))
-    maxx=min(imgW,int(max(kpsx)+extend))
-    kpsy=[kp.y for kp in kps.keypoints]
-    miny=max(0,int(min(kpsy)-extend))
-    maxy=min(imgH,int(max(kpsy)+extend))
-    if minx==maxx or miny==maxy:
-        return None
-    else:
-        return ia.BoundingBox(x1=minx,y1=miny,x2=maxx,y2=maxy)
-    
+# Sometimes(0.5, ...) applies the given augmenter in 50% of all cases
 sometimes = lambda aug: iaa.Sometimes(0.5, aug)
 
-# Define our sequence of augmentation steps that will be applied to every image.
+# Define sequence of augmentation steps that will be applied to every image.
 seq = iaa.Sequential(
     [
-        #
-        # Apply the following augmenters to most images.
-        #
         iaa.Fliplr(0.5), # horizontally flip 50% of all images
         iaa.Flipud(0.2), # vertically flip 20% of all images
 
@@ -181,7 +157,7 @@ seq = iaa.Sequential(
     random_order=True
 )
            
-def kps_to_BB(kps):
+def kps_to_BB(kps): # creates bounding box out of keypoints
     extend=3 # To make the bounding box a little bit bigger
     kpsx=[kp.x for kp in kps.keypoints]
     minx=max(0,int(min(kpsx)-extend))
@@ -194,7 +170,7 @@ def kps_to_BB(kps):
     else:
         return ia.BoundingBox(x1=minx,y1=miny,x2=maxx,y2=maxy)
 
-seq_det = seq.to_deterministic() # call this for each batch again, NOT only once at the start
+seq_det = seq.to_deterministic() # required so each bb is correct (same manipulations to keypoints and images)
 
 # augment keypoints and images
 images_aug = seq_det.augment_images(images)
