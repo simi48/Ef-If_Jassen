@@ -3,18 +3,34 @@
 Project:       Deep Jass
 
 File:           Jassen.py
+
 Purpose:        Assortment of Functions required for playing cards
+
+Functions:
+    CountPoints\n
+    LegalMove\n
+    Colour\n
+    RoundWinner\n
+    LocalPov\n
+    CTT (Card to Text)\n
+    CsTT (Variation of CTT)\n
+    CsTT36 (Variation of CsTT)
+
+
 
 Created on:     11.03.2019 13:41:18
 Author:         Simon Thür; Marc Matter
 
-Copyright © 2019
+Copyright © 2019 Marc Matter, Michael Siebenmann, Ramon Heeb, Simon Thür. All rights reserved.
 """
+print("______________________________\nJassen.py                Start\n______________________________")
 
-import tensorflow as tf
+
+#import tensorflow as tf
 import numpy as np
 
 #print(tf.__version__)
+np.set_printoptions(linewidth=np.inf)
 
 
 def CountPoints(cards,trump=0):
@@ -117,8 +133,9 @@ def CountPoints(cards,trump=0):
         Ret[cards[23]]+=2
         Ret[cards[5]]+=2
     else:
-        print("well fuck, ought to have chosen a proper trump")
-        Ret=[]
+        if(trump<0 or trump>6):
+            print("well fuck, ought to have chosen a proper trump")
+            Ret=[]
     return Ret
 
 
@@ -164,7 +181,7 @@ def LegalMove(playerCards,playedCard,called,trump,player=0):
             5=shield;
         
         player (int):
-            Signifies which number is the player. if nothing is indicated, player will be `Player 0?, meaning cards with value 0 are players cards
+            Signifies which number is the player. if nothing is indicated, player will be `Player 0`, meaning cards with value 0 are players cards
         
     Returns:
         boolean:
@@ -175,21 +192,17 @@ def LegalMove(playerCards,playedCard,called,trump,player=0):
                 if played card was not an acceptable choice.
     '''
     
+    
     if(len(playerCards)!=36):
         print("Card array is not comprised of 36 cards.")
     if(playedCard<0 or playedCard>=len(playerCards)):
         print("played card is outside of card array. May throw error, may give false results.")
     Ret = True
-    playedColour=3
-    if(playedCard<9):
-        playedColour=0
-    elif(playedCard<18):
-        playedColour=1
-    elif(playedCard<27):
-        playedColour=2
+    playedColour = Colour([playedCard])
+    playedColour = playedColour[0]
     if(playerCards[playedCard]!=player):
         Ret = False
-        print("not in players posession")
+        print("not in players possession")
     else:
         if(playedColour!=called and playedColour != trump-2):
             Ret=False
@@ -214,13 +227,41 @@ def LegalMove(playerCards,playedCard,called,trump,player=0):
 # =============================================================================
 
 
-def RoundWinner(playedCards,trump,called=None):
+def Colour(playedCards):
+    '''
+    Identifies which colours the cards in the array have. (values of array represent card)
+    
+    Arguments:
+        playedCards(array[int]):
+            An array holding the numbers of cards requested.
+    
+    Returns:
+        Array[int]:
+            The Values of the colours of the card at each index:
+                0=rose;
+                1=acorn;
+                2=bell;
+                3=shield;
+    '''
+    playedColour = []
+    for i in range(len(playedCards)):
+        if(playedCards[i]<9):
+            playedColour.append(0)
+        elif(playedCards[i]<18):
+            playedColour.append(1)
+        elif(playedCards[i]<27):
+            playedColour.append(2)
+        else:
+            playedColour.append(3)
+    return playedColour
+
+def RoundWinner(playedCards,trump,callingPlayer=None):
     '''
     Calculates which player (array index) has won the round.
     
     Parameters:
         playedCards (array[int]):
-            An Array of the cards played in this round (corresponding to the 36 Card layout). Each index represents a Player, the value the card. (if card values are outside of standard 36 card values, results will not be correct)
+            An Array of the cards played in this round (corresponding to the 36 Card layout but only played cards). Each index represents a Player, the value the card. (if card values are outside of standard 36 card values, results will not be correct)
         
         trump (int):
             Indicates which playstyle is in use/which colour is trump:\n
@@ -231,13 +272,9 @@ def RoundWinner(playedCards,trump,called=None):
             4=bell;
             5=shield;
         
-        called (int):
-            Indicates which colour was called for:\n
-            0=rose;
-            1=acorn;
-            2=bell;
-            3=shield;
-            \n if nothing is selected, defaults to index 0 (player 0)
+        callingplyer (int):
+            Indicates which colour was called for; which player is calling the colour:\n
+            if nothing is selected, defaults to index 0 (player 0)
         
     Returns:
         int:
@@ -249,22 +286,14 @@ def RoundWinner(playedCards,trump,called=None):
             warning = True
     if(warning):
         print("Card values are out of bounds, results will not reflect reality")
-    playedColour=[]
-    for i in range(len(playedCards)):
-        if(playedCards[i]<9):
-            playedColour.append(0)
-        elif(playedCards[i]<18):
-            playedColour.append(1)
-        elif(playedCards[i]<27):
-            playedColour.append(2)
-        else:
-            playedColour.append(3)
+    playedColour=Colour(playedCards)
+    
     #print(playedColour)
     Ret=None
-    if(called==None):
-        called = playedColour[0]
+    if(callingPlayer==None):
+        callingPlayer = playedColour[0]
     else:
-        called = playedColour[called]
+        callingPlayer = playedColour[callingPlayer]
     #Check for Trump
     if(playedColour.count(trump-2)!=0):
         trumpCards=[]
@@ -293,14 +322,14 @@ def RoundWinner(playedCards,trump,called=None):
                     Ret=trumpCards[i]
     elif(trump==1):
         #6 Beats all
-        if(playedColour.count(called)==1):
+        if(playedColour.count(callingPlayer)==1):
             #if only one person played appropriate colour
-            Ret = playedColour.index(called)
+            Ret = playedColour.index(callingPlayer)
         else:
             colourCards=[]
             #which players played appropriate colour
             for i in range(len(playedColour)):
-                if(playedColour[i]==called):
+                if(playedColour[i]==callingPlayer):
                     colourCards.append(i)#players which played correct colour
             #If no trump, only general
             Ret = colourCards[0]
@@ -310,14 +339,14 @@ def RoundWinner(playedCards,trump,called=None):
                     Ret = colourCards[i]
     else:
         #for when no trump is present and ace wins
-        if(playedColour.count(called)==1):
+        if(playedColour.count(callingPlayer)==1):
             #if only one person played appropriate colour
-            Ret = playedColour.index(called)
+            Ret = playedColour.index(callingPlayer)
         else:
             colourCards=[]
             #which players played appropriate colour
             for i in range(len(playedColour)):
-                if(playedColour[i]==called):
+                if(playedColour[i]==callingPlayer):
                     colourCards.append(i)#players which played correct colour
             #If no trump, only general
             Ret = colourCards[0]
@@ -345,3 +374,221 @@ def RoundWinner(playedCards,trump,called=None):
 # print(100/(stats[1]+stats[0])*stats[0])
 # print(stats)
 # =============================================================================
+
+
+
+def LocalPov(Cards, player=0):
+    '''
+    Transcribes Global Card array to local card array from pov of a player. (used for RNN Input)
+    
+    Parameters:
+        Cards (array[int]):
+            Global Card array (36 Card layout) signified as follows:
+                0:	Player 0 holds card\n
+                1:	Player 1 holds card\n
+                2:	Player 2 holds card\n
+                3:	Player 3 holds card\n
+                4:	Player 0 plays card\n
+                5:	Player 1 plays card\n
+                6:	Player 2 plays card\n
+                7:	Player 3 plays card\n
+                8:	Player 0 has played card\n
+                9:	Player 1 has played card\n
+                10:	Player 2 has played card\n
+                11:	Player 3 has played card\n
+        player (int):
+            Indicates the desired perspective
+        
+    Returns:
+        array[int]:
+            36 Card pov layout for player:
+                0:	Card location not known\n
+                1:	player holds card\n
+                2:	Player 1 holds card\n
+                3:	Player 2 holds card\n
+                4:	Player 3 holds card\n
+                5:	Player has already played card\n
+                6:	Player 1 has already played card\n
+                7:	Player 2 has already played card\n
+                8:	Player 3 has already played card\n
+
+
+    '''
+    if(len(Cards)!=36):
+        print("Card array is not equal to 36. (len="+str(len(Cards))+")")
+    if(player<0 or player>3):
+        print("Player "+str(player)+" is out of bounds, will not return correct values")
+    Ret = [0]*36
+    for i in range(len(Cards)):
+        if(Cards[i]==player+4):
+            print("Player can see which card he played this turn. pls reconsider! Card["+str(i)+"]"+"\nThis may throw an error down the line")
+            Ret[i]=None
+        #For cards in hand
+        elif(Cards[i]<4):
+            if(Cards[i]%4==player):
+                Ret[i]=1
+        #For Cards being played
+        elif(Cards[i]<8):
+            Ret[i]=(Cards[i]-player)%4 + 1
+        #For Cards already played
+        elif(Cards[i]<12):
+            Ret[i]=(Cards[i]-player)%4 + 5
+        else:
+            print("Card Value out of bounds: Cards["+str(i)+"]="+str(Cards[i]))
+            Ret[i]=None
+    return Ret
+
+# =============================================================================
+#       To test LocalPov
+# Cards = np.random.randint(12, size=36)
+# print(Cards)
+# print(LocalPov(Cards,3))
+# =============================================================================
+
+
+def Shuffle(playercount=4):
+    '''
+    Shuffles the 36 Cards.
+    
+    Parameters:
+        playercount (int):
+            Indicates the amount of players (defaults to 4)
+    
+    Returns:
+        Array[int]:
+            An array of standard 36 Card distributed among `playercount` players, in values of range(`playercount`)
+    '''
+    if(36%playercount!=0):
+        print("Not all players have the same amount of cards")
+    Ret = []
+    for i in range(36):
+        Ret.append(i%playercount)
+    np.random.shuffle(Ret)
+    return Ret
+
+
+# =============================================================================
+#       To test Shuffle and the other stuff
+# print(Colour([1]))
+# print(RoundWinner([5,6,9],0))
+# cardArray=Shuffle()
+# trump = np.random.randint(6)
+# card = np.random.randint(36)
+# print("Cards"+str(cardArray))
+# print("Points: "+str(CountPoints(cardArray,trump)))
+# localCard=LocalPov(cardArray)
+# #print(localCard)
+# print("Card "+str(card))
+# print(LegalMove(cardArray,card,0,trump))
+# =============================================================================
+
+
+
+
+
+#ConvenienceFunctions:
+
+def CTT(SingleCard):
+    '''
+    Finds card name for a given value
+    
+    Arguments:
+        SingleCard(int):
+            Which card one would like in plain text.
+    
+    Returns:
+        str:
+            Card given in plain text.
+    '''
+    Ret = ""
+    if(SingleCard<0 or SingleCard>35):
+        Ret = "Card out of range, will display incorrect answer:\n "
+    colour = Colour([SingleCard])
+    colour = colour[0]
+    
+    if(colour==0):
+        Ret = Ret + "Rosen"
+    elif(colour==1):
+        Ret = Ret + "Eichel"
+    elif(colour==2):
+        Ret = Ret + "Schellen"
+    elif(colour==3):
+        Ret = Ret + "Schilten"
+    if(SingleCard%9==0):
+        Ret = Ret + " 6"
+    elif(SingleCard%9==1):
+        Ret = Ret + " 7"
+    elif(SingleCard%9==2):
+        Ret = Ret + " 8"
+    elif(SingleCard%9==3):
+        Ret = Ret + " 9"
+    elif(SingleCard%9==4):
+        Ret = Ret + " 10"
+    elif(SingleCard%9==5):
+        Ret = Ret + " Under"
+    elif(SingleCard%9==6):
+        Ret = Ret + " Ober"
+    elif(SingleCard%9==7):
+        Ret = Ret + " König"
+    elif(SingleCard%9==8):
+        Ret = Ret + " As"
+
+    return Ret
+
+
+def CsTT(CardArray):
+    '''
+    Finds card names for each given value
+    
+    Arguments:
+        CardArray (array[int]):
+            Values for cards one wishes in plain text.
+    
+    Returns:
+        Array(str):
+            Cards given in plain text.
+    '''
+    
+    Ret=[]
+    for i in range(len(CardArray)):
+        Ret.append(CTT(CardArray[i]))
+    return Ret
+
+
+def CsTT36(cardArray,player=0):
+    '''
+    Finds Card names for selected Cards
+    
+    Parameters:
+        cardArray (array[int]):
+            Standard 36 Card arrangement, int signifying to whom it belongs.
+        
+        player (int):
+            Indicates which players cards one wishes to see.
+    
+    Returns:
+        Array(str):
+            Cards of selected person given in plain text.
+    '''
+    if(len(cardArray)!=36):
+        print("Cardarray lenght is not 36; may not accuratly portray cards. len(cardArray) = "+str(len(cardArray)))
+    tmp = []
+    for i in range(len(cardArray)):
+        if(cardArray[i]==player):
+            tmp.append(i)
+    Ret = CsTT(tmp)
+    return Ret
+
+
+
+# =============================================================================
+#       To test CTT and related
+# print(CsTT36(Shuffle(),0))
+# print(CTT(22))
+# print(CsTT36([1,2,3,4,5,6],2))
+# =============================================================================
+
+
+
+
+print("______________________________\nJassen.py                  End\n______________________________")
