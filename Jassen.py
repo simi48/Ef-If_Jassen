@@ -33,7 +33,7 @@ import numpy as np
 np.set_printoptions(linewidth=np.inf)
 
 
-def CountPoints(cards,trump=0):
+def CountPoints(cards,trump=None):
     '''Counts points for each player.
     
     Parameters:
@@ -52,6 +52,11 @@ def CountPoints(cards,trump=0):
     if(len(cards)<36):
         print("Pls use standard 36 Card layout")
         return ret
+    if(trump == None):
+        if(len(cards)==37):
+            trump = cards[36]
+        else:
+            trump = 0
     
     #PlayerCount/ArraySize
     playerCount=0
@@ -104,28 +109,28 @@ def CountPoints(cards,trump=0):
         Ret[cards[14]]+=2
         Ret[cards[23]]+=2
         Ret[cards[32]]+=2
-    elif(trump==3):
+    elif(trump==2):
         Ret[cards[5]]+=20 #Buur
         Ret[cards[3]]+=14 #Nell
         #Under
         Ret[cards[14]]+=2
         Ret[cards[23]]+=2
         Ret[cards[32]]+=2
-    elif(trump==4):
+    elif(trump==3):
         Ret[cards[14]]+=20 #Buur
         Ret[cards[12]]+=14 #Nell
         #Under
         Ret[cards[5]]+=2
         Ret[cards[23]]+=2
         Ret[cards[32]]+=2
-    elif(trump==5):
+    elif(trump==4):
         Ret[cards[23]]+=20 #Buur
         Ret[cards[21]]+=14 #Nell
         #Under
         Ret[cards[14]]+=2
         Ret[cards[5]]+=2
         Ret[cards[32]]+=2
-    elif(trump==6):
+    elif(trump==5):
         Ret[cards[32]]+=20 #Buur
         Ret[cards[30]]+=14 #Nell
         #Under
@@ -133,17 +138,17 @@ def CountPoints(cards,trump=0):
         Ret[cards[23]]+=2
         Ret[cards[5]]+=2
     else:
-        if(trump<0 or trump>6):
-            print("well fuck, ought to have chosen a proper trump")
+        if(trump<0 or trump>5):
+            print("well fuck, ought to have chosen a proper trump (note: check the 37th element of the card array if trump was left blank)")
             Ret=[]
     return Ret
 
 
 # =============================================================================
-#       To test CountPoints
-# testCards = np.random.randint(4,size=36)
+# #     To test CountPoints
+# testCards = np.random.randint(4,size=37)
 # print(testCards)
-# testPoints = CountPoints(testCards,5)
+# testPoints = CountPoints(testCards,2)
 # print(testPoints)
 # sumPoints = 0
 # for i in range(len(testPoints)):
@@ -153,7 +158,7 @@ def CountPoints(cards,trump=0):
     
 
 
-def LegalMove(playerCards,playedCard,called,trump,player=0):
+def LegalMove(playerCards,playedCard,called,trump=0,player=0):
     '''
     Checks whether a played card was playable
     
@@ -172,7 +177,7 @@ def LegalMove(playerCards,playedCard,called,trump,player=0):
             3=shield;
         
         trump (int):
-            Indicates which playstyle is in use/which colour is trump:\n
+            Indicates which playstyle is in use/which colour is trump (if playerCards has 37 inputs, last element defines trump)(defaults to 0):\n
             0=ace;
             1=6;
             2=rose;
@@ -193,8 +198,10 @@ def LegalMove(playerCards,playedCard,called,trump,player=0):
     '''
     
     
-    if(len(playerCards)!=36):
-        print("Card array is not comprised of 36 cards.")
+    if(len(playerCards)!=36 or len(playerCards)!=37):
+        print("Card array is not comprised of 36 (or 37) cards.")
+    elif(len(playerCards)==37):
+        trump = playerCards[36]
     if(playedCard<0 or playedCard>=len(playerCards)):
         print("played card is outside of card array. May throw error, may give false results.")
     Ret = True
@@ -414,11 +421,11 @@ def LocalPov(Cards, player=0):
 
 
     '''
-    if(len(Cards)!=36):
-        print("Card array is not equal to 36. (len="+str(len(Cards))+")")
+    if(len(Cards)!=36 and len(Cards)!=37):
+        print("Card array is not equal to 36/37. (len="+str(len(Cards))+")")
     if(player<0 or player>3):
         print("Player "+str(player)+" is out of bounds, will not return correct values")
-    Ret = [0]*36
+    Ret = [0]*37
     for i in range(len(Cards)):
         if(Cards[i]==player+4):
             print("Player can see which card he played this turn. pls reconsider! Card["+str(i)+"]"+"\nThis may throw an error down the line")
@@ -436,11 +443,14 @@ def LocalPov(Cards, player=0):
         else:
             print("Card Value out of bounds: Cards["+str(i)+"]="+str(Cards[i]))
             Ret[i]=None
+        #Playstyle / trump
+        if(len(Cards)==37):
+            Ret[36]=Cards[36]
     return Ret
 
 # =============================================================================
 #       To test LocalPov
-# Cards = np.random.randint(12, size=36)
+# Cards = np.random.randint(12, size=37)
 # print(Cards)
 # print(LocalPov(Cards,3))
 # =============================================================================
