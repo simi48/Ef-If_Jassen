@@ -22,8 +22,8 @@ GlobalCards.append(0) #playstyle
 LocalCards = []
 for i in range(4):
     LocalCards.append(js.LocalPov(GlobalCards,i)) #Is in RNN Input format, but needs to be converted to 3d array (only input if len()=37)
-for i in range(len(LocalCards)):
-    print("Player "+str(i)+" "+str(js.CsTT36(LocalCards[i],1))+"\n")
+#for i in range(len(LocalCards)):
+#    print("Player "+str(i)+" "+str(js.CsTT36(LocalCards[i],1))+"\n")
 
 # =============================================================================
 #           #Test, whether js.LocalPov() works properly, cuz I wasn't sure, but appears to be fine...
@@ -40,9 +40,61 @@ for i in range(len(LocalCards)):
 #         LocalCards[i]=js.LocalPov(GlobalCards,i)
 # =============================================================================
     
+
+
+def TrainArrayInputRaw():
+    Ret = js.Shuffle()
+    called = None
+    for i in range(np.random.randint(20)):
+        Ret[np.random.randint(36)]=np.random.randint(8,12)
+    for i in range(np.random.randint(3)):
+        index = np.random.randint(36)
+        while(Ret[index]<8 and Ret[index]>4):
+            index = np.random.randint(36)
+        Ret[index] = 7-i
+        called = index
     
+    
+    Ret.append(np.random.randint(6))
+    if(called!=None):
+        called = js.Colour([called])
+        Ret.append(called[0])
+    else:
+        Ret.append(None)
+    return Ret
 
+def CheckArray(trainInput):
+    Ret = []
+    for i in range(36):
+        if(js.LegalMove(trainInput,i,trainInput[37])):
+            Ret.append(i)
+    if(len(Ret)!=1):
+        Ret = None
+    else:
+        Ret = Ret[0]
+    
+    
+    return Ret
 
+def TrainArray(length):
+    Ret=[0]*length
+#    print(Ret)
+    for i in range(length):
+        print((i+1)/length*100,"%")
+        Ret[i] = [0]*2
+        RawArray = TrainArrayInputRaw()
+        while(CheckArray(RawArray)==None):
+            RawArray = TrainArrayInputRaw()
+        Ret[i][1] = CheckArray(RawArray)
+        RawArray.pop(37)
+        Ret[i][0] = RawArray
+        
+    print("\n")
+    return Ret
+
+TESTtrainArray = TrainArray(100000)
+for i in range(len(TESTtrainArray)):
+    print(CTT(TESTtrainArray[i][1]))
 
     #Test some NN stuff
 sess = tf.Session()
@@ -60,9 +112,19 @@ LocalCards0 = np.reshape(LocalCards[0],[1,1,37])                                
 LocalCards0TF = tf.convert_to_tensor(LocalCards0,dtype=tf.float32)             #Convert to float
 #tf.initialize_all_variables()      #absolutly necessary! but still not working...?
 
-print(LocalCards0)
-Result = sess.run(Model.predict(LocalCards0TF,steps=1))
-print(sess.run(Result))
+# =============================================================================
+# =============================================================================
+# =============================================================================
+# =============================================================================
+# # # # print(LocalCards0)
+# # # # Result = sess.run(Model.predict(LocalCards0TF,steps=1))
+# # # # print(sess.run(Result))
+# =============================================================================
+# =============================================================================
+# =============================================================================
+# =============================================================================
+
+
 #print(sess.run(tf.constant(5)))
 
 

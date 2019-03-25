@@ -171,6 +171,7 @@ def LegalMove(playerCards,playedCard,called,trump=0,player=0):
         
         called (int):
             Indicates which colour was called for:\n
+            None = nothing called for
             0=rose;
             1=acorn;
             2=bell;
@@ -198,7 +199,7 @@ def LegalMove(playerCards,playedCard,called,trump=0,player=0):
     '''
     
     
-    if(len(playerCards)!=36 or len(playerCards)!=37):
+    if(len(playerCards)!=36 and len(playerCards)!=37 and len(playerCards)!=38):
         print("Card array is not comprised of 36 (or 37) cards.")
     elif(len(playerCards)==37):
         trump = playerCards[36]
@@ -209,11 +210,12 @@ def LegalMove(playerCards,playedCard,called,trump=0,player=0):
     playedColour = playedColour[0]
     if(playerCards[playedCard]!=player):
         Ret = False
-        print("not in players possession")
+#        print("not in players possession")
     else:
-        if(playedColour!=called and playedColour != trump-2):
-            Ret=False
-            print("incorrectColour")
+        if(called != None):
+            if(playedColour!=called and playedColour != trump-2):
+                Ret=False
+#                print("incorrectColour")
     
     
     return Ret
@@ -590,15 +592,25 @@ def CsTT36(cardArray,player=0):
     return Ret
 
 
+# =============================================================================
+# inputarray = Shuffle()
+# inputarray.append(0)
+# print(inputarray)
+# inputarray = LocalPov(inputarray)
+# print(inputarray)
+# =============================================================================
 
 # =============================================================================
-#       To test CTT and related
-# print(CsTT36(Shuffle(),0))
-# print(CTT(22))
-# print(CsTT36([1,2,3,4,5,6],2))
+# #      To test CTT and related
+# Cards = Shuffle()
+# print(Cards)
+# print("player 0:\n",CsTT36(Cards,0))
+# print("player 1:\n",CsTT36(Cards,1))
+# print("player 2:\n",CsTT36(Cards,2))
+# print("player 3:\n",CsTT36(Cards,3))
 # =============================================================================
 
-
+#print(Shuffle(9))
 
 
 print("______________________________\nJassen.py                  End\n______________________________")
