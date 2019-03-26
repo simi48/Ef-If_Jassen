@@ -63,7 +63,6 @@ cardKP = ia.KeypointsOnImage([
     ia.Keypoint(x = decalX,       y = decalY+cardH)
     ], shape = (imgH, imgW, 3))
 
-
 xml_body_1="""<annotation>
         <folder>FOLDER</folder>
         <filename>{FILENAME}</filename>
