@@ -1,5 +1,25 @@
 # -*- coding: utf-8 -*-
 
+# -----------------------------------------------------------------------------
+# This script generates a set of training data for a playing card recognition
+# software. More precisely, it generates a scene of 3 randomly augmented
+# random playing cards on a random background. It also draws bounding boxes
+# around the images, in order to use them in classification.
+#
+# Author:   Michael Siebenmann
+# Date :    11.03.2019
+#
+# History:
+# Version   Date        Who     Changes
+# 1.0       11.03.2019  M7ma    created
+#
+# Copyright © Michael Siebenmann, Marc Matter, Simon Thür, Ramon Heeb
+# Frauenfeld, Switzerland. All rights reserved
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Imports
+# -----------------------------------------------------------------------------
 
 import imgaug as ia
 from imgaug import augmenters as iaa
@@ -17,12 +37,11 @@ import pickle
 from glob import glob 
 from shapely.geometry import Polygon
 
-ia.seed(1)
+# -----------------------------------------------------------------------------
+# Setup
+# -----------------------------------------------------------------------------
 
-# Example batch of images.
-# The array has shape (32, 64, 64, 3) and dtype uint8.
-#images = np.array(
-#    [img for _ in range(32)], dtype=np.uint8)  # 32 means create 32 enhanced images using following methods.
+ia.seed(1)
 
 # dimensions of generated images
 imgW = 1000
@@ -73,14 +92,6 @@ xml_object=""" <object>
 """
 xml_body_2="""</annotation>        
 """
-
-def create_voc_xml(xml_file, img_file,listbba,display=False):
-    with open(xml_file,"w") as f:
-        f.write(xml_body_1.format(**{'FILENAME':os.path.basename(img_file), 'PATH':img_file,'WIDTH':imgW,'HEIGHT':imgH}))
-        for bba in listbba:            
-            f.write(xml_object.format(**{'CLASS':bba.classname,'XMIN':bba.x1,'YMIN':bba.y1,'XMAX':bba.x2,'YMAX':bba.y2}))
-        f.write(xml_body_2)
-        if display: print("New xml",xml_file)
 
 sometimes = lambda aug: iaa.Sometimes(0.5, aug)
 
@@ -184,7 +195,19 @@ transformCard = iaa.Sequential([
     iaa.Affine(rotate=(-180,180)),
     iaa.Affine(translate_percent={"x":(-0.25,0.25),"y":(-0.25,0.25)}),
 ])
-    
+
+# -----------------------------------------------------------------------------
+# Functions
+# -----------------------------------------------------------------------------
+
+def create_voc_xml(xml_file, img_file,listbba,display=False):
+    with open(xml_file,"w") as f:
+        f.write(xml_body_1.format(**{'FILENAME':os.path.basename(img_file), 'PATH':img_file,'WIDTH':imgW,'HEIGHT':imgH}))
+        for bba in listbba:            
+            f.write(xml_object.format(**{'CLASS':bba.classname,'XMIN':bba.x1,'YMIN':bba.y1,'XMAX':bba.x2,'YMAX':bba.y2}))
+        f.write(xml_body_2)
+        if display: print("New xml", xml_file)
+
 def kps_to_BB(kps):
     extend = 3 # To make the bounding box a bit bigger
     kpsx = [kp.x for kp in kps.keypoints]
@@ -198,7 +221,7 @@ def kps_to_BB(kps):
     else:
         return ia.BoundingBox(x1=minx,y1=miny,x2=maxx,y2=maxy)
 
-#seq_det = seq.to_deterministic() # call this for each batch again, NOT only once at the start
+#seq_det = seq.to_deterministic()
 # augment keypoints and images
 #images_aug = seq_det.augment_images(images)
 #keypoints_aug = seq_det.augment_keypoints(keypoints_on_images)
@@ -217,14 +240,15 @@ def createScene():
     card2 = imageio.imread("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read second random card
     card3 = imageio.imread("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read third random card
     
-    card1 = np.zeros((imgH, imgW, 4), dtype = np.uint8)
-    card2 = np.zeros((imgH, imgW, 4), dtype = np.uint8)
-    card3 = np.zeros((imgH, imgW, 4), dtype = np.uint8)
     
     background = scaleBackground.augment_image(background)
     card1 = scaleCard.augment_image(card1)
     card2 = scaleCard.augment_image(card2)
     card3 = scaleCard.augment_image(card3)
+    
+    card1 = np.zeros((imgH, imgW, 4), dtype = np.uint8)
+    card2 = np.zeros((imgH, imgW, 4), dtype = np.uint8)
+    card3 = np.zeros((imgH, imgW, 4), dtype = np.uint8)
     
     # superimpose background and the three cards
     mask1 = card1[:,:,3]
@@ -238,11 +262,10 @@ def createScene():
     final = np.where(mask3, card3[:,:,0:3], final)
     
     imageio.imwrite("D:\Deep_Jass\\Testbilder\\" + '_scene.jpg', final)
-    display(card1)
+    display(final)
+
+# -----------------------------------------------------------------------------
+# Main Program
+# -----------------------------------------------------------------------------
 
 createScene()
-
-#for img_idx, (image_after, keypoints_after) in enumerate(zip(images_aug, keypoints_aug)):
-    #bb_aug = kps_to_BB(keypoints_after)
-    #image_after = bb_aug.draw_on_image(image_after, thickness=2)
-    #imageio.imwrite("D:\Deep_Jass\\Testbilder\\" + str(img_idx)+'marc.jpg', image_after)
