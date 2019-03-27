@@ -12,6 +12,7 @@
 # History:
 # Version   Date        Who     Changes
 # 1.0       11.03.2019  M7ma    created
+# 1.1		27.03.2019	M7ma	createScene() function working
 #
 # Copyright © Michael Siebenmann, Marc Matter, Simon Thür, Ramon Heeb
 # Frauenfeld, Switzerland. All rights reserved
@@ -33,6 +34,7 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import matplotlib.patches as patches
+from matplotlib import cm
 import pickle
 from glob import glob 
 from shapely.geometry import Polygon
@@ -45,12 +47,12 @@ from PIL import Image
 ia.seed(1)
 
 # dimensions of generated images
-imgW = 1500
+imgW = 1000
 imgH = 1000
 
 # dimensions of a card
-cardW = 337
-cardH = 526
+cardW = 169
+cardH = 263
 
 # center cards in images
 decalX = int((imgW - cardW) / 2)
@@ -99,35 +101,12 @@ sometimes = lambda aug: iaa.Sometimes(0.5, aug)
 # Define our sequence of augmentation steps that will be applied to a scene of cards
 transformScene = iaa.Sequential(
     [
-        #
-        # Apply the following augmenters to most images.
-        #
-        #iaa.Fliplr(0.5), # horizontally flip 50% of all images
-        iaa.Flipud(0.4), # vertically flip 40% of all images
-
-        # crop some of the images by 0-10% of their height/width
-        sometimes(iaa.Crop(percent=(0, 0.1))),
-
-        # Apply affine transformations to some of the images
-        # - scale to 80-120% of image height/width (each axis independently)
-        # - translate by -20 to +20 relative to height/width (per axis)
-        # - rotate by -45 to +45 degrees
-        # - shear by -16 to +16 degrees
-        # - order: use nearest neighbour or bilinear interpolation (fast)
-        # - mode: use any available mode to fill newly created pixels
-        #         see API or scikit-image for which modes are available
-        # - cval: if the mode is constant, then use a random brightness
-        #         for the newly created pixels (e.g. sometimes black,
-        #         sometimes white)
-        sometimes(iaa.Affine(
-            scale={"x": (0.8, 1.2), "y": (0.8, 1.2)},
-            translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)},
-            rotate=(-45, 45),
-            shear=(-16, 16),
-            order=[0, 1],
-            cval=(0, 255),
-            mode=ia.ALL
-        )),
+        # Apply affine transformations to some of the images      
+        iaa.Affine(
+            rotate=(-180, 180),
+            shear=(-25, 25),
+            order=[0, 1] # - order: use nearest neighbour or bilinear interpolation (fast)
+        ),
 
         #
         # Execute 0 to 5 of the following (less important) augmenters per
@@ -174,9 +153,6 @@ transformScene = iaa.Sequential(
                     loc=0, scale=(0.0, 0.05*255), per_channel=0.5
                 ),
 
-                # Add a value of -10 to 10 to each pixel.
-                #iaa.Add((-10, 10), per_channel=0.5),
-
                 # Change brightness of images (50-150% of original value).
                 iaa.Multiply((0.5, 1.5), per_channel=0.5),
 
@@ -222,22 +198,17 @@ def kps_to_BB(kps):
     else:
         return ia.BoundingBox(x1=minx,y1=miny,x2=maxx,y2=maxy)
 
-#seq_det = seq.to_deterministic()
-# augment keypoints and images
-#images_aug = seq_det.augment_images(images)
-#keypoints_aug = seq_det.augment_keypoints(keypoints_on_images)
-
 def display(image):
         fig,ax=plt.subplots(1,figsize=(8,8))
         ax.imshow(image)
 
-
-
-def createScene():
-    background = Image.open("D:\Deep_Jass\\Backgrounds\\banded_0077.jpg") # random background image (using dtd dataset)
-    card1 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read first random card
-    card2 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read second random card
-    card3 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read third random card
+def createScene(idx):
+    bg_file = "D:\Deep_Jass\\Backgrounds\\" + random.choice(os.listdir("D:\Deep_Jass\\Backgrounds"))
+    tr_bg = Image.new('RGBA', (1000, 1000), (0, 0, 0, 0))
+    background = Image.open(bg_file).convert('RGBA') # random background image (using dtd dataset)
+    card1 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg").convert('RGBA') #read first random card
+    card2 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg").convert('RGBA') #read second random card
+    card3 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg").convert('RGBA') #read third random card
     
     # Scale images to desired values
     background = background.resize((imgW, imgH))
@@ -245,21 +216,41 @@ def createScene():
     card2 = card2.resize((cardW, cardH))
     card3 = card3.resize((cardW, cardH))
 
-    # superimpose background and the three cards
-    area1 = (100, 100)
-    area2 = (500, 100)
-    area3 = (900, 100)
-    background.paste(card1, area1)
-    background.paste(card2, area2)
-    background.paste(card3, area3)
+    # apply some augmentations to the cards
+    card1_aug = card1.rotate(random.randint(0, 360), expand=1)
+    card2_aug = card2.rotate(random.randint(0, 360), expand=1)
+    card3_aug = card3.rotate(random.randint(0, 360), expand=1)
     
-    final = np.array(background)
+    # random coordinates for the cards
+    x1 = random.randint(0, 600)
+    x2 = random.randint(0, 600)
+    x3 = random.randint(0, 600)
+    y1 = random.randint(0, 600)
+    y2 = random.randint(0, 600)
+    y3 = random.randint(0, 600)
     
-    imageio.imwrite("D:\Deep_Jass\\Testbilder\\" + '_scene.jpg', final)
+    area1 = (x1, y1)
+    area2 = (x2, y2)
+    area3 = (x3, y3)
+    
+    # superimpose transparent background and the three cards
+    tr_bg.paste(card1_aug, area1, card1_aug)
+    tr_bg.paste(card2_aug, area2, card2_aug)
+    tr_bg.paste(card3_aug, area3, card3_aug)
+    
+    cards = np.array(tr_bg)
+    cards_aug = transformScene.augment_image(cards)
+    cards_aug = Image.fromarray(cards_aug) # convert back to PIL Image
+    
+    background.paste(cards_aug, (0,0), cards_aug)
+    
+    #background.save("D:\Deep_Jass\\Testbilder\\" + str(idx) + '_scene.jpg')
     display(background)
 
 # -----------------------------------------------------------------------------
 # Main Program
 # -----------------------------------------------------------------------------
 
-createScene()
+# generate 20 scenes
+for idx in range(20):
+    createScene(idx)
