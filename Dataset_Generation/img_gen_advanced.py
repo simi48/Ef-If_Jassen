@@ -36,6 +36,7 @@ import matplotlib.patches as patches
 import pickle
 from glob import glob 
 from shapely.geometry import Polygon
+from PIL import Image
 
 # -----------------------------------------------------------------------------
 # Setup
@@ -44,7 +45,7 @@ from shapely.geometry import Polygon
 ia.seed(1)
 
 # dimensions of generated images
-imgW = 1000
+imgW = 1500
 imgH = 1000
 
 # dimensions of a card
@@ -62,6 +63,7 @@ cardKP = ia.KeypointsOnImage([
     ia.Keypoint(x = decalX+cardW, y = decalY+cardH),
     ia.Keypoint(x = decalX,       y = decalY+cardH)
     ], shape = (imgH, imgW, 3))
+
 
 xml_body_1="""<annotation>
         <folder>FOLDER</folder>
@@ -229,39 +231,32 @@ def display(image):
         fig,ax=plt.subplots(1,figsize=(8,8))
         ax.imshow(image)
 
-# Scale Images
-scaleBackground = iaa.Scale({"height": imgH, "width": imgW})
-scaleCard       = iaa.Scale({"height": cardH, "width": cardW})
+
 
 def createScene():
-    background = imageio.imread("D:\Deep_Jass\\Backgrounds\\banded_0077.jpg") # random background image (using dtd dataset)
-    card1 = imageio.imread("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read first random card
-    card2 = imageio.imread("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read second random card
-    card3 = imageio.imread("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read third random card
+    background = Image.open("D:\Deep_Jass\\Backgrounds\\banded_0077.jpg") # random background image (using dtd dataset)
+    card1 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read first random card
+    card2 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read second random card
+    card3 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg") #read third random card
     
-    
-    background = scaleBackground.augment_image(background)
-    card1 = scaleCard.augment_image(card1)
-    card2 = scaleCard.augment_image(card2)
-    card3 = scaleCard.augment_image(card3)
-    
-    card1 = np.zeros((imgH, imgW, 4), dtype = np.uint8)
-    card2 = np.zeros((imgH, imgW, 4), dtype = np.uint8)
-    card3 = np.zeros((imgH, imgW, 4), dtype = np.uint8)
-    
+    # Scale images to desired values
+    background = background.resize((imgW, imgH))
+    card1 = card1.resize((cardW, cardH))
+    card2 = card2.resize((cardW, cardH))
+    card3 = card3.resize((cardW, cardH))
+
     # superimpose background and the three cards
-    mask1 = card1[:,:,3]
-    mask1 = np.stack([mask1]*3,-1)
-    final = np.where(mask1,card1[:,:,0:3], background)
-    mask2 = card2[:,:,3]
-    mask2 = np.stack([mask2]*3,-1)
-    final = np.where(mask2, card2[:,:,0:3], final)
-    mask3 = card3[:,:,3]
-    mask3 = np.stack([mask3]*3,-1)
-    final = np.where(mask3, card3[:,:,0:3], final)
+    area1 = (100, 100)
+    area2 = (500, 100)
+    area3 = (900, 100)
+    background.paste(card1, area1)
+    background.paste(card2, area2)
+    background.paste(card3, area3)
+    
+    final = np.array(background)
     
     imageio.imwrite("D:\Deep_Jass\\Testbilder\\" + '_scene.jpg', final)
-    display(final)
+    display(background)
 
 # -----------------------------------------------------------------------------
 # Main Program
