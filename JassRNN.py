@@ -11,10 +11,12 @@ Author:         Simon Thür; Marc Matter
 
 Copyright © 2019 Marc Matter, Michael Siebenmann, Ramon Heeb, Simon Thür. All rights reserved.
 """
-print("______________________________\nJassRNN.py               Start\n______________________________")
+#print("______________________________\nJassRNN.py               Start\n______________________________")
 import tensorflow as tf
 import numpy as np
 import Jassen as js
+import multiprocessing
+import time
 #from Jassen import *
 #Feel free to delete the folowing if it is in any way a hindrance
 GlobalCards = js.Shuffle()
@@ -129,6 +131,8 @@ def TrainArray(length):
     Parameters:
         length(int):
             Defines how many indexes the resultating array ought to have.
+        
+        
             
     Returns:
         array[int][int]:
@@ -138,7 +142,7 @@ def TrainArray(length):
     Ret=[0]*length
 #    print(Ret)
     for i in range(length):
-        print((i+1)/length*100,"%")
+#        print((i+1)/length*100,"%")
         Ret[i] = [0]*2
         RawArray = TrainArrayInputRaw()
         while(CheckArray(RawArray)==None):
@@ -147,8 +151,54 @@ def TrainArray(length):
         RawArray.pop(37)
         Ret[i][0] = RawArray
         
-    print("\n")
+#    print("\n")
+    
     return Ret
+
+def test(length):
+    
+    return length
+
+
+def MPTrainArrayIntermediate(length,queue):
+    tmp = test(TrainArray(length))
+#    print(tmp)
+    queue.put(tmp)
+
+def MPTrainArray(length,processes): #Not working yet pls fix thx.
+    '''
+    Creates a 2d-array which holds multiple training arrays as wella s the only legoa move for each of these training arrays.
+    Uses Multiple cores to accelerate the creation of this training set.
+    
+    Parameters:
+        length(int):
+            Defines how many indexes the resulting array ought to have.
+        
+        processes(int):
+            Defines how many processes (CPU cores) are to be used.
+        
+    Returns:
+        array[int][int]:
+            [int][0]: training array
+            [int][1]: only legal move for the corresponding training array.
+    '''
+    
+    
+    queue = multiprocessing.Queue()
+    process_list=[]
+    for i in range(processes):
+        process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(length,queue)))
+    for prcs in process_list:
+        prcs.start()
+    for prcs in process_list:
+        prcs.join()
+    print("joined")
+    Ret = []
+    while not queue.empty():
+        Ret.append(queue.get())
+    return Ret
+
+
 
 # =============================================================================
 # TESTtrainArray = TrainArray(100)
@@ -214,4 +264,14 @@ LocalCards0TF = tf.convert_to_tensor(LocalCards0,dtype=tf.float32)             #
 
 sess.close()
 
-print("______________________________\nJassRNN.py                 End\n______________________________")
+
+
+if __name__ == '__main__':
+    
+#    print(TrainArray(5))
+    TESTtrainArray = MPTrainArray(100,1)
+    for i in range(len(TESTtrainArray)):
+        print(js.CTT(TESTtrainArray[i][1]))
+
+
+#print("______________________________\nJassRNN.py                 End\n______________________________")
