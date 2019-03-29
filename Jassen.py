@@ -23,7 +23,7 @@ Author:         Simon Thür; Marc Matter
 
 Copyright © 2019 Marc Matter, Michael Siebenmann, Ramon Heeb, Simon Thür. All rights reserved.
 """
-print("______________________________\nJassen.py                Start\n______________________________")
+#print("______________________________\nJassen.py                Start\n______________________________")
 
 
 #import tensorflow as tf
@@ -198,7 +198,7 @@ def LegalMove(playerCards,playedCard,called,trump=0,player=0):
                 if played card was not an acceptable choice.
     '''
     
-    
+#    print("tmp checkpoint for TESMP.py")
     if(len(playerCards)!=36 and len(playerCards)!=37 and len(playerCards)!=38):
         print("Card array is not comprised of 36 (or 37) cards.")
     elif(len(playerCards)==37):
@@ -613,4 +613,4 @@ def CsTT36(cardArray,player=0):
 #print(Shuffle(9))
 
 
-print("______________________________\nJassen.py                  End\n______________________________")
+#print("______________________________\nJassen.py                  End\n______________________________")
