@@ -16,7 +16,6 @@ import tensorflow as tf
 import numpy as np
 import Jassen as js
 import multiprocessing
-import time
 #from Jassen import *
 #Feel free to delete the folowing if it is in any way a hindrance
 GlobalCards = js.Shuffle()
@@ -165,37 +164,49 @@ def MPTrainArrayIntermediate(length,queue):
 #    print(tmp)
     queue.put(tmp)
 
-def MPTrainArray(length,processes): #Not working yet pls fix thx.
+
+def MPTrainArray(length, base = 95):
     '''
     Creates a 2d-array which holds multiple training arrays as wella s the only legoa move for each of these training arrays.
     Uses Multiple cores to accelerate the creation of this training set.
     
     Parameters:
         length(int):
-            Defines how many indexes the resulting array ought to have.
+            Defines how many indexes the resulting array ought to have. (will be rounded to a multiple of `base` (defaults to the max of 95)
         
-        processes(int):
-            Defines how many processes (CPU cores) are to be used.
+        base(int):
+            Defines the base value each process will calculate. Default to the max=95
         
     Returns:
         array[int][int]:
             [int][0]: training array
             [int][1]: only legal move for the corresponding training array.
     '''
-    
-    
+    if(base>95):
+        print("MPTrainArray(length, base) base was greater than 95: ",base,"\nBase was set to 95.")
+        base = 95
+    processes = int(length/base)
     queue = multiprocessing.Queue()
+    print("MPTrainArray, using `",processes,"` processes with base=`",base,"`")
     process_list=[]
     for i in range(processes):
-        process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(length,queue)))
+        process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(base,queue)))#define process
+
     for prcs in process_list:
-        prcs.start()
+        prcs.start() #start processes
+    Collect = []
+
+    for i in process_list:
+        Collect.append(queue.get())
+
+#join processes (terminate them once their done) this is clearly the issue...
+#apparantly wont close because there is stuff in the queue?
     for prcs in process_list:
         prcs.join()
-    print("joined")
     Ret = []
-    while not queue.empty():
-        Ret.append(queue.get())
+    for i in Collect:
+        Ret = Ret + i
+    
     return Ret
 
 
@@ -269,7 +280,7 @@ sess.close()
 if __name__ == '__main__':
     
 #    print(TrainArray(5))
-    TESTtrainArray = MPTrainArray(100,1)
+    TESTtrainArray = MPTrainArray(1000)
     for i in range(len(TESTtrainArray)):
         print(js.CTT(TESTtrainArray[i][1]))
 

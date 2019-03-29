@@ -2,7 +2,6 @@ import Jassen as js
 import multiprocessing
 import numpy as np
 
-
 def TrainArrayInputRaw():
     '''
     Creates a array (36 cards) where every card gets one of the 11 possible conditions randomly assigned to it. 
@@ -90,6 +89,8 @@ def TrainArray(length):
     Parameters:
         length(int):
             Defines how many indexes the resultating array ought to have.
+        
+        
             
     Returns:
         array[int][int]:
@@ -119,54 +120,51 @@ def test(length):
 
 def MPTrainArrayIntermediate(length,queue):
     tmp = test(TrainArray(length))
-    print("finished computation")
-    queue.put(tmp)   #if there is nothing in queue (meainging dont put stuff, or take it out before the process finishes) processes will close fine
-    print("put in queue")
-    return
+#    print(tmp)
+    queue.put(tmp)
 
-def MPTrainArray(length,processes):
+
+def MPTrainArray(length, base = 95):
     '''
     Creates a 2d-array which holds multiple training arrays as wella s the only legoa move for each of these training arrays.
     Uses Multiple cores to accelerate the creation of this training set.
     
     Parameters:
         length(int):
-            Defines how many indexes the resulting array ought to have.
+            Defines how many indexes the resulting array ought to have. (will be rounded to a multiple of `base` (defaults to the max of 95)
         
-        processes(int):
-            Defines how many processes (CPU cores) are to be used.
+        base(int):
+            Defines the base value each process will calculate. Default to the max=95
         
     Returns:
         array[int][int]:
             [int][0]: training array
             [int][1]: only legal move for the corresponding training array.
     '''
-    
-    
+    if(base>95):
+        print("MPTrainArray(length, base) base was greater than 95: ",base,"\nBase was set to 95.")
+        base = 95
+    processes = int(length/base)
     queue = multiprocessing.Queue()
+    print("MPTrainArray, using `",processes,"` processes with base=`",base,"`")
     process_list=[]
     for i in range(processes):
-        process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(length,queue)))#define process
+        process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(base,queue)))#define process
+
     for prcs in process_list:
         prcs.start() #start processes
-    print("process_list:", process_list)
-    
-    
-    
+    Collect = []
+
+    for i in process_list:
+        Collect.append(queue.get())
+
 #join processes (terminate them once their done) this is clearly the issue...
 #apparantly wont close because there is stuff in the queue?
     for prcs in process_list:
-        print("prcs", prcs)
         prcs.join()
-        print ("joined")
-    print("join complete")
-    
-    print("before queue loop")
     Ret = []
-    while not queue.qlength():
-        print("queue loop")
-        Ret.append(queue.get())
-    print("after queue loop")
+    for i in Collect:
+        Ret = Ret + i
     
     return Ret
 
@@ -174,7 +172,8 @@ def MPTrainArray(length,processes):
 
 
 if __name__ == '__main__':
-    print(TrainArray(5))
-    TESTtrainArray = MPTrainArray(1000,8)
+    print(TrainArray(2))
+    TESTtrainArray = MPTrainArray(1000)
     print(TESTtrainArray)
+    print(len(TESTtrainArray))
     
