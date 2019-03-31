@@ -7,14 +7,14 @@ File:           Jassen.py
 Purpose:        Assortment of Functions required for playing cards
 
 Functions:
-    CountPoints\n
-    LegalMove\n
-    Colour\n
-    RoundWinner\n
-    LocalPov\n
-    CTT (Card to Text)\n
-    CsTT (Variation of CTT)\n
-    CsTT36 (Variation of CsTT)
+    - CountPoints
+    - LegalMove
+    - Colour
+    - RoundWinner
+    - LocalPov
+    - CTT (Card to Text)
+    - CsTT (Variation of CTT)
+    - CsTT36 (Variation of CsTT)
 
 
 
@@ -40,7 +40,14 @@ def CountPoints(cards,trump=None):
         cards (array[int]):
             Card array in standard 36 card layout, each card value signifying to which player it belongs. Value must be >= 0
         trump (int):
-            signifying playstyle (0=ace;1=6;2=rose;3=acorn;4=bell;5=shield)
+            signifying playstyle
+            
+                - 0=ace
+                - 1=6
+                - 2=rose
+                - 3=acorn
+                - 4=bell
+                - 5=shield
             If value is not provided, defaults to 0
 
     Returns:
@@ -170,21 +177,21 @@ def LegalMove(playerCards,playedCard,called,trump=0,player=0):
             The card that the player wishes to play/has played. It states which card according to the same Card layout used for playerCards.
         
         called (int):
-            Indicates which colour was called for:\n
-            None = nothing called for
-            0=rose;
-            1=acorn;
-            2=bell;
-            3=shield;
+            - Indicates which colour was called for:\n
+            - None = nothing called for
+            - 0=rose;
+            - 1=acorn;
+            - 2=bell;
+            - 3=shield;
         
         trump (int):
             Indicates which playstyle is in use/which colour is trump (if playerCards has 37 inputs, last element defines trump)(defaults to 0):\n
-            0=ace;
-            1=6;
-            2=rose;
-            3=acorn;
-            4=bell;
-            5=shield;
+            - 0=ace;
+            - 1=6;
+            - 2=rose;
+            - 3=acorn;
+            - 4=bell;
+            - 5=shield;
         
         player (int):
             Signifies which number is the player. if nothing is indicated, player will be `Player 0`, meaning cards with value 0 are players cards
@@ -247,10 +254,11 @@ def Colour(playedCards):
     Returns:
         Array[int]:
             The Values of the colours of the card at each index:
-                0=rose;
-                1=acorn;
-                2=bell;
-                3=shield;
+            
+                - 0=rose
+                - 1=acorn
+                - 2=bell
+                - 3=shield
     '''
     playedColour = []
     for i in range(len(playedCards)):
@@ -274,12 +282,12 @@ def RoundWinner(playedCards,trump,callingPlayer=None):
         
         trump (int):
             Indicates which playstyle is in use/which colour is trump:\n
-            0=ace;
-            1=6;
-            2=rose;
-            3=acorn;
-            4=bell;
-            5=shield;
+            - 0=ace;
+            - 1=6;
+            - 2=rose;
+            - 3=acorn;
+            - 4=bell;
+            - 5=shield;
         
         callingplyer (int):
             Indicates which colour was called for; which player is calling the colour:\n
@@ -393,33 +401,35 @@ def LocalPov(Cards, player=0):
     Parameters:
         Cards (array[int]):
             Global Card array (36 Card layout) signified as follows:
-                0:	Player 0 holds card\n
-                1:	Player 1 holds card\n
-                2:	Player 2 holds card\n
-                3:	Player 3 holds card\n
-                4:	Player 0 plays card\n
-                5:	Player 1 plays card\n
-                6:	Player 2 plays card\n
-                7:	Player 3 plays card\n
-                8:	Player 0 has played card\n
-                9:	Player 1 has played card\n
-                10:	Player 2 has played card\n
-                11:	Player 3 has played card\n
+            
+                - 0:	Player 0 holds card
+                - 1:	Player 1 holds card
+                - 2:	Player 2 holds card
+                - 3:	Player 3 holds card
+                - 4:	Player 0 plays card
+                - 5:	Player 1 plays card
+                - 6:	Player 2 plays card
+                - 7:	Player 3 plays card
+                - 8:	Player 0 has played card
+                - 9:	Player 1 has played card
+                - 10:	Player 2 has played card
+                - 11:	Player 3 has played card
         player (int):
             Indicates the desired perspective
         
     Returns:
         array[int]:
             36 Card pov layout for player:
-                0:	Card location not known\n
-                1:	player holds card\n
-                2:	Player 1 holds card\n
-                3:	Player 2 holds card\n
-                4:	Player 3 holds card\n
-                5:	Player has already played card\n
-                6:	Player 1 has already played card\n
-                7:	Player 2 has already played card\n
-                8:	Player 3 has already played card\n
+            
+                - 0:	Card location not known
+                - 1:	player holds card
+                - 2:	Player 1 holds card
+                - 3:	Player 2 holds card
+                - 4:	Player 3 holds card
+                - 5:	Player has already played card
+                - 6:	Player 1 has already played card
+                - 7:	Player 2 has already played card
+                - 8:	Player 3 has already played card
 
 
     '''

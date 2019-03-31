@@ -52,28 +52,29 @@ def TrainArrayInputRaw():
     Returns:
         Array[int]:
             Global Card array (36 Card layout) signified as follows:
-                0:	Player 0 holds card\n
-                1:	Player 1 holds card\n
-                2:	Player 2 holds card\n
-                3:	Player 3 holds card\n
-                4:	Player 0 plays card\n
-                5:	Player 1 plays card\n
-                6:	Player 2 plays card\n
-                7:	Player 3 plays card\n
-                8:	Player 0 has played card\n
-                9:	Player 1 has played card\n
-                10:	Player 2 has played card\n
-                11:	Player 3 has played card\n
+                - 0:	Player 0 holds card
+                - 1:	Player 1 holds card
+                - 2:	Player 2 holds card
+                - 3:	Player 3 holds card
+                - 4:	Player 0 plays card
+                - 5:	Player 1 plays card
+                - 6:	Player 2 plays card
+                - 7:	Player 3 plays card
+                - 8:	Player 0 has played card
+                - 9:	Player 1 has played card
+                - 10:	Player 2 has played card
+                - 11:	Player 3 has played card
             
             Two additional arrayelements [36] and [37]:
                 [36]: Holds information about the desired playstyle:
-                    0: Oben runter\n
-                    1: Unten rauf\n
-                    2: Trump is rose\n
-                    3: Trump is acorn\n
-                    4: Trump is bell\n
-                    5: Trump is shield\n
-                [37]: Holds information about whether a colour is called for or the player is free to choose one.
+                    - 0: Oben runter
+                    - 1: Unten rauf
+                    - 2: Trump is rose
+                    - 3: Trump is acorn
+                    - 4: Trump is bell
+                    - 5: Trump is shield
+                [37]: Holds information about whether a colour is called for or the player is free to choose one
+                    
                     
     '''
     Ret = js.Shuffle()
@@ -160,7 +161,7 @@ def test(length):
 
 
 def MPTrainArrayIntermediate(length,queue):
-    tmp = test(TrainArray(length))
+    tmp = TrainArray(length)
 #    print(tmp)
     queue.put(tmp)
 
@@ -217,21 +218,26 @@ def MPTrainArray(length, base = 95):
 #     print(js.CTT(TESTtrainArray[i][1]))
 # =============================================================================
 
-    #Test some NN stuff
-sess = tf.Session()
-Model = tf.keras.models.Sequential()
-Model.add(tf.keras.layers.InputLayer(input_shape=(1,37),name='input'))
-#Model.add(tf.keras.layers.Dense(36, name='Dense1'))
-Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM1',return_sequences=True))
-Model.add(tf.keras.layers.CuDNNLSTM(36, name='LSTM2',return_sequences=True))
-Model.add(tf.keras.layers.Dropout(0.5))
-Model.add(tf.keras.layers.Dense(36, activation='softmax'))
+def GetModel():
+    '''
+    Used for acquiring the RNN Model (useing LSTM Cells) with input size (1,1,37) and output size (1,1,36)
+    
+    Returns:
+        Tensorflow_Model
+    '''
+    Model = tf.keras.models.Sequential()
+    Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37),name='input'))
+    #Model.add(tf.keras.layers.Dense(36, name='Dense1'))
+    Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM1',return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.CuDNNLSTM(36, name='LSTM2',return_sequences=True, stateful=True))
+    Model.add(tf.keras.layers.Dropout(0.5))
+    Model.add(tf.keras.layers.Dense(36))
+    
+    Model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])        #maybe if we decide to use handmade training data for not playing incorrect cards.
+    
+    tf.global_variables_initializer()      #absolutly necessary! but still not working...?
+    return Model
 
-Model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])        #maybe if we decide to use handmade training data for not playing incorrect cards.
-LocalCards0 = np.reshape(LocalCards[0],[1,1,37])                                            #reshaped for RNN input
-
-LocalCards0TF = tf.convert_to_tensor(LocalCards0,dtype=tf.float32)             #Convert to float
-#tf.initialize_all_variables()      #absolutly necessary! but still not working...?
 
 # =============================================================================
 # =============================================================================
@@ -273,16 +279,121 @@ LocalCards0TF = tf.convert_to_tensor(LocalCards0,dtype=tf.float32)             #
 # #print(sess.run(TestLayer(TfArray)))
 # =============================================================================
 
-sess.close()
+#sess.close()
+
+
+def PrepareInput(input):
+    '''
+    Converts an array of length 37 into a  matrix (1,1,37), which fits the input requirements of the RNN Model (from GetModel())
+    
+    Parameters:
+        input(array[int]):
+            An array of length 37 (ideally in LocalPov format) which is to be converted to RNN Input.
+            
+        
+    Returns:
+        Numpy Matrix:
+            Input Matrix for the RNN.
+    '''
+    return np.reshape(input,[1,1,37])
+
+
+def PrepareInputArray(input_array):
+    '''
+    Converts an array of array (len 37) into an array of matrices (1,1,37), which fits the input requirements of the RNN Model (from GetModel())
+    
+    
+    Parameters:
+        input_array(array[array[int]])
+    '''
+    
+    Ret=[]
+    for i in input_array:
+        Ret.append(PrepareInput(i))
+    return Ret
+
+
+def Evaluate(RNN_Output):
+    Array = RNN_Output[0][0]
+    highest = 0
+    index = None
+    for i in range(len(Array)):
+        if(Array[i]>highest):
+            index = i
+            highest = Array[i]
+            
+    return index
+
+
+def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does not work in Spyder, to make use of this execute from Anaconda/CMD
+    '''
+    Trains the Model to not be completely stupid
+    
+    Parameters:
+        model(tf.keras.Model):
+            TensorFlow model with input (1,1,37) and output (1,1,36)
+        
+        size(int):
+            Determines the amount of training to be done
+        
+        Multiprocessing(Boolean):
+            Specifies whether training should make use of Multiprocessing (default to False)
+            *NOTE Multiprocessing will not work in Spyder IDE. To make use of this, execute Code in standalone console
+            
+    '''
+    
+    
+    if Multiprocessing:
+        training_data = MPTrainArray(size)
+    else:
+        training_data = TrainArray(size)
+    
+    '''Theres some problem with TrainArray(), because it returns a 3d array with 2 2d arrays... should not be happening like that though so will have to look at that'''
+    
+    
+#    print(training_data)
+    x = []
+    y = []
+    print(training_data)
+    
+    for i in training_data:
+        x.append(i[0])
+        tmp = [0]*36
+        tmp[i[1]] = 1
+        y.append(tmp)
+    for i in x:
+        print( x)
+        x = PrepareInput(x)
+    for i in y:
+        y = np.reshape(y,(1,1,36))
+    model.train_on_batch(x,y)
 
 
 
+
+# =============================================================================
+# Main
+# =============================================================================
 if __name__ == '__main__':
     
-#    print(TrainArray(5))
-    TESTtrainArray = MPTrainArray(1000)
-    for i in range(len(TESTtrainArray)):
-        print(js.CTT(TESTtrainArray[i][1]))
-
-
+    LocalCards = TrainArray(1)
+    LocalCards0 = PrepareInput(LocalCards[0][0])
+    Model = GetModel()
+    RNN_Output = Model.predict(LocalCards0)
+    Highest = Evaluate(RNN_Output)
+    print("Model Output:\n",RNN_Output)
+    print("Played Card (highest output)",Highest)
+    print(js.CTT(Highest))
+    
+    
+    print("\n\n\nTest Memory (using the same input several times in succession")
+    for i in range(10):
+        print(Evaluate(Model.predict(LocalCards0)))
+#    Model.train_on_batch()
+    
+    print(RNN_Output)
+    print(Model.predict(LocalCards0))
+    print("\n\n\n\n")
+    TrainModelBasics(Model,100)
+#    Model.train_on_batch()
 #print("______________________________\nJassRNN.py                 End\n______________________________")
