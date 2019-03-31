@@ -35,9 +35,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import matplotlib.patches as patches
 from matplotlib import cm
-import pickle
 from glob import glob 
-from shapely.geometry import Polygon
 from PIL import Image
 
 # -----------------------------------------------------------------------------
@@ -133,16 +131,6 @@ transformScene = iaa.Sequential(
                 # Same as sharpen, but for an embossing effect.
                 iaa.Emboss(alpha=(0, 1.0), strength=(0, 2.0)),
 
-                # Search in some images either for all edges or for
-                # directed edges. These edges are then marked in a black
-                # and white image and overlayed with the original image
-                # using an alpha of 0 to 0.7.
-                sometimes(iaa.OneOf([
-                    iaa.EdgeDetect(alpha=(0, 0.7)),
-                    iaa.DirectedEdgeDetect(
-                        alpha=(0, 0.7), direction=(0.0, 1.0)
-                    ),
-                ])),
 
                 # Add gaussian noise to some images.
                 # In 50% of these cases, the noise is randomly sampled per
@@ -167,15 +155,19 @@ transformScene = iaa.Sequential(
     random_order=True
 )
 
-# to transform 1 card
-transformCard = iaa.Sequential([
-    iaa.Affine(rotate=(-180,180)),
-    iaa.Affine(translate_percent={"x":(-0.25,0.25),"y":(-0.25,0.25)}),
-])
-
 # -----------------------------------------------------------------------------
 # Functions
 # -----------------------------------------------------------------------------
+
+# convert PIL Image to a numpy array (for augmentation)
+def PIL_to_np(img):
+    PIL_img = np.array(img)
+    return PIL_img
+
+# convert a numpy array to a PIL Image (for superimposing / saving)
+def np_to_PIL(img):
+    np_img = Image.fromarray(img)
+    return np_img
 
 def create_voc_xml(xml_file, img_file,listbba,display=False):
     with open(xml_file,"w") as f:
@@ -203,54 +195,87 @@ def display(image):
         ax.imshow(image)
 
 def createScene(idx):
+    transformScene_det = transformScene.to_deterministic()
+    
+    # load 3 random cards, a random background and a transparent background for superimposing
     bg_file = "D:\Deep_Jass\\Backgrounds\\" + random.choice(os.listdir("D:\Deep_Jass\\Backgrounds"))
     tr_bg = Image.new('RGBA', (1000, 1000), (0, 0, 0, 0))
-    background = Image.open(bg_file).convert('RGBA') # random background image (using dtd dataset)
+    background = imageio.imread(bg_file) #read you image
     card1 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg").convert('RGBA') #read first random card
     card2 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg").convert('RGBA') #read second random card
     card3 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg").convert('RGBA') #read third random card
     
     # Scale images to desired values
-    background = background.resize((imgW, imgH))
+    background = np_to_PIL(background).resize((imgW, imgH))
     card1 = card1.resize((cardW, cardH))
     card2 = card2.resize((cardW, cardH))
     card3 = card3.resize((cardW, cardH))
-
-    # apply some augmentations to the cards
-    card1_aug = card1.rotate(random.randint(0, 360), expand=1)
-    card2_aug = card2.rotate(random.randint(0, 360), expand=1)
-    card3_aug = card3.rotate(random.randint(0, 360), expand=1)
     
     # random coordinates for the cards
-    x1 = random.randint(0, 600)
-    x2 = random.randint(0, 600)
-    x3 = random.randint(0, 600)
-    y1 = random.randint(0, 600)
-    y2 = random.randint(0, 600)
-    y3 = random.randint(0, 600)
+    x1 = random.randint(100, 600)
+    x2 = random.randint(100, 600)
+    x3 = random.randint(100, 600)
+    y1 = random.randint(100, 600)
+    y2 = random.randint(100, 600)
+    y3 = random.randint(100, 600)
     
     area1 = (x1, y1)
     area2 = (x2, y2)
     area3 = (x3, y3)
     
+    # rotate cards
+    
     # superimpose transparent background and the three cards
-    tr_bg.paste(card1_aug, area1, card1_aug)
-    tr_bg.paste(card2_aug, area2, card2_aug)
-    tr_bg.paste(card3_aug, area3, card3_aug)
+    tr_bg.paste(card1, area1, card1)
+    tr_bg.paste(card2, area2, card2)
+    tr_bg.paste(card3, area3, card3)
     
-    cards = np.array(tr_bg)
-    cards_aug = transformScene.augment_image(cards)
-    cards_aug = Image.fromarray(cards_aug) # convert back to PIL Image
+    cards = PIL_to_np(tr_bg)
     
+    # create keypoints on images
+    keypoints1 = ia.KeypointsOnImage([
+    ia.Keypoint(x=x1, y=y1),
+    ia.Keypoint(x=x1+cardW, y=y1),
+    ia.Keypoint(x=x1, y=y1+cardH),
+    ia.Keypoint(x=x1+cardW, y=y1+cardH)
+    ], shape = cards.shape)
+    
+    keypoints2 = ia.KeypointsOnImage([
+    ia.Keypoint(x=x2, y=y2),
+    ia.Keypoint(x=x2+cardW, y=y2),
+    ia.Keypoint(x=x2, y=y2+cardH),
+    ia.Keypoint(x=x2+cardW, y=y2+cardH)
+    ], shape = cards.shape)
+    
+    keypoints3 = ia.KeypointsOnImage([
+    ia.Keypoint(x=x3, y=y3),
+    ia.Keypoint(x=x3+cardW, y=y3),
+    ia.Keypoint(x=x3, y=y3+cardH),
+    ia.Keypoint(x=x3+cardW, y=y3+cardH)
+    ], shape = cards.shape)
+    
+    cards_aug = transformScene_det.augment_image(cards)
+    keypoints1_aug = transformScene_det.augment_keypoints(keypoints1)
+    keypoints2_aug = transformScene_det.augment_keypoints(keypoints2)
+    keypoints3_aug = transformScene_det.augment_keypoints(keypoints3)
+    cards_aug = np_to_PIL(cards_aug) # convert back to PIL Image
+    
+    # paste cards on the random background
     background.paste(cards_aug, (0,0), cards_aug)
     
-    #background.save("D:\Deep_Jass\\Testbilder\\" + str(idx) + '_scene.jpg')
-    display(background)
+    cards = PIL_to_np(background)
+    
+    final = keypoints1_aug.draw_on_image(cards, size=10)
+    final = keypoints2_aug.draw_on_image(final, size=10)
+    final = keypoints3_aug.draw_on_image(final, size=10)
+    display(final)
+    
+    np_to_PIL(final).save("D:\Deep_Jass\\Testbilder\\" + str(idx) + '_scene.jpg')
 
 # -----------------------------------------------------------------------------
 # Main Program
 # -----------------------------------------------------------------------------
 
-# generate 20 scenes
-for idx in range(20):
+# generate 5 scenes
+for idx in tqdm(range(20)):
     createScene(idx)
