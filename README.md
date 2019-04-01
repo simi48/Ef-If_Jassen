@@ -1,4 +1,4 @@
-# Ef-If_Jassen
+# EF-IF_Jassen
 Ein Arbeit im Ergänzungsfach Informatik
 
 Jassbot, welcher

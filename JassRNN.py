@@ -16,6 +16,7 @@ import tensorflow as tf
 import numpy as np
 import Jassen as js
 import multiprocessing
+from tqdm import tqdm
 #from Jassen import *
 #Feel free to delete the folowing if it is in any way a hindrance
 GlobalCards = js.Shuffle()
@@ -197,7 +198,7 @@ def MPTrainArray(length, base = 95):
         prcs.start() #start processes
     Collect = []
 
-    for i in process_list:
+    for i in tqdm(process_list):
         Collect.append(queue.get())
 
 #join processes (terminate them once their done) this is clearly the issue...
@@ -356,16 +357,17 @@ def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does
     y = []
     print(training_data)
     
-    for i in training_data:
-        x.append(i[0])
+    for i in range(len(training_data)):
+        x.append(training_data[i][0])
         tmp = [0]*36
-        tmp[i[1]] = 1
+        tmp[training_data[i][1]] = 1
         y.append(tmp)
-    for i in x:
-        print( x)
-        x = PrepareInput(x)
-    for i in y:
-        y = np.reshape(y,(1,1,36))
+    for i in range(len(x)):
+        x[i] = PrepareInput(x[i])
+    for i in range(len(y)):
+        y[i] = np.reshape(y[i],(1,1,36))
+    print(x)
+    print(y)
     model.train_on_batch(x,y)
 
 
@@ -412,13 +414,13 @@ if __name__ == '__main__':
     
     
     print("\n\n\nTest Memory (using the same input several times in succession")
-    for i in range(10):
-        print(Evaluate(Model.predict(LocalCards0)))
+    for i in tqdm(range(10)):
+        Evaluate(Model.predict(LocalCards0))
 #    Model.train_on_batch()
     
     print(RNN_Output)
     print(Model.predict(LocalCards0))
     print("\n\n\n\n")
-    TrainModelBasics(Model,100)
+    TrainModelBasics(Model,1)
 #    Model.train_on_batch()
 #print("______________________________\nJassRNN.py                 End\n______________________________")
