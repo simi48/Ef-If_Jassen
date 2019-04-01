@@ -1,6 +1,7 @@
 import Jassen as js
 import multiprocessing
 import numpy as np
+from tqdm import tqdm
 
 def TrainArrayInputRaw():
     '''
@@ -124,17 +125,17 @@ def MPTrainArrayIntermediate(length,queue):
     queue.put(tmp)
 
 
-def MPTrainArray(length, base = 95):
+def MPTrainArray(length, base = 50):
     '''
     Creates a 2d-array which holds multiple training arrays as wella s the only legoa move for each of these training arrays.
     Uses Multiple cores to accelerate the creation of this training set.
     
     Parameters:
         length(int):
-            Defines how many indexes the resulting array ought to have. (will be rounded to a multiple of `base` (defaults to the max of 95)
+            Defines how many indexes the resulting array ought to have. (will be rounded to a multiple of `base`
         
         base(int):
-            Defines the base value each process will calculate. Default to the max=95
+            Defines the base value each process will calculate. Default to 50, max=95
         
     Returns:
         array[int][int]:
@@ -144,24 +145,24 @@ def MPTrainArray(length, base = 95):
     if(base>95):
         print("MPTrainArray(length, base) base was greater than 95: ",base,"\nBase was set to 95.")
         base = 95
-    processes = int(length/base)
+    processes = multiprocessing.cpu_count()
     queue = multiprocessing.Queue()
-    print("MPTrainArray, using `",processes,"` processes with base=`",base,"`")
-    process_list=[]
-    for i in range(processes):
-        process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(base,queue)))#define process
-
-    for prcs in process_list:
-        prcs.start() #start processes
     Collect = []
+    for _ in tqdm(range(int(length/base/processes))):
+        process_list=[]
+        for i in range(processes):
+            process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(base,queue)))#define process
 
-    for i in process_list:
-        Collect.append(queue.get())
+        for prcs in process_list:
+            prcs.start() #start processes
 
-#join processes (terminate them once their done) this is clearly the issue...
-#apparantly wont close because there is stuff in the queue?
-    for prcs in process_list:
-        prcs.join()
+        for i in process_list:
+            Collect.append(queue.get())
+
+#join processes (terminate them once they're done) 
+#apparantly wont close because there is stuff in the queue? problem solved by limiteing queue
+        for prcs in process_list:
+            prcs.join()
     Ret = []
     for i in Collect:
         Ret = Ret + i
@@ -173,7 +174,7 @@ def MPTrainArray(length, base = 95):
 
 if __name__ == '__main__':
     print(TrainArray(2))
-    TESTtrainArray = MPTrainArray(1000)
-    print(TESTtrainArray)
+    TESTtrainArray = MPTrainArray(1000000)
+#    print(TESTtrainArray)
     print(len(TESTtrainArray))
     

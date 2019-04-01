@@ -167,17 +167,17 @@ def MPTrainArrayIntermediate(length,queue):
     queue.put(tmp)
 
 
-def MPTrainArray(length, base = 95):
+def MPTrainArray(length, base = 50):
     '''
     Creates a 2d-array which holds multiple training arrays as wella s the only legoa move for each of these training arrays.
     Uses Multiple cores to accelerate the creation of this training set.
     
     Parameters:
         length(int):
-            Defines how many indexes the resulting array ought to have. (will be rounded to a multiple of `base` (defaults to the max of 95)
+            Defines how many indexes the resulting array ought to have. (will be rounded to a multiple of `base`
         
         base(int):
-            Defines the base value each process will calculate. Default to the max=95
+            Defines the base value each process will calculate. Default to 50, max=95
         
     Returns:
         array[int][int]:
@@ -187,24 +187,24 @@ def MPTrainArray(length, base = 95):
     if(base>95):
         print("MPTrainArray(length, base) base was greater than 95: ",base,"\nBase was set to 95.")
         base = 95
-    processes = int(length/base)
+    processes = multiprocessing.cpu_count()
     queue = multiprocessing.Queue()
-    print("MPTrainArray, using `",processes,"` processes with base=`",base,"`")
-    process_list=[]
-    for i in range(processes):
-        process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(base,queue)))#define process
-
-    for prcs in process_list:
-        prcs.start() #start processes
     Collect = []
+    for _ in tqdm(range(int(length/base/processes))):
+        process_list=[]
+        for i in range(processes):
+            process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(base,queue)))#define process
 
-    for i in tqdm(process_list):
-        Collect.append(queue.get())
+        for prcs in process_list:
+            prcs.start() #start processes
 
-#join processes (terminate them once their done) this is clearly the issue...
-#apparantly wont close because there is stuff in the queue?
-    for prcs in process_list:
-        prcs.join()
+        for i in process_list:
+            Collect.append(queue.get())
+
+#join processes (terminate them once they're done) 
+#apparantly wont close because there is stuff in the queue? problem solved by limiteing queue
+        for prcs in process_list:
+            prcs.join()
     Ret = []
     for i in Collect:
         Ret = Ret + i
@@ -327,7 +327,7 @@ def Evaluate(RNN_Output):
     return index
 
 
-def TrainModelBasics(model,size, epochs = 1, Multiprocessing = False): #Multiprocessing does not work in Spyder, to make use of this execute from Anaconda/CMD
+def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does not work in Spyder, to make use of this execute from Anaconda using `python JassRNN.py`
     '''
     Trains the Model to not be completely stupid
     
@@ -343,31 +343,28 @@ def TrainModelBasics(model,size, epochs = 1, Multiprocessing = False): #Multipro
             *NOTE Multiprocessing will not work in Spyder IDE. To make use of this, execute Code in standalone console
             
     '''
+    print("Generating Data")
+    if (Multiprocessing):
+        training_data = MPTrainArray(size)
+    else:
+        training_data = TrainArray(size)
     
-    for epoch in tqdm(range(epochs)):
-        if Multiprocessing:
-            training_data = MPTrainArray(size)
-        else:
-            training_data = TrainArray(size)
+    '''Theres some problem with TrainArray(), because it returns a 3d array with 2 2d arrays... should not be happening like that though so will have to look at that'''
     
-        '''Theres some problem with TrainArray(), because it returns a 3d array with 2 2d arrays... should not be happening like that though so will have to look at that'''
+    #    print(training_data)
+    x = []
+    y = []
     
-    
-#    print(training_data)
-        x = []
-        y = []
-    
-        for i in range(len(training_data)):
-            x.append(training_data[i][0])
-            tmp = [0]*36
-            tmp[training_data[i][1]] = 1
-            y.append(tmp)
-        for i in range(len(x)):
-            x[i] = PrepareInput(x[i])
-        for i in range(len(y)):
-            y[i] = np.reshape(y[i],(1,1,36))
-        for i in tqdm(range(len(x))):
-            model.train_on_batch(x[i],y[i])
+    for i in range(len(training_data)):
+        x.append(training_data[i][0])
+        tmp = [0]*36
+        tmp[training_data[i][1]] = 1
+        y.append(tmp)
+    x=np.reshape(x,(len(x),1,1,37))
+    y=np.reshape(y,(len(y),1,1,36))
+    print("Adjusting Network")
+    for i in tqdm(range(len(x))):
+        model.fit(x[i],y[i],batch_size=1, verbose = 0,use_multiprocessing=Multiprocessing) #*NOTE it works with `use_multiprocessing=True` but I have no idea what it does or whether it helps at all
 
 
 
@@ -401,7 +398,6 @@ def LoadRNN(model, name):
 # Main
 # =============================================================================
 if __name__ == '__main__':
-    
     LocalCards = TrainArray(1)
     LocalCards0 = PrepareInput(LocalCards[0][0])
     Model = GetModel()
@@ -420,8 +416,8 @@ if __name__ == '__main__':
     print(RNN_Output)
     print(Evaluate(Model.predict(LocalCards0)))
     print("\n\n\n\n")
-    TrainModelBasics(Model,1000,10)
+    TrainModelBasics(Model,100000,True)
     print(Evaluate(Model.predict(LocalCards0)))
     print(LocalCards[0][1])
-#    Model.train_on_batch()
+
 #print("______________________________\nJassRNN.py                 End\n______________________________")
