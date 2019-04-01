@@ -37,6 +37,8 @@ import matplotlib.patches as patches
 from matplotlib import cm
 from glob import glob 
 from PIL import Image
+import math
+import six.moves as sm
 
 # -----------------------------------------------------------------------------
 # Setup
@@ -51,18 +53,6 @@ imgH = 1000
 # dimensions of a card
 cardW = 169
 cardH = 263
-
-# center cards in images
-decalX = int((imgW - cardW) / 2)
-decalY = int((imgH - cardH) / 2)
-
-# keypoints of the bounding box of a whole card
-cardKP = ia.KeypointsOnImage([
-    ia.Keypoint(x = decalX,       y = decalY),
-    ia.Keypoint(x = decalX+cardW, y = decalY),   
-    ia.Keypoint(x = decalX+cardW, y = decalY+cardH),
-    ia.Keypoint(x = decalX,       y = decalY+cardH)
-    ], shape = (imgH, imgW, 3))
 
 
 xml_body_1="""<annotation>
@@ -169,7 +159,7 @@ def np_to_PIL(img):
     np_img = Image.fromarray(img)
     return np_img
 
-def create_voc_xml(xml_file, img_file,listbba,display=False):
+def create_voc_xml(xml_file, img_file,listbba, display=False):
     with open(xml_file,"w") as f:
         f.write(xml_body_1.format(**{'FILENAME':os.path.basename(img_file), 'PATH':img_file,'WIDTH':imgW,'HEIGHT':imgH}))
         for bba in listbba:            
@@ -190,21 +180,23 @@ def kps_to_BB(kps):
     else:
         return ia.BoundingBox(x1=minx,y1=miny,x2=maxx,y2=maxy)
 
-# rotate points around given angle, clockwise
-def rotatePoints(center, points, angle):
-    angle = math.radians(angle)
+# rotate points around given angle, counterclockwise
+def rotatePoints(center, points, angle, img):
+    angle = math.radians(360-angle)
+    width, height = img.size
     rotatedPoints = []
     ox, oy = center
-
+    xoff = (cardW - width)/2
+    yoff = (cardH - height)/2
     for i in range(len(points)):
         px, py = points[i]
-
-        qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
-        qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
+        qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy) - xoff
+        qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy) - yoff
         rotatedPoints.append((qx, qy))
-
-    return rotatedPoints
     
+    rotatedPoints = np.array(rotatedPoints)
+    return rotatedPoints
+
 def display(image):
         fig,ax=plt.subplots(1,figsize=(8,8))
         ax.imshow(image)
@@ -238,8 +230,8 @@ def createScene(idx):
     area2 = (x2, y2)
     area3 = (x3, y3)
     
-    # random angles
-    a  = random.randint(0, 359)
+    # random angles for rotation
+    a = random.randint(0, 359)
     b = random.randint(0, 359)
     c = random.randint(0, 359)
     
@@ -256,46 +248,60 @@ def createScene(idx):
     cards = PIL_to_np(tr_bg)
     
     # create keypoints on images
-    keypoints1 = ia.KeypointsOnImage([
-    ia.Keypoint(x=x1, y=y1),
-    ia.Keypoint(x=x1+cardW, y=y1),
-    ia.Keypoint(x=x1, y=y1+cardH),
-    ia.Keypoint(x=x1+cardW, y=y1+cardH)
-    ], shape = cards.shape)
+    keypoints1 = np.float32([
+    (x1, y1),
+    (x1+cardW, y1),
+    (x1, y1+cardH),
+    (x1+cardW, y1+cardH)
+    ])
     
-    keypoints2 = ia.KeypointsOnImage([
-    ia.Keypoint(x=x2, y=y2),
-    ia.Keypoint(x=x2+cardW, y=y2),
-    ia.Keypoint(x=x2, y=y2+cardH),
-    ia.Keypoint(x=x2+cardW, y=y2+cardH)
-    ], shape = cards.shape)
+    keypoints2 = np.float32([
+    (x2, y2),
+    (x2+cardW, y2),
+    (x2, y2+cardH),
+    (x2+cardW, y2+cardH)
+    ])
     
-    keypoints3 = ia.KeypointsOnImage([
-    ia.Keypoint(x=x3, y=y3),
-    ia.Keypoint(x=x3+cardW, y=y3),
-    ia.Keypoint(x=x3, y=y3+cardH),
-    ia.Keypoint(x=x3+cardW, y=y3+cardH)
-    ], shape = cards.shape)
+    keypoints3 = np.float32([
+    (x3, y3),
+    (x3+cardW, y3),
+    (x3, y3+cardH),
+    (x3+cardW, y3+cardH)
+    ])
     
     # rotate keypoints
-    keypoints1 = rotate((x1+cardW/2, y1+cardH/2), keypoints, a)
-    keypoints2 = rotate((x2+cardW/2, y2+cardH/2), keypoints, b)
-    keypoints3 = rotate((x3+cardW/2, y3+cardH/2), keypoints, c)
+    keypoints1 = rotatePoints((x1+cardW/2, y1+cardH/2), keypoints1, a, card1)
+    keypoints2 = rotatePoints((x2+cardW/2, y2+cardH/2), keypoints2, b, card2)
+    keypoints3 = rotatePoints((x3+cardW/2, y3+cardH/2), keypoints3, c, card3)
+    
+    # convert array to keypointsonimage type
+    keypoints1 = ia.KeypointsOnImage.from_coords_array(keypoints1, shape=cards.shape)
+    keypoints2 = ia.KeypointsOnImage.from_coords_array(keypoints2, shape=cards.shape)
+    keypoints3 = ia.KeypointsOnImage.from_coords_array(keypoints3, shape=cards.shape)
     
     cards_aug = transformScene_det.augment_image(cards)
+    cards_aug = np_to_PIL(cards_aug) # convert back to PIL Image
+    
     keypoints1_aug = transformScene_det.augment_keypoints(keypoints1)
     keypoints2_aug = transformScene_det.augment_keypoints(keypoints2)
     keypoints3_aug = transformScene_det.augment_keypoints(keypoints3)
-    cards_aug = np_to_PIL(cards_aug) # convert back to PIL Image
     
     # paste cards on the random background
     background.paste(cards_aug, (0,0), cards_aug)
     
     cards = PIL_to_np(background)
+    bb1 = kps_to_BB(keypoints1_aug)
+    bb2 = kps_to_BB(keypoints2_aug)
+    bb3 = kps_to_BB(keypoints3_aug)
     
-    final = keypoints1_aug.draw_on_image(cards, size=10)
-    final = keypoints2_aug.draw_on_image(final, size=10)
-    final = keypoints3_aug.draw_on_image(final, size=10)
+    final = bb1.draw_on_image(cards, thickness=3)
+    final = bb2.draw_on_image(final, thickness=3)
+    final = bb3.draw_on_image(final, thickness=3)
+    
+    final = keypoints1_aug.draw_on_image(final, size=14, color=[255, 0, 255])
+    final = keypoints2_aug.draw_on_image(final, size=14, color=[255, 0, 255])
+    final = keypoints3_aug.draw_on_image(final, size=14, color=[255, 0, 255])
+    
     display(final)
     
     np_to_PIL(final).save("D:\Deep_Jass\\Testbilder\\" + str(idx) + '_scene.jpg')
@@ -307,3 +313,5 @@ def createScene(idx):
 # generate 5 scenes
 for idx in tqdm(range(20)):
     createScene(idx)
+
+#create_voc_xml(xml_fn, jpg_fn, listbba, display=display)
