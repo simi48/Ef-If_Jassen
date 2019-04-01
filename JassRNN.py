@@ -371,6 +371,31 @@ def TrainModelBasics(model,size, epochs = 1, Multiprocessing = False): #Multipro
 
 
 
+def SaveRNN(model, name):
+    '''
+    Saves the Neural Network to your Hard Disk.
+    
+    Parameters:
+        model(tf.keras.Model):
+            TensorFlow model with input (1,1,37) and output (1,1,36)
+        name(String):
+            The desired name under which you want so save your model.       
+    '''
+# =============================================================================
+#     model.numpy.save(name, '_saved_wih.np', model.wih)
+# =============================================================================
+
+def LoadRNN(model, name):
+    '''
+    Loads the Neural Network from your Hard Disk.
+    
+    Parameters:
+        model(tf.keras.Model):
+            TensorFlow model with input (1,1,37) and output (1,1,36)
+        name(String):
+            The desired name under which your model was saved.        
+    '''
+    
 
 # =============================================================================
 # Main
