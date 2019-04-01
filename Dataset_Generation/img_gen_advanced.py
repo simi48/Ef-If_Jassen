@@ -238,9 +238,12 @@ def createScene(idx):
     area2 = (x2, y2)
     area3 = (x3, y3)
     
-    # rotate cards
-    a, b, c = random.randint(0, 359)
+    # random angles
+    a  = random.randint(0, 359)
+    b = random.randint(0, 359)
+    c = random.randint(0, 359)
     
+    # rotate cards
     card1 = card1.rotate(a, expand = 1)
     card2 = card2.rotate(b, expand = 1)
     card3 = card3.rotate(c, expand = 1)
