@@ -230,8 +230,9 @@ def GetModel():
     Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37),name='input'))
     #Model.add(tf.keras.layers.Dense(36, name='Dense1'))
     Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM1',return_sequences=True, stateful=True)) #Stateful = remember what happended last time
-    Model.add(tf.keras.layers.CuDNNLSTM(36, name='LSTM2',return_sequences=True, stateful=True))
+    Model.add(tf.keras.layers.CuDNNLSTM(50, name='LSTM2M_MEMORY',return_sequences=True, stateful=True)) #Stateful = remember what happended last time
     Model.add(tf.keras.layers.Dropout(0.5))
+    Model.add(tf.keras.layers.CuDNNLSTM(36, name='LSTM3',return_sequences=True, stateful=True))
     Model.add(tf.keras.layers.Dense(36))
     
     Model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])        #maybe if we decide to use handmade training data for not playing incorrect cards.
@@ -326,7 +327,7 @@ def Evaluate(RNN_Output):
     return index
 
 
-def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does not work in Spyder, to make use of this execute from Anaconda/CMD
+def TrainModelBasics(model,size, epochs = 1, Multiprocessing = False): #Multiprocessing does not work in Spyder, to make use of this execute from Anaconda/CMD
     '''
     Trains the Model to not be completely stupid
     
@@ -343,32 +344,30 @@ def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does
             
     '''
     
+    for epoch in tqdm(range(epochs)):
+        if Multiprocessing:
+            training_data = MPTrainArray(size)
+        else:
+            training_data = TrainArray(size)
     
-    if Multiprocessing:
-        training_data = MPTrainArray(size)
-    else:
-        training_data = TrainArray(size)
-    
-    '''Theres some problem with TrainArray(), because it returns a 3d array with 2 2d arrays... should not be happening like that though so will have to look at that'''
+        '''Theres some problem with TrainArray(), because it returns a 3d array with 2 2d arrays... should not be happening like that though so will have to look at that'''
     
     
 #    print(training_data)
-    x = []
-    y = []
-    print(training_data)
+        x = []
+        y = []
     
-    for i in range(len(training_data)):
-        x.append(training_data[i][0])
-        tmp = [0]*36
-        tmp[training_data[i][1]] = 1
-        y.append(tmp)
-    for i in range(len(x)):
-        x[i] = PrepareInput(x[i])
-    for i in range(len(y)):
-        y[i] = np.reshape(y[i],(1,1,36))
-    print(x)
-    print(y)
-    model.train_on_batch(x,y)
+        for i in range(len(training_data)):
+            x.append(training_data[i][0])
+            tmp = [0]*36
+            tmp[training_data[i][1]] = 1
+            y.append(tmp)
+        for i in range(len(x)):
+            x[i] = PrepareInput(x[i])
+        for i in range(len(y)):
+            y[i] = np.reshape(y[i],(1,1,36))
+        for i in tqdm(range(len(x))):
+            model.train_on_batch(x[i],y[i])
 
 
 
@@ -394,8 +393,10 @@ if __name__ == '__main__':
 #    Model.train_on_batch()
     
     print(RNN_Output)
-    print(Model.predict(LocalCards0))
+    print(Evaluate(Model.predict(LocalCards0)))
     print("\n\n\n\n")
-    TrainModelBasics(Model,1)
+    TrainModelBasics(Model,1000,10)
+    print(Evaluate(Model.predict(LocalCards0)))
+    print(LocalCards[0][1])
 #    Model.train_on_batch()
 #print("______________________________\nJassRNN.py                 End\n______________________________")
