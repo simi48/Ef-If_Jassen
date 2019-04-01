@@ -190,6 +190,21 @@ def kps_to_BB(kps):
     else:
         return ia.BoundingBox(x1=minx,y1=miny,x2=maxx,y2=maxy)
 
+# rotate points around given angle, clockwise
+def rotatePoints(center, points, angle):
+    angle = math.radians(angle)
+    rotatedPoints = []
+    ox, oy = center
+
+    for i in range(len(points)):
+        px, py = points[i]
+
+        qx = ox + math.cos(angle) * (px - ox) - math.sin(angle) * (py - oy)
+        qy = oy + math.sin(angle) * (px - ox) + math.cos(angle) * (py - oy)
+        rotatedPoints.append((qx, qy))
+
+    return rotatedPoints
+    
 def display(image):
         fig,ax=plt.subplots(1,figsize=(8,8))
         ax.imshow(image)
@@ -224,6 +239,11 @@ def createScene(idx):
     area3 = (x3, y3)
     
     # rotate cards
+    a, b, c = random.randint(0, 359)
+    
+    card1 = card1.rotate(a, expand = 1)
+    card2 = card2.rotate(b, expand = 1)
+    card3 = card3.rotate(c, expand = 1)
     
     # superimpose transparent background and the three cards
     tr_bg.paste(card1, area1, card1)
@@ -253,6 +273,11 @@ def createScene(idx):
     ia.Keypoint(x=x3, y=y3+cardH),
     ia.Keypoint(x=x3+cardW, y=y3+cardH)
     ], shape = cards.shape)
+    
+    # rotate keypoints
+    keypoints1 = rotate((x1+cardW/2, y1+cardH/2), keypoints, a)
+    keypoints2 = rotate((x2+cardW/2, y2+cardH/2), keypoints, b)
+    keypoints3 = rotate((x3+cardW/2, y3+cardH/2), keypoints, c)
     
     cards_aug = transformScene_det.augment_image(cards)
     keypoints1_aug = transformScene_det.augment_keypoints(keypoints1)
