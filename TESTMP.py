@@ -1,7 +1,7 @@
 import Jassen as js
-import multiprocessing
+import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
 import numpy as np
-from tqdm import tqdm
+from tqdm import tqdm #using anaconda/pip: pip install tqdm
 
 def TrainArrayInputRaw():
     '''

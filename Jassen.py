@@ -23,13 +23,9 @@ Author:         Simon Thür; Marc Matter
 
 Copyright © 2019 Marc Matter, Michael Siebenmann, Ramon Heeb, Simon Thür. All rights reserved.
 """
-#print("______________________________\nJassen.py                Start\n______________________________")
 
-
-#import tensorflow as tf
 import numpy as np
 
-#print(tf.__version__)
 np.set_printoptions(linewidth=np.inf)
 
 
@@ -151,19 +147,6 @@ def CountPoints(cards,trump=None):
     return Ret
 
 
-# =============================================================================
-# #     To test CountPoints
-# testCards = np.random.randint(4,size=37)
-# print(testCards)
-# testPoints = CountPoints(testCards,2)
-# print(testPoints)
-# sumPoints = 0
-# for i in range(len(testPoints)):
-#     sumPoints += testPoints[i]
-# print("Sum of Points should equal 152. Currently equals: "+str(sumPoints))
-# =============================================================================
-    
-
 
 def LegalMove(playerCards,playedCard,called,trump=0,player=0):
     '''
@@ -205,7 +188,6 @@ def LegalMove(playerCards,playedCard,called,trump=0,player=0):
                 if played card was not an acceptable choice.
     '''
     
-#    print("tmp checkpoint for TESMP.py")
     if(len(playerCards)!=36 and len(playerCards)!=37 and len(playerCards)!=38):
         print("Card array is not comprised of 36 (or 37) cards.")
     elif(len(playerCards)==37):
@@ -226,22 +208,6 @@ def LegalMove(playerCards,playedCard,called,trump=0,player=0):
     
     
     return Ret
-
-# =============================================================================
-#       To test LegalMove
-# playerCards=[]
-# for i in range(36):
-#     playerCards.append(i&3)
-# playedCard = 32
-# called =2
-# trump=5
-# print(playerCards)
-# print("playedCard: "+str(playedCard))
-# print("called: "+str(called))
-# print("trump: "+str(trump))
-# print(LegalMove(playerCards,playedCard,called,trump))
-# =============================================================================
-
 
 def Colour(playedCards):
     '''
@@ -305,7 +271,6 @@ def RoundWinner(playedCards,trump,callingPlayer=None):
         print("Card values are out of bounds, results will not reflect reality")
     playedColour=Colour(playedCards)
     
-    #print(playedColour)
     Ret=None
     if(callingPlayer==None):
         callingPlayer = playedColour[0]
@@ -373,24 +338,6 @@ def RoundWinner(playedCards,trump,callingPlayer=None):
                     Ret = colourCards[i]
     return Ret
 
-
-# =============================================================================
-#       To test RoundWinner
-# stats=[0,0]
-# for i in range(247):
-#     playedCards = np.random.randint(36,size=4)
-#     trump = np.random.randint(6)
-#     called = np.random.randint(4)
-#     print("Cards: "+str(playedCards)+"  Trump: "+str(trump)+"  Called: "+str(called))
-#     Winner =RoundWinner(playedCards,trump,called)
-#     if(called==Winner):
-#         stats[0]+=1
-#     else:
-#         stats[1]+=1
-#     print("Winner: "+str(Winner)+"                                                 iteration "+str(i+1))
-# print(100/(stats[1]+stats[0])*stats[0])
-# print(stats)
-# =============================================================================
 
 
 
@@ -460,13 +407,6 @@ def LocalPov(Cards, player=0):
             Ret[36]=Cards[36]
     return Ret
 
-# =============================================================================
-#       To test LocalPov
-# Cards = np.random.randint(12, size=37)
-# print(Cards)
-# print(LocalPov(Cards,3))
-# =============================================================================
-
 
 def Shuffle(playercount=4):
     '''
@@ -487,22 +427,6 @@ def Shuffle(playercount=4):
         Ret.append(i%playercount)
     np.random.shuffle(Ret)
     return Ret
-
-
-# =============================================================================
-#       To test Shuffle and the other stuff
-# print(Colour([1]))
-# print(RoundWinner([5,6,9],0))
-# cardArray=Shuffle()
-# trump = np.random.randint(6)
-# card = np.random.randint(36)
-# print("Cards"+str(cardArray))
-# print("Points: "+str(CountPoints(cardArray,trump)))
-# localCard=LocalPov(cardArray)
-# #print(localCard)
-# print("Card "+str(card))
-# print(LegalMove(cardArray,card,0,trump))
-# =============================================================================
 
 
 
@@ -601,26 +525,21 @@ def CsTT36(cardArray,player=0):
     Ret = CsTT(tmp)
     return Ret
 
-
+if __name__ == '__main__':
+    
 # =============================================================================
-# inputarray = Shuffle()
-# inputarray.append(0)
-# print(inputarray)
-# inputarray = LocalPov(inputarray)
-# print(inputarray)
+#     None of the below things are necessary, change as required.
 # =============================================================================
-
-# =============================================================================
-# #      To test CTT and related
-# Cards = Shuffle()
-# print(Cards)
-# print("player 0:\n",CsTT36(Cards,0))
-# print("player 1:\n",CsTT36(Cards,1))
-# print("player 2:\n",CsTT36(Cards,2))
-# print("player 3:\n",CsTT36(Cards,3))
-# =============================================================================
-
-#print(Shuffle(9))
-
-
-#print("______________________________\nJassen.py                  End\n______________________________")
+    
+    inputarray = Shuffle()
+    inputarray.append(0)
+    print(inputarray)
+    inputarray = LocalPov(inputarray)
+    print(inputarray)
+    
+    Cards = Shuffle()
+    print(Cards)
+    print("player 0:\n",CsTT36(Cards,0))
+    print("player 1:\n",CsTT36(Cards,1))
+    print("player 2:\n",CsTT36(Cards,2))
+    print("player 3:\n",CsTT36(Cards,3))

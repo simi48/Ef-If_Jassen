@@ -11,38 +11,11 @@ Author:         Simon Thür; Marc Matter
 
 Copyright © 2019 Marc Matter, Michael Siebenmann, Ramon Heeb, Simon Thür. All rights reserved.
 """
-#print("______________________________\nJassRNN.py               Start\n______________________________")
-import tensorflow as tf
+import tensorflow as tf #using Anaconda: conda create --name tf_gpu tensorflow-gpu \n activate tf_gpu
 import numpy as np
 import Jassen as js
-import multiprocessing
-from tqdm import tqdm
-#from Jassen import *
-#Feel free to delete the folowing if it is in any way a hindrance
-GlobalCards = js.Shuffle()
-GlobalCards.append(0) #playstyle
-LocalCards = []
-for i in range(4):
-    LocalCards.append(js.LocalPov(GlobalCards,i)) #Is in RNN Input format, but needs to be converted to 3d array (only input if len()=37)
-#for i in range(len(LocalCards)):
-#    print("Player "+str(i)+" "+str(js.CsTT36(LocalCards[i],1))+"\n")
-
-# =============================================================================
-#           #Test, whether js.LocalPov() works properly, cuz I wasn't sure, but appears to be fine...
-# print("Start Test")
-# for z in range(100):
-#     for i in range(4):
-#         if(js.CsTT36(GlobalCards,i)==js.CsTT36(LocalCards[i],1)):
-#             print("Identical")
-#         else:
-#             print(js.CsTT36(GlobalCards,i))
-#             print(js.CsTT36(LocalCards,1))
-#     GlobalCards =js.Shuffle()
-#     for i in range(4):
-#         LocalCards[i]=js.LocalPov(GlobalCards,i)
-# =============================================================================
-    
-
+import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
+from tqdm import tqdm  #using anaconda/pip: pip install tqdm
 
 def TrainArrayInputRaw():
     '''
@@ -141,9 +114,7 @@ def TrainArray(length):
             [int][1]: only legal move for the corresponding training array.
     '''
     Ret=[0]*length
-#    print(Ret)
     for i in range(length):
-#        print((i+1)/length*100,"%")
         Ret[i] = [0]*2
         RawArray = TrainArrayInputRaw()
         while(CheckArray(RawArray)==None):
@@ -152,7 +123,6 @@ def TrainArray(length):
         RawArray.pop(37)
         Ret[i][0] = RawArray
         
-#    print("\n")
     
     return Ret
 
@@ -163,7 +133,6 @@ def test(length):
 
 def MPTrainArrayIntermediate(length,queue):
     tmp = TrainArray(length)
-#    print(tmp)
     queue.put(tmp)
 
 
@@ -213,12 +182,6 @@ def MPTrainArray(length, base = 50):
 
 
 
-# =============================================================================
-# TESTtrainArray = TrainArray(100)
-# for i in range(len(TESTtrainArray)):
-#     print(js.CTT(TESTtrainArray[i][1]))
-# =============================================================================
-
 def GetModel():
     '''
     Used for acquiring the RNN Model (useing LSTM Cells) with input size (1,1,37) and output size (1,1,36)
@@ -241,47 +204,6 @@ def GetModel():
     return Model
 
 
-# =============================================================================
-# =============================================================================
-# =============================================================================
-# =============================================================================
-# # # # print(LocalCards0)
-# # # # Result = sess.run(Model.predict(LocalCards0TF,steps=1))
-# # # # print(sess.run(Result))
-# =============================================================================
-# =============================================================================
-# =============================================================================
-# =============================================================================
-
-
-#print(sess.run(tf.constant(5)))
-
-
-
-#yeah no, fuck it, using the stuff on top now
-# =============================================================================
-# inputs = tf.keras.Input(shape=(36,))
-# x = tf.keras.layers.InputLayer(input_shape=inputs)
-# outputs = tf.keras.layers.Dense(36, activation=tf.nn.softmax)(x)
-# model = tf.keras.Model(inputs=inputs, outputs=outputs)
-# 
-# TfArray=tf.constant([0,0,LocalCards[0]],name = 'TfArray',dtype=tf.uint8)
-# 
-# print(model)
-# 
-# TestLayer = tf.keras.layers.CuDNNGRU(units=36)
-# 
-# x = tf.placeholder(tf.float32, shape=[None,None,36])
-# init = tf.global_variables_initializer()
-# sess.run(init)
-# #print(sess.run(TfArray))
-# print(LocalCards[0])
-# print(sess.run(x))
-# #print(sess.run(TestLayer(x)))
-# #print(sess.run(TestLayer(TfArray)))
-# =============================================================================
-
-#sess.close()
 
 
 def PrepareInput(input):
@@ -316,15 +238,19 @@ def PrepareInputArray(input_array):
 
 
 def Evaluate(RNN_Output):
-    Array = RNN_Output[0][0]
-    highest = 0
-    index = None
-    for i in range(len(Array)):
-        if(Array[i]>highest):
-            index = i
-            highest = Array[i]
-            
-    return index
+    '''
+    Evaluates an array (RNN_Output) and decides at which index the highest number was located.
+    
+    Parameters:
+        RNN_Output(Array/Matrix):
+            An array in the shape the RNN has returned it's values.
+    
+    Returns:
+        int:
+            The index of the highest values, corresponding to the played card.
+    
+    '''
+    return np.argmax(RNN_Output)
 
 
 def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does not work in Spyder, to make use of this execute from Anaconda using `python JassRNN.py`
@@ -351,7 +277,6 @@ def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does
     
     '''Theres some problem with TrainArray(), because it returns a 3d array with 2 2d arrays... should not be happening like that though so will have to look at that'''
     
-    #    print(training_data)
     x = []
     y = []
     
@@ -419,5 +344,3 @@ if __name__ == '__main__':
     TrainModelBasics(Model,100000,True)
     print(Evaluate(Model.predict(LocalCards0)))
     print(LocalCards[0][1])
-
-#print("______________________________\nJassRNN.py                 End\n______________________________")
