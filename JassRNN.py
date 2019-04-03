@@ -136,8 +136,6 @@ def TrainArray(length, queue = None):
             Ret[i][0] = RawArray
         else:
             Ret[0] = RawArray
-            while(not queue.empty()):
-                pass
             queue.put(Ret)
     return Ret
 
@@ -178,7 +176,6 @@ def MPTrainArray(length):
         process_list.append(multiprocessing.Process(target=TrainArray,args=(prcs_length,queue)))#define process
     for prcs in process_list:
         prcs.start() #start processes
-    print(prcs_length*processes)
     for _ in tqdm(range(prcs_length*processes)):
         Collect.append(queue.get())
 #join processes (terminate them once they're done) 

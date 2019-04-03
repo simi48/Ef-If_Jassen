@@ -122,8 +122,6 @@ def TrainArray(length, queue = None):
             Ret[i][0] = RawArray
         else:
             Ret[0] = RawArray
-            while(not queue.empty()):
-                pass
             queue.put(Ret)
     return Ret
 
