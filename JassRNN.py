@@ -290,7 +290,21 @@ def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does
     print("Adjusting Network")
     for i in tqdm(range(len(x))):
         model.fit(x[i],y[i],batch_size=1, verbose = 0,use_multiprocessing=Multiprocessing) #*NOTE it works with `use_multiprocessing=True` but I have no idea what it does or whether it helps at all
-
+        if(i%10==0):
+            model.reset_states()
+            
+def Mutate(model, mutation_factor):
+    '''
+    workinprogress
+    
+    '''
+    weight_Matrix = model.get_weights()
+    for i in weight_Matrix:
+        for z in range(len(i)):
+            if(np.random.random()<mutation_factor):
+                i[z] = np.random.random()
+    model.set_weights(weight_Matrix)
+    return(model)
 
 
 def SaveRNN(model, name):
@@ -341,6 +355,9 @@ if __name__ == '__main__':
     print(RNN_Output)
     print(Evaluate(Model.predict(LocalCards0)))
     print("\n\n\n\n")
-    TrainModelBasics(Model,100000,True)
+    TrainModelBasics(Model,500,True)
     print(Evaluate(Model.predict(LocalCards0)))
     print(LocalCards[0][1])
+    
+    print(Model.get_weights())
+    
