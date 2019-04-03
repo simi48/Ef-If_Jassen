@@ -267,6 +267,10 @@ def createScene(idx):
     bb2 = kps_to_BB(keypoints2_aug)
     bb3 = kps_to_BB(keypoints3_aug)
     
+    card1YOLO = []
+    card2YOLO = []
+    card3YOLO = []
+    
     final = bb1.draw_on_image(cards, thickness=3)
     final = bb2.draw_on_image(final, thickness=3)
     final = bb3.draw_on_image(final, thickness=3)
@@ -276,6 +280,9 @@ def createScene(idx):
     final = keypoints3_aug.draw_on_image(final, size=14, color=[255, 0, 255])
     
     display(final)
+    
+    # generate .txt for YOLOv2
+    create_txt(card1YOLO, card2YOLO, card3YOLO, idx)
     
     np_to_PIL(final).save("D:\Deep_Jass\\Testbilder\\" + str(idx) + '_scene.jpg')
 
