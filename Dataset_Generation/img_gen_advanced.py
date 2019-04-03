@@ -54,36 +54,6 @@ imgH = 1000
 cardW = 169
 cardH = 263
 
-
-xml_body_1="""<annotation>
-        <folder>FOLDER</folder>
-        <filename>{FILENAME}</filename>
-        <path>{PATH}</path>
-        <source>
-                <database>Unknown</database>
-        </source>
-        <size>
-                <width>{WIDTH}</width>
-                <height>{HEIGHT}</height>
-                <depth>3</depth>
-        </size>
-"""
-xml_object=""" <object>
-                <name>{CLASS}</name>
-                <pose>Unspecified</pose>
-                <truncated>0</truncated>
-                <difficult>0</difficult>
-                <bndbox>
-                        <xmin>{XMIN}</xmin>
-                        <ymin>{YMIN}</ymin>
-                        <xmax>{XMAX}</xmax>
-                        <ymax>{YMAX}</ymax>
-                </bndbox>
-        </object>
-"""
-xml_body_2="""</annotation>        
-"""
-
 sometimes = lambda aug: iaa.Sometimes(0.5, aug)
 
 # Define our sequence of augmentation steps that will be applied to a scene of cards
@@ -159,13 +129,16 @@ def np_to_PIL(img):
     np_img = Image.fromarray(img)
     return np_img
 
-def create_voc_xml(xml_file, img_file,listbba, display=False):
-    with open(xml_file,"w") as f:
-        f.write(xml_body_1.format(**{'FILENAME':os.path.basename(img_file), 'PATH':img_file,'WIDTH':imgW,'HEIGHT':imgH}))
-        for bba in listbba:            
-            f.write(xml_object.format(**{'CLASS':bba.classname,'XMIN':bba.x1,'YMIN':bba.y1,'XMAX':bba.x2,'YMAX':bba.y2}))
-        f.write(xml_body_2)
-        if display: print("New xml", xml_file)
+def create_txt(idx, card1, card2, card3):
+    txt_file = open(str(idx) + "_scene.txt", "w")
+       
+    txt_file.write(card1[0] + " " + card1[1] + " " + card1[2] + " " + card1[3] + " " + card1[4] \n)
+    txt_file.write(card2[0] + " " + card2[1] + " " + card2[2] + " " + card2[3] + " " + card2[4] \n)
+    txt_file.write(card3[0] + " " + card3[1] + " " + card3[2] + " " + card3[3] + " " + card3[4] \n)
+    txt_file.close()
+    
+    
+    return txt_file
 
 def kps_to_BB(kps):
     extend = 3 # To make the bounding box a bit bigger
@@ -294,6 +267,10 @@ def createScene(idx):
     bb2 = kps_to_BB(keypoints2_aug)
     bb3 = kps_to_BB(keypoints3_aug)
     
+    card1YOLO = []
+    card2YOLO = []
+    card3YOLO = []
+    
     final = bb1.draw_on_image(cards, thickness=3)
     final = bb2.draw_on_image(final, thickness=3)
     final = bb3.draw_on_image(final, thickness=3)
@@ -303,6 +280,9 @@ def createScene(idx):
     final = keypoints3_aug.draw_on_image(final, size=14, color=[255, 0, 255])
     
     display(final)
+    
+    # generate .txt for YOLOv2
+    create_txt(card1YOLO, card2YOLO, card3YOLO, idx)
     
     np_to_PIL(final).save("D:\Deep_Jass\\Testbilder\\" + str(idx) + '_scene.jpg')
 
