@@ -2,6 +2,7 @@ import Jassen as js
 import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
 import numpy as np
 from tqdm import tqdm #using anaconda/pip: pip install tqdm
+import time
 
 def TrainArrayInputRaw():
     '''
@@ -83,7 +84,7 @@ def CheckArray(trainInput):
      
     return Ret
 
-def TrainArray(length):
+def TrainArray(length, queue = None):
     '''
     Creates an 2d-array which holds multiple training arrays as well as the only legal move for each of these training arrays.
     
@@ -98,20 +99,32 @@ def TrainArray(length):
             [int][0]: training array (created with TrainArrayInputRaw).
             [int][1]: only legal move for the corresponding training array.
     '''
-    Ret=[0]*length
-#    print(Ret)
+    SP=False
+    if( queue==None):
+        SP=True
+    if(SP):
+        Ret=[0]*length
+    else:
+        Ret=[0]*2
     for i in range(length):
 #        print((i+1)/length*100,"%")
-        Ret[i] = [0]*2
+        if(SP):
+            Ret[i] = [0]*2
         RawArray = TrainArrayInputRaw()
         while(CheckArray(RawArray)==None):
             RawArray = TrainArrayInputRaw()
-        Ret[i][1] = CheckArray(RawArray)
+        if(SP):
+            Ret[i][1] = CheckArray(RawArray)
+        else:
+            Ret[1] = CheckArray(RawArray)
         RawArray.pop(37)
-        Ret[i][0] = RawArray
-        
-#    print("\n")
-    
+        if(SP):
+            Ret[i][0] = RawArray
+        else:
+            Ret[0] = RawArray
+            while(not queue.empty()):
+                pass
+            queue.put(Ret)
     return Ret
 
 def test(length):
@@ -148,33 +161,58 @@ def MPTrainArray(length, base = 50):
     processes = multiprocessing.cpu_count()
     queue = multiprocessing.Queue()
     Collect = []
-    for _ in tqdm(range(int(length/base/processes))):
-        process_list=[]
-        for i in range(processes):
-            process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(base,queue)))#define process
-
-        for prcs in process_list:
-            prcs.start() #start processes
-
-        for i in process_list:
-            Collect.append(queue.get())
-
+    process_list=[]
+    prcs_length = int(length/processes)
+    for i in range(processes):
+        process_list.append(multiprocessing.Process(target=TrainArray,args=(prcs_length,queue)))#define process
+    for prcs in process_list:
+        prcs.start() #start processes
+    print(prcs_length*processes)
+    for _ in tqdm(range(prcs_length*processes)):
+        Collect.append(queue.get())
 #join processes (terminate them once they're done) 
 #apparantly wont close because there is stuff in the queue? problem solved by limiteing queue
-        for prcs in process_list:
-            prcs.join()
-    Ret = []
-    for i in Collect:
-        Ret = Ret + i
+    for prcs in process_list:
+        prcs.join()
+    return Collect
+
+
+def FindTime():
+    '''
+    Checks for the size at which Muliprocessing becomes faster than serial processing.
     
-    return Ret
+    Returns:
+        the size (int) at which MP is faster than SP
+    '''
+    size = multiprocessing.cpu_count()*50
+    MP=1
+    SP=0
+    while(MP>SP):
+        size+=multiprocessing.cpu_count()*50
+        for i in range(2):
+            startsp=time.time()
+        tmp = TrainArray(size)
+        endsp = time.time()
+        SP = endsp-startsp
+        startmp = time.time()
+        for i in range(2):
+            tmp = MPTrainArray(size)
+        endmp = time.time()
+        MP = endmp-startmp
+        print("MP: ",MP)
+        print("SP: ",SP)
+        print("size:",size)
 
-
-
+#    print(tmp)
+    return size
 
 if __name__ == '__main__':
-    print(TrainArray(2))
-    TESTtrainArray = MPTrainArray(1000000)
-#    print(TESTtrainArray)
-    print(len(TESTtrainArray))
+#    print(FindTime())
+    print(TrainArray(16))
+    print("")
+    print(MPTrainArray(16))
+#    print(TrainArray(10))
+#    TESTtrainArray = MPTrainArray(100000)
+##    print(TESTtrainArray)
+#    print(len(TESTtrainArray))
     

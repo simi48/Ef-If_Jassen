@@ -98,7 +98,7 @@ def CheckArray(trainInput):
      
     return Ret
 
-def TrainArray(length):
+def TrainArray(length, queue = None):
     '''
     Creates an 2d-array which holds multiple training arrays as well as the only legal move for each of these training arrays.
     
@@ -106,24 +106,39 @@ def TrainArray(length):
         length(int):
             Defines how many indexes the resultating array ought to have.
         
-        
+        queue(multiprocessing.Queue()):
+            Queue to which result are pushed.
             
     Returns:
         array[int][int]:
             [int][0]: training array (created with TrainArrayInputRaw).
             [int][1]: only legal move for the corresponding training array.
     '''
-    Ret=[0]*length
+    SP=False #serial process y/n
+    if( queue==None):
+        SP=True
+    if(SP):
+        Ret=[0]*length
+    else:
+        Ret=[0]*2
     for i in range(length):
-        Ret[i] = [0]*2
+        if(SP):
+            Ret[i] = [0]*2
         RawArray = TrainArrayInputRaw()
         while(CheckArray(RawArray)==None):
             RawArray = TrainArrayInputRaw()
-        Ret[i][1] = CheckArray(RawArray)
+        if(SP):
+            Ret[i][1] = CheckArray(RawArray)
+        else:
+            Ret[1] = CheckArray(RawArray)
         RawArray.pop(37)
-        Ret[i][0] = RawArray
-        
-    
+        if(SP):
+            Ret[i][0] = RawArray
+        else:
+            Ret[0] = RawArray
+            while(not queue.empty()):
+                pass
+            queue.put(Ret)
     return Ret
 
 def test(length):
@@ -132,11 +147,12 @@ def test(length):
 
 
 def MPTrainArrayIntermediate(length,queue):
-    tmp = TrainArray(length)
+    tmp = test(TrainArray(length))
+#    print(tmp)
     queue.put(tmp)
 
 
-def MPTrainArray(length, base = 50):
+def MPTrainArray(length):
     '''
     Creates a 2d-array which holds multiple training arrays as wella s the only legoa move for each of these training arrays.
     Uses Multiple cores to accelerate the creation of this training set.
@@ -153,32 +169,24 @@ def MPTrainArray(length, base = 50):
             [int][0]: training array
             [int][1]: only legal move for the corresponding training array.
     '''
-    if(base>95):
-        print("MPTrainArray(length, base) base was greater than 95: ",base,"\nBase was set to 95.")
-        base = 95
     processes = multiprocessing.cpu_count()
     queue = multiprocessing.Queue()
     Collect = []
-    for _ in tqdm(range(int(length/base/processes))):
-        process_list=[]
-        for i in range(processes):
-            process_list.append(multiprocessing.Process(target=MPTrainArrayIntermediate,args=(base,queue)))#define process
-
-        for prcs in process_list:
-            prcs.start() #start processes
-
-        for i in process_list:
-            Collect.append(queue.get())
-
+    process_list=[]
+    prcs_length = int(length/processes)
+    for i in range(processes):
+        process_list.append(multiprocessing.Process(target=TrainArray,args=(prcs_length,queue)))#define process
+    for prcs in process_list:
+        prcs.start() #start processes
+    print(prcs_length*processes)
+    for _ in tqdm(range(prcs_length*processes)):
+        Collect.append(queue.get())
 #join processes (terminate them once they're done) 
 #apparantly wont close because there is stuff in the queue? problem solved by limiteing queue
-        for prcs in process_list:
-            prcs.join()
-    Ret = []
-    for i in Collect:
-        Ret = Ret + i
+    for prcs in process_list:
+        prcs.join()
     
-    return Ret
+    return Collect
 
 
 
@@ -253,7 +261,7 @@ def Evaluate(RNN_Output):
     return np.argmax(RNN_Output)
 
 
-def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does not work in Spyder, to make use of this execute from Anaconda using `python JassRNN.py`
+def TrainModelBasics(model,size, Multiprocessing = None): #Multiprocessing does not work in Spyder, to make use of this execute from Anaconda using `python JassRNN.py`
     '''
     Trains the Model to not be completely stupid
     
@@ -269,6 +277,8 @@ def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does
             *NOTE Multiprocessing will not work in Spyder IDE. To make use of this, execute Code in standalone console
             
     '''
+    if(Multiprocessing==None):
+        Multiprocessing= size>5000
     print("Generating Data")
     if (Multiprocessing):
         training_data = MPTrainArray(size)
@@ -293,18 +303,34 @@ def TrainModelBasics(model,size, Multiprocessing = False): #Multiprocessing does
         if(i%10==0):
             model.reset_states()
             
-def Mutate(model, mutation_factor):
+def Mutate(model, mutation_factor, reset = True):
     '''
-    workinprogress
+    Mutate takes in a model, and alters random weights to random values.
+    Parameters:
+        model(tf.keras.model.sequential):
+            The model which is to be mutated.
+        
+        mutation_factor(float):
+            The ratio of altered to same values. (note, this is to be judged as a binomial experiment and will not necessarily return the exact ratio given.)
+            if mutation_factor=0, nothing will change, elif mutation_factor=1 everything will change.
+        
+        reset(boolean):
+            Indicates whether the states (memory) should be reset, as it may have been mutated.
+    
+    
+    Returns:
+        (Model will be altered, as such no return value.)
+        
     
     '''
     weight_Matrix = model.get_weights()
     for i in weight_Matrix:
         for z in range(len(i)):
             if(np.random.random()<mutation_factor):
-                i[z] = np.random.random()
+                i[z] = np.random.random()*2-1 #should set a value between 1 and -1
     model.set_weights(weight_Matrix)
-    return(model)
+    if(reset):
+        model.reset_states()
 
 
 def SaveRNN(model, name):
@@ -355,9 +381,13 @@ if __name__ == '__main__':
     print(RNN_Output)
     print(Evaluate(Model.predict(LocalCards0)))
     print("\n\n\n\n")
-    TrainModelBasics(Model,500,True)
+    TrainModelBasics(Model,1000000)
     print(Evaluate(Model.predict(LocalCards0)))
     print(LocalCards[0][1])
     
-    print(Model.get_weights())
-    
+    old = Model.get_weights()
+    Mutate(Model,1)
+    new = Model.get_weights()
+    for i in range(len(new)):
+        print(new[i]==old[i])
+    print(new)
