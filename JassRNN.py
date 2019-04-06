@@ -14,6 +14,7 @@ Copyright © 2019 Marc Matter, Michael Siebenmann, Ramon Heeb, Simon Thür. All 
 import tensorflow as tf #using Anaconda: conda create --name tf_gpu tensorflow-gpu \n activate tf_gpu
 import numpy as np
 import Jassen as js
+import os
 import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
 from tqdm import tqdm  #using anaconda/pip: pip install tqdm
 
@@ -357,14 +358,28 @@ def LoadRNN(name):
     model = tf.keras.models.load_model(name, '.h5')
     return model
     
+def CreateCheckpointCallback(epoches):
+    '''
+    Creates a checkpoint for the weights of the RNN all x epoches
     
-
+    Parameters:
+        epoches(int):
+            defines the gap between the checkpoint saves, for example a 5 would mean that the model creates a checkpoint all 5 epoches
+    
+    Returns:
+        callback variable (parameter for model.fit)
+    '''
+    checkpoint_path = "training_1/cp.ckpt"
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only = True, verbose = epoches)
+    
+    return cp_callback
 # =============================================================================
 # Main
 # =============================================================================
 if __name__ == '__main__':
     LocalCards = TrainArray(1)
     LocalCards0 = PrepareInput(LocalCards[0][0])
+    Cp_callback = CreateCheckpointCallback(5) #callbacks = [Cp_callback], parameter for model.fit
     Model = GetModel()
     RNN_Output = Model.predict(LocalCards0)
     Highest = Evaluate(RNN_Output)
