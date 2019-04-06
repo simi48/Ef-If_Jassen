@@ -340,20 +340,23 @@ def SaveRNN(model, name):
         name(String):
             The desired name under which you want so save your model.       
     '''
-# =============================================================================
-#     model.numpy.save(name, '_saved_wih.np', model.wih)
-# =============================================================================
+    model.save(name, '.h5')
 
-def LoadRNN(model, name):
+def LoadRNN(name):
     '''
     Loads the Neural Network from your Hard Disk.
     
     Parameters:
-        model(tf.keras.Model):
-            TensorFlow model with input (1,1,37) and output (1,1,36)
         name(String):
-            The desired name under which your model was saved.        
+            The desired name under which your model was saved.     
+            
+    Returns:
+        model(tf.keras.Model):
+            TensorFlow model with input (1,1,37) and output (1,1,36) 
     '''
+    model = tf.keras.models.load_model(name, '.h5')
+    return model
+    
     
 
 # =============================================================================
