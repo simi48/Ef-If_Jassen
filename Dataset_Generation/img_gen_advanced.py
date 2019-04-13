@@ -26,19 +26,12 @@ import imgaug as ia
 from imgaug import augmenters as iaa
 import numpy as np
 import imageio
-import cv2
 import os
 from tqdm import tqdm
 import random
-import os
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-import matplotlib.patches as patches
-from matplotlib import cm
-from glob import glob 
 from PIL import Image
 import math
-import six.moves as sm
 
 # -----------------------------------------------------------------------------
 # Setup
@@ -71,7 +64,7 @@ transformScene = iaa.Sequential(
         # image. Don't execute all of them, as that would often be way too
         # strong.
         #
-        iaa.SomeOf((0, 5),
+        iaa.SomeOf((3, 7),
             [
                 # Blur each image with varying strength using
                 # gaussian blur (sigma between 0 and 3.0),
@@ -82,7 +75,8 @@ transformScene = iaa.Sequential(
                     iaa.AverageBlur(k=(2, 7)),
                     iaa.MedianBlur(k=(3, 11)),
                 ]),
-
+                
+                
                 # Sharpen each image, overlay the result with the original
                 # image using an alpha between 0 (no sharpening) and 1
                 # (full sharpening effect).
@@ -91,7 +85,7 @@ transformScene = iaa.Sequential(
                 # Same as sharpen, but for an embossing effect.
                 iaa.Emboss(alpha=(0, 1.0), strength=(0, 2.0)),
 
-
+                
                 # Add gaussian noise to some images.
                 # In 50% of these cases, the noise is randomly sampled per
                 # channel and pixel.
@@ -106,6 +100,8 @@ transformScene = iaa.Sequential(
 
                 # Improve or worsen the contrast of images.
                 iaa.ContrastNormalization((0.5, 2.0), per_channel=0.5),
+                
+                iaa.GammaContrast((0.5, 1.75), per_channel = True)
             ],
             # do all of the above augmentations in random order
             random_order=True
@@ -130,11 +126,11 @@ def np_to_PIL(img):
     return np_img
 
 def create_txt(idx, card1, card2, card3):
-    txt_file = open(str(idx) + "_scene.txt", "w")
+    txt_file = open("I:\Informatik_Ergaenzung\\Aufgaben\\Deep_Jass\\Textfiles\\" + str(idx) + "_scene.txt", "w")
        
-    txt_file.write(card1[0] + " " + card1[1] + " " + card1[2] + " " + card1[3] + " " + card1[4] \n)
-    txt_file.write(card2[0] + " " + card2[1] + " " + card2[2] + " " + card2[3] + " " + card2[4] \n)
-    txt_file.write(card3[0] + " " + card3[1] + " " + card3[2] + " " + card3[3] + " " + card3[4] \n)
+    txt_file.write(str(card1[0]) + " " + str(card1[1]) + " " + str(card1[2]) + " " + str(card1[3]) + " " + str(card1[4]) + "\n")
+    txt_file.write(str(card2[0]) + " " + str(card2[1]) + " " + str(card2[2]) + " " + str(card2[3]) + " " + str(card2[4]) + "\n")
+    txt_file.write(str(card3[0]) + " " + str(card3[1]) + " " + str(card3[2]) + " " + str(card3[3]) + " " + str(card3[4]) + "\n")
     txt_file.close()
     
     
@@ -181,9 +177,15 @@ def createScene(idx):
     bg_file = "D:\Deep_Jass\\Backgrounds\\" + random.choice(os.listdir("D:\Deep_Jass\\Backgrounds"))
     tr_bg = Image.new('RGBA', (1000, 1000), (0, 0, 0, 0))
     background = imageio.imread(bg_file) #read you image
-    card1 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg").convert('RGBA') #read first random card
-    card2 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg").convert('RGBA') #read second random card
-    card3 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(1) + "\\" + str(random.randint(0, 35)) + ".jpg").convert('RGBA') #read third random card
+    
+    # choose a random card and save it in a variable, so we can pass it to Yolo later
+    c1 = random.randint(0, 35)
+    c2 = random.randint(0, 35)
+    c3 = random.randint(0, 35)
+    
+    card1 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(random.randint(1, 2)) + "\\" + str(c1) + ".jpg").convert('RGBA') #read first random card
+    card2 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(random.randint(1, 2)) + "\\" + str(c2) + ".jpg").convert('RGBA') #read second random card
+    card3 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(random.randint(1, 2)) + "\\" + str(c3) + ".jpg").convert('RGBA') #read third random card
     
     # Scale images to desired values
     background = np_to_PIL(background).resize((imgW, imgH))
@@ -267,31 +269,30 @@ def createScene(idx):
     bb2 = kps_to_BB(keypoints2_aug)
     bb3 = kps_to_BB(keypoints3_aug)
     
-    card1YOLO = []
-    card2YOLO = []
-    card3YOLO = []
+    # lists for YOLO, format: [class, x_center, y_center, width, height]
+    card1YOLO = [c1, (bb1.x1+bb1.x2)/2, (bb1.y1+bb1.y2)/2, abs(bb1.x1-bb1.x2), abs(bb1.y1-bb1.y2)]
+    card2YOLO = [c2, (bb2.x1+bb2.x2)/2, (bb2.y1+bb2.y2)/2, abs(bb2.x1-bb2.x2), abs(bb2.y1-bb2.y2)]
+    card3YOLO = [c3, (bb2.x1+bb3.x2)/2, (bb3.y1+bb3.y2)/2, abs(bb3.x1-bb3.x2), abs(bb3.y1-bb3.y2)]
     
-    final = bb1.draw_on_image(cards, thickness=3)
-    final = bb2.draw_on_image(final, thickness=3)
-    final = bb3.draw_on_image(final, thickness=3)
+    #final = bb1.draw_on_image(cards, thickness=3)
+    #final = bb2.draw_on_image(final, thickness=3)
+    #final = bb3.draw_on_image(final, thickness=3)
     
-    final = keypoints1_aug.draw_on_image(final, size=14, color=[255, 0, 255])
-    final = keypoints2_aug.draw_on_image(final, size=14, color=[255, 0, 255])
-    final = keypoints3_aug.draw_on_image(final, size=14, color=[255, 0, 255])
+    #final = keypoints1_aug.draw_on_image(final, size=14, color=[255, 0, 255])
+    #final = keypoints2_aug.draw_on_image(final, size=14, color=[255, 0, 255])
+    #final = keypoints3_aug.draw_on_image(final, size=14, color=[255, 0, 255])
     
-    display(final)
+    #display(cards)
     
     # generate .txt for YOLOv2
-    create_txt(card1YOLO, card2YOLO, card3YOLO, idx)
+    create_txt(idx, card1YOLO, card2YOLO, card3YOLO)
     
-    np_to_PIL(final).save("D:\Deep_Jass\\Testbilder\\" + str(idx) + '_scene.jpg')
+    np_to_PIL(cards).save("I:\Informatik_Ergaenzung\\Aufgaben\\Deep_Jass\\Szenen\\" + str(idx) + '_scene.jpg')
 
 # -----------------------------------------------------------------------------
 # Main Program
 # -----------------------------------------------------------------------------
 
 # generate 5 scenes
-for idx in tqdm(range(20)):
+for idx in tqdm(range(10000)):
     createScene(idx)
-
-#create_voc_xml(xml_fn, jpg_fn, listbba, display=display)
