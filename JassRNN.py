@@ -330,11 +330,9 @@ def Mutate(model, mutation_factor, reset = True):
     if(reset):
         model.reset_states()
 
-
 def SaveRNN(model, name):
     '''
     Saves the Neural Network to your Hard Disk.
-    
     Parameters:
         model(tf.keras.Model):
             TensorFlow model with input (1,1,37) and output (1,1,36)
@@ -342,20 +340,30 @@ def SaveRNN(model, name):
             The desired name under which you want so save your model.       
     '''
     model.save(name, '.h5')
-
-def LoadRNN(name):
+    
+def SaveWeights(model):
     '''
-    Loads the Neural Network from your Hard Disk.
+    Saves the Neural Networ's weights and biases to your Hard Disk.
     
     Parameters:
-        name(String):
-            The desired name under which your model was saved.     
+        model(tf.keras.Model):
+            TensorFlow model with input (1,1,37) and output (1,1,36)
+    '''
+    model.save_weights('./checkpoints/my_checkpoint')
+
+def LoadWeights(model):
+    '''
+    Loads the Neural Network's weights from your Hard Disk.
+    
+    Parameters:
+        model(tf.keras.Model):
+            TensorFlow model with input (1,1,37) and output (1,1,36)     
             
     Returns:
         model(tf.keras.Model):
             TensorFlow model with input (1,1,37) and output (1,1,36) 
     '''
-    model = tf.keras.models.load_model(name, '.h5')
+    model.load_weights('/checkpoints/my_checkpoint')
     return model
     
 def CreateCheckpointCallback(epoches):
