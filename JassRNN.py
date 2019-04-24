@@ -14,7 +14,6 @@ Copyright © 2019 Marc Matter, Michael Siebenmann, Ramon Heeb, Simon Thür. All 
 import tensorflow as tf #using Anaconda: conda create --name tf_gpu tensorflow-gpu \n activate tf_gpu
 import numpy as np
 import Jassen as js
-import os
 import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
 from tqdm import tqdm  #using anaconda/pip: pip install tqdm
 
@@ -341,29 +340,35 @@ def SaveRNN(model, name):
     '''
     model.save(name, '.h5')
     
-def SaveWeights(model):
+def SaveWeights(model, name):
     '''
     Saves the Neural Networ's weights and biases to your Hard Disk.
     
     Parameters:
         model(tf.keras.Model):
             TensorFlow model with input (1,1,37) and output (1,1,36)
+        name:
+            The name of the savefile
     '''
-    model.save_weights('./checkpoints/my_checkpoint')
-
-def LoadWeights(model):
+    Path = '/checkpoints/' + name
+    model.save_weights(Path)
+    
+def LoadWeights(model, name):
     '''
     Loads the Neural Network's weights from your Hard Disk.
     
     Parameters:
         model(tf.keras.Model):
-            TensorFlow model with input (1,1,37) and output (1,1,36)     
+            TensorFlow model with input (1,1,37) and output (1,1,36)
+        name:
+            The name of the savefile
             
     Returns:
         model(tf.keras.Model):
             TensorFlow model with input (1,1,37) and output (1,1,36) 
     '''
-    model.load_weights('/checkpoints/my_checkpoint')
+    Path = '/checkpoints/' + name
+    model.load_weights(Path)
     return model
     
 def CreateCheckpointCallback(epoches):
@@ -404,9 +409,9 @@ if __name__ == '__main__':
     print(RNN_Output)
     print(Evaluate(Model.predict(LocalCards0)))
     print("\n\n\n\n")
-    TrainModelBasics(Model,1000000)
+    TrainModelBasics(Model,1000, False)
     print(Evaluate(Model.predict(LocalCards0)))
-    print(LocalCards[0][1])
+    
     
     old = Model.get_weights()
     Mutate(Model,1)
