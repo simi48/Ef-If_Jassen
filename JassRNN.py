@@ -398,6 +398,6 @@ if __name__ == '__main__':
     #n = amount of iterations, but i reckon you guesse :)
     n = 15
     for i in range(n):
-        print("Iteration ",i+1,"of n")
+        print("Iteration ",i+1,"of ",n)
         TrainModelBasics(Model,100000)
         SaveWeights(Model,"Basic")
