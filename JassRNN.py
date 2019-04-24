@@ -350,7 +350,7 @@ def SaveWeights(model, name):
         name:
             The name of the savefile
     '''
-    Path = '/checkpoints/' + name
+    Path = 'checkpoints/' + name
     model.save_weights(Path)
     
 def LoadWeights(model, name):
@@ -367,7 +367,7 @@ def LoadWeights(model, name):
         model(tf.keras.Model):
             TensorFlow model with input (1,1,37) and output (1,1,36) 
     '''
-    Path = '/checkpoints/' + name
+    Path = 'checkpoints/' + name
     model.load_weights(Path)
     return model
     
@@ -394,28 +394,10 @@ if __name__ == '__main__':
     LocalCards0 = PrepareInput(LocalCards[0][0])
     Cp_callback = CreateCheckpointCallback(5) #callbacks = [Cp_callback], parameter for model.fit
     Model = GetModel()
-    RNN_Output = Model.predict(LocalCards0)
-    Highest = Evaluate(RNN_Output)
-    print("Model Output:\n",RNN_Output)
-    print("Played Card (highest output)",Highest)
-    print(js.CTT(Highest))
-    
-    
-    print("\n\n\nTest Memory (using the same input several times in succession")
-    for i in tqdm(range(10)):
-        Evaluate(Model.predict(LocalCards0))
-#    Model.train_on_batch()
-    
-    print(RNN_Output)
-    print(Evaluate(Model.predict(LocalCards0)))
-    print("\n\n\n\n")
-    TrainModelBasics(Model,1000, False)
-    print(Evaluate(Model.predict(LocalCards0)))
-    
-    
-    old = Model.get_weights()
-    Mutate(Model,1)
-    new = Model.get_weights()
-    for i in range(len(new)):
-        print(new[i]==old[i])
-    print(new)
+    LoadWeights(Model,"Basic")
+    #n = amount of iterations, but i reckon you guesse :)
+    n = 15
+    for i in range(n):
+        print("Iteration ",i+1,"of n")
+        TrainModelBasics(Model,100000)
+        SaveWeights(Model,"Basic")
