@@ -21,6 +21,32 @@ import Jassen as js
 
 
 
+def SingleGame(ModelArray, limited = False):
+    called = None
+    points = [0,0,0,0]
+    for stage in range(4): #everyone gets to begin once.
+        GlobalCards = js.Shuffle()
+        if(limited):
+            GlobalCards.append(0)
+        else:
+            GlobalCards.append(np.random.randint(6))
+        for turn in range(9): #everyone has 9 cards
+            called = None
+            for player in range(4): #4 players playing one card at a time.
+                local = js.LocalPov(GlobalCards,player)
+                suggested_move = rnn.Evaluate(ModelArray[player].predict(rnn.PrepareInput(local)))
+                if(not js.LegalMove(local,suggested_move,called,player = 1)): #player 1 meaning that cards with value 1 are abailable for play (as is the case in local pov)
+                    for i in range(36):
+                        if(js.LegalMove(local,local[i],called, player = 1)):
+                            suggested_move = i
+                '''left off here:
+                    next:: play card'''
+                
+        
+        
+    return points
+
+
 
 # =============================================================================
 # Main
@@ -35,6 +61,7 @@ if __name__ == '__main__':
 # =============================================================================
         
     Cards = js.Shuffle()
+    print(Cards)
     Round = 0
     
     style = np.random.randint(6) #subject to change

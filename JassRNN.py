@@ -415,7 +415,7 @@ if __name__ == '__main__':
     Model = GetModel()
     LoadWeights(Model,"Basic")
     #n = amount of iterations, but i reckon you guesse :)
-    n = 15
+    n = 35
     for i in range(n):
         print("Iteration ",i+1,"of ",n)
         TrainModelBasics(Model,100000)
