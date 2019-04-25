@@ -21,27 +21,69 @@ import Jassen as js
 
 
 
-def SingleGame(ModelArray, limited = False):
+def SingleGame(ModelArray, trump = None):
+    '''
+    SingleGame allows for 4 AIs to play one full game of cards (4 rounds, so everyone can go first once)
+    
+    Parameters:
+        ModelArray (Array[tf.keras.model.sequential]):
+            An array of len(Array)=4 of tf models.
+        
+        limited (int):
+            A boolean signifying what trump the game will use. If trump = None (default) a random playstyle will be selected.\n
+            - 0=ace;
+            - 1=6;
+            - 2=rose;
+            - 3=acorn;
+            - 4=bell;
+            - 5=shield;
+    
+    Returns:
+        Array[int]:
+            An Array of the points each AI made during this game.
+            
+    '''
     called = None
     points = [0,0,0,0]
     for stage in range(4): #everyone gets to begin once.
         GlobalCards = js.Shuffle()
-        if(limited):
-            GlobalCards.append(0)
+        if(trump!=None):
+            GlobalCards.append(trump)
         else:
             GlobalCards.append(np.random.randint(6))
+        startingplayer = stage
         for turn in range(9): #everyone has 9 cards
             called = None
+            playedcards = []
             for player in range(4): #4 players playing one card at a time.
-                local = js.LocalPov(GlobalCards,player)
-                suggested_move = rnn.Evaluate(ModelArray[player].predict(rnn.PrepareInput(local)))
+                activeplayer = (player + startingplayer) %4 #offset to different players
+                print(player," ",activeplayer)
+                local = js.LocalPov(GlobalCards,activeplayer)
+                suggested_move = rnn.Evaluate(ModelArray[activeplayer].predict(rnn.PrepareInput(local)))
+                tmp = suggested_move
                 if(not js.LegalMove(local,suggested_move,called,player = 1)): #player 1 meaning that cards with value 1 are abailable for play (as is the case in local pov)
                     for i in range(36):
                         if(js.LegalMove(local,local[i],called, player = 1)):
                             suggested_move = i
-                '''left off here:
-                    next:: play card'''
+                            '''!!!CAUTION currently will allow a card to be played the player does not have on hand, if he has no supported colour!!!'''
                 
+                #malus
+                if(tmp!=suggested_move):
+                    points[activeplayer]-=10000
+                
+                #set the called colour
+                if(player==0):
+                    called = js.Colour([suggested_move])
+                    called = called[0]
+                GlobalCards[suggested_move] = 8+activeplayer
+                playedcards.append(activeplayer)
+            startingplayer = js.RoundWinner(playedcards,GlobalCards[36],startingplayer)
+        
+        #screwing up globalcards, but wont need them after anyway:
+        for i in range(36):
+            GlobalCards[i] -= 8
+        print(js.CountPoints(GlobalCards))
+        points = points + js.CountPoints(GlobalCards)
         
         
     return points
@@ -59,7 +101,13 @@ if __name__ == '__main__':
 #         Players.append(rnn.GetModel())
 #         rnn.LoadWeights(Players[i], name)
 # =============================================================================
-        
+    modellist = []
+    for i in range(4):
+        modellist.append(rnn.GetModel())
+        rnn.LoadWeights(modellist[i],"Basic")
+        rnn.Mutate(modellist[i],0.3*i)
+    print(SingleGame(modellist))
+    
     Cards = js.Shuffle()
     print(Cards)
     Round = 0

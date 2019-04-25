@@ -238,7 +238,7 @@ def Colour(playedCards):
             playedColour.append(3)
     return playedColour
 
-def RoundWinner(playedCards,trump,callingPlayer=None):
+def RoundWinner(playedCards,trump=0,callingPlayer=None):
     '''
     Calculates which player (array index) has won the round.
     
@@ -530,16 +530,4 @@ if __name__ == '__main__':
 # =============================================================================
 #     None of the below things are necessary, change as required.
 # =============================================================================
-    
-    inputarray = Shuffle()
-    inputarray.append(0)
-    print(inputarray)
-    inputarray = LocalPov(inputarray)
-    print(inputarray)
-    
-    Cards = Shuffle()
-    print(Cards)
-    print("player 0:\n",CsTT36(Cards,0))
-    print("player 1:\n",CsTT36(Cards,1))
-    print("player 2:\n",CsTT36(Cards,2))
-    print("player 3:\n",CsTT36(Cards,3))
+    print(RoundWinner([10,11,5,4],0))
