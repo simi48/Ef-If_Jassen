@@ -54,8 +54,9 @@ def SingleGame(ModelArray, trump = None):
         startingplayer = stage
         for turn in range(9): #everyone has 9 cards
             called = None
-            playedcards = []*37
+#            playedcards = []*36
             for player in range(4): #4 players playing one card at a time.
+                playedcards = [None]*4
                 activeplayer = (player + startingplayer) %4 #offset to different players
 #                print(player," ",activeplayer)
                 local = js.LocalPov(GlobalCards,activeplayer)
@@ -66,21 +67,24 @@ def SingleGame(ModelArray, trump = None):
                         if(js.LegalMove(local,local[i],called, player = 1)):
                             suggested_move = i
                     if(tmp==suggested_move):
-                        suggested_move = local.index(1)
+                        intermediate = local.index(1)
+                        if(intermediate != 36):
+                            suggested_move = intermediate
                 
                 #malus
                 if(tmp!=suggested_move):
                     points[activeplayer]-=10000
                     print("nay")
                 else:
-                    print("yay")
+                    print("Praise the sun")
                 
                 #set the called colour
                 if(player==0):
                     called = js.Colour([suggested_move])
                     called = called[0]
                 GlobalCards[suggested_move] = 8+activeplayer
-                playedcards[suggested_move] = activeplayer
+            playedcards[activeplayer] = suggested_move
+            print(playedcards)
             startingplayer = js.RoundWinner(playedcards,GlobalCards[36],startingplayer)
         
         #screwing up globalcards, but wont need them after anyway:
@@ -113,6 +117,7 @@ if __name__ == '__main__':
         modellist.append(rnn.GetModel())
         rnn.LoadWeights(modellist[i],"Basic")
         rnn.Mutate(modellist[i],0.3*i)
+    print("starting...")
     print(SingleGame(modellist))
     
     Cards = js.Shuffle()
