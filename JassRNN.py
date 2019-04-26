@@ -198,9 +198,8 @@ def GetModel():
     Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37),name='input'))
     #Model.add(tf.keras.layers.Dense(36, name='Dense1'))
     Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM1',return_sequences=True, stateful=True)) #Stateful = remember what happended last time
-    Model.add(tf.keras.layers.CuDNNLSTM(50, name='LSTM2M_MEMORY',return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM2M_MEMORY',return_sequences=True, stateful=True)) #Stateful = remember what happended last time
     Model.add(tf.keras.layers.Dropout(0.5))
-    Model.add(tf.keras.layers.CuDNNLSTM(36, name='LSTM3',return_sequences=True, stateful=True))
     Model.add(tf.keras.layers.Dense(36))
     
     Model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])        #maybe if we decide to use handmade training data for not playing incorrect cards.

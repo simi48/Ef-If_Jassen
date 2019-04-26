@@ -21,7 +21,7 @@ import Jassen as js
 
 
 
-def SingleGame(ModelArray, trump = None):
+def SingleGame(ModelArray, trump = None, queue = None):
     '''
     SingleGame allows for 4 AIs to play one full game of cards (4 rounds, so everyone can go first once)
     
@@ -46,7 +46,7 @@ def SingleGame(ModelArray, trump = None):
     called = None
     points = [0,0,0,0]
     for stage in range(4): #everyone gets to begin once.
-        print("stage ",stage)
+#        print("stage ",stage)
         GlobalCards = js.Shuffle()
         if(trump!=None):
             GlobalCards.append(trump)
@@ -55,37 +55,40 @@ def SingleGame(ModelArray, trump = None):
         startingplayer = stage
         controllarray = []
         for turn in range(9): #everyone has 9 cards
-            print("turn ",turn)
+#            print("turn ",turn)
             called = None
 #            playedcards = []*36
             playedcards = [None]*4
             for player in range(4): #4 players playing one card at a time.
-                print("player ",player)
+#                print("player ",player)
                 activeplayer = (player + startingplayer) %4 #offset to different players
 #                print(player," ",activeplayer)
                 local = js.LocalPov(GlobalCards,activeplayer)
                 suggested_move = rnn.Evaluate(ModelArray[activeplayer].predict(rnn.PrepareInput(local)))
                 tmp = suggested_move
-                DebugVar = []
-                for i in range(36):
-                    DebugVar.append(js.LegalMove(local,i,called,trump = GlobalCards[36],player = 1))
+#                DebugVar = []
+#                for i in range(36):
+#                    DebugVar.append(js.LegalMove(local,i,called,trump = GlobalCards[36],player = 1))
                 if(not js.LegalMove(local,suggested_move,called,trump = GlobalCards[36],player = 1)): #player 1 meaning that cards with value 1 are available for play (as is the case in local pov)
                     for i in range(36):
                         if(js.LegalMove(local,i,called,trump = GlobalCards[36],player = 1)):
                             suggested_move = i
+                    #just to make sure it doesnt play the "playstyle"
                     if(tmp==suggested_move):
-                        intermediate = local.index(1) #just to make sure it doesnt play the "playstyle"
-                        if(intermediate != 36):
+                        intermediate = local.index(1)
+                        if(js.LegalMove(local,suggested_move,None,trump=GlobalCards[36],player=1)):
+                            pass #yes I know it aint pretty, but im tired, its 01:19 27:04:2019
+#                            print("Won't win but not incorrect (more of a test fuck off)\nalso, if this happens randomly, let me know it worked (ST) thx.\n\n")
+                        elif(intermediate != 36):
                             suggested_move = intermediate
                             tmp = suggested_move
-                            '''error, if it gets here, might as well use the card originally planned for by the rnn (if it is holding the card)'''
                 
                 #malus
                 if(tmp!=suggested_move):
                     points[activeplayer]-=10000
-                    print("nay")
-                else:
-                    print("Praise the sun")
+#                    print("nay")
+#                else:
+#                    print("Praise the sun")
                 
                 #set the called colour
                 if(player==0):
@@ -96,7 +99,7 @@ def SingleGame(ModelArray, trump = None):
                 playedcards[activeplayer] = suggested_move
 #                print(playedcards)
 #            print(playedcards)
-            print("\ncontrollarray\n",controllarray,"\n")
+#            print("\ncontrollarray\n",controllarray,"\n")
             for i in range(4):
                 GlobalCards[playedcards[i]] = i+8
             startingplayer = js.RoundWinner(playedcards,GlobalCards[36],startingplayer)
@@ -104,14 +107,16 @@ def SingleGame(ModelArray, trump = None):
         #screwing up globalcards, but wont need them after anyway:
         for i in range(36):
             GlobalCards[i] -= 8
-        print(js.CountPoints(GlobalCards))
-        test = points + js.CountPoints(GlobalCards)
-        if(test == points):
-            print(GlobalCards)
-        else:
-            points = test
+        score = js.CountPoints(GlobalCards)
+#        print(len(score))
+#        print(score)
+        for i in range(4):
+            points[i] += score[i]
         
-    return points
+    if(queue==None):
+        return points
+    else:
+        queue.put(points)
 
 
 
@@ -131,19 +136,25 @@ if __name__ == '__main__':
 #        cards = js.Shuffle()
 #        cards.append(np.random.randint(6))
 #        print(rnn.Evaluate(model.predict(rnn.PrepareInput(js.LocalPov(cards)))))
-    
-    modellist = []
-    for i in range(4):
-        print("iteration: ",i)
-        modellist.append(rnn.GetModel())
-        print("loaded")
-        rnn.LoadWeights(modellist[i],"TESTSAVE")
-        print("loaded weights")
+    modellist = []          
+    m = rnn.GetModel()
+    print("__innit__ & mutating")
+    for i in tqdm(range(4)):
+#        print("iteration: ",i)
+        modellist.append(m)
+#        print("loaded")
+#        rnn.LoadWeights(modellist[i],"TESTSAVE")
+#        print("loaded weights")
         rnn.Mutate(modellist[i],0.3*i+0.1)
-        print("mutated")
+#        print("mutated")
     print("starting...")
-    print(SingleGame(modellist))
-    
+#    print(SingleGame(modellist))
+    points = [0]*4
+    for i in tqdm(range(100)):
+        score = SingleGame(modellist)
+        for i in range(4):
+            points[i] += score[i]
+    print("Points:\n",points)
 #    
 #    for i in range(15):
 #        cards = js.Shuffle()
