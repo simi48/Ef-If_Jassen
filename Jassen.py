@@ -202,7 +202,7 @@ def LegalMove(playerCards,playedCard,called,trump=0,player=0):
 #        print("not in players possession")
     else:
         if(called != None):
-            if(playedColour!= called and playedColour != trump-2):
+            if(playedColour!= called and playedColour != (trump-2)):
                 Ret=False
 #                print("incorrectColour")
     
@@ -370,9 +370,9 @@ def LocalPov(Cards, player=0):
             
                 - 0:	Card location not known
                 - 1:	player holds card
-                - 2:	Player 1 holds card
-                - 3:	Player 2 holds card
-                - 4:	Player 3 holds card
+                - 2:	Player 1 plays card
+                - 3:	Player 2 plays card
+                - 4:	Player 3 plays card
                 - 5:	Player has already played card
                 - 6:	Player 1 has already played card
                 - 7:	Player 2 has already played card
@@ -385,7 +385,7 @@ def LocalPov(Cards, player=0):
     if(player<0 or player>3):
         print("Player "+str(player)+" is out of bounds, will not return correct values")
     Ret = [0]*37
-    for i in range(len(Cards)):
+    for i in range(36):
         if(Cards[i]==player+4):
             print("Player can see which card he played this turn. pls reconsider! Card["+str(i)+"]"+"\nThis may throw an error down the line")
             Ret[i]=None
@@ -403,8 +403,8 @@ def LocalPov(Cards, player=0):
             print("Card Value out of bounds: Cards["+str(i)+"]="+str(Cards[i]))
             Ret[i]=None
         #Playstyle / trump
-        if(len(Cards)==37):
-            Ret[36]=Cards[36]
+    if(len(Cards)==37):
+        Ret[36]=Cards[36]
     return Ret
 
 
@@ -530,4 +530,16 @@ if __name__ == '__main__':
 # =============================================================================
 #     None of the below things are necessary, change as required.
 # =============================================================================
+    
     print(RoundWinner([10,11,5,4],0))
+    testpov = []
+    for i in range(36):
+        testpov.append(i%12)
+    x = LocalPov(testpov)
+    print(testpov)
+    print(x)
+    
+    
+    tests = Shuffle()
+    for i in range(4):
+        print(tests.count(i))

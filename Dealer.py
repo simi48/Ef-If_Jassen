@@ -46,6 +46,7 @@ def SingleGame(ModelArray, trump = None):
     called = None
     points = [0,0,0,0]
     for stage in range(4): #everyone gets to begin once.
+        print("stage ",stage)
         GlobalCards = js.Shuffle()
         if(trump!=None):
             GlobalCards.append(trump)
@@ -54,23 +55,30 @@ def SingleGame(ModelArray, trump = None):
         startingplayer = stage
         controllarray = []
         for turn in range(9): #everyone has 9 cards
+            print("turn ",turn)
             called = None
 #            playedcards = []*36
             playedcards = [None]*4
             for player in range(4): #4 players playing one card at a time.
+                print("player ",player)
                 activeplayer = (player + startingplayer) %4 #offset to different players
 #                print(player," ",activeplayer)
                 local = js.LocalPov(GlobalCards,activeplayer)
                 suggested_move = rnn.Evaluate(ModelArray[activeplayer].predict(rnn.PrepareInput(local)))
                 tmp = suggested_move
-                if(not js.LegalMove(local,suggested_move,called,player = 1)): #player 1 meaning that cards with value 1 are abailable for play (as is the case in local pov)
+                DebugVar = []
+                for i in range(36):
+                    DebugVar.append(js.LegalMove(local,i,called,trump = GlobalCards[36],player = 1))
+                if(not js.LegalMove(local,suggested_move,called,trump = GlobalCards[36],player = 1)): #player 1 meaning that cards with value 1 are available for play (as is the case in local pov)
                     for i in range(36):
-                        if(js.LegalMove(local,local[i],called, player = 1)):
+                        if(js.LegalMove(local,i,called,trump = GlobalCards[36],player = 1)):
                             suggested_move = i
                     if(tmp==suggested_move):
-                        intermediate = local.index(1)
+                        intermediate = local.index(1) #just to make sure it doesnt play the "playstyle"
                         if(intermediate != 36):
                             suggested_move = intermediate
+                            tmp = suggested_move
+                            '''error, if it gets here, might as well use the card originally planned for by the rnn (if it is holding the card)'''
                 
                 #malus
                 if(tmp!=suggested_move):
@@ -83,12 +91,14 @@ def SingleGame(ModelArray, trump = None):
                 if(player==0):
                     called = js.Colour([suggested_move])
                     called = called[0]
-                GlobalCards[suggested_move] = 8+activeplayer
+                GlobalCards[suggested_move] = 4+activeplayer
                 controllarray.append(suggested_move)
                 playedcards[activeplayer] = suggested_move
-                print(playedcards)
-            print(playedcards)
-            print("controllarray\n",controllarray,"\n")
+#                print(playedcards)
+#            print(playedcards)
+            print("\ncontrollarray\n",controllarray,"\n")
+            for i in range(4):
+                GlobalCards[playedcards[i]] = i+8
             startingplayer = js.RoundWinner(playedcards,GlobalCards[36],startingplayer)
         
         #screwing up globalcards, but wont need them after anyway:
@@ -116,26 +126,30 @@ if __name__ == '__main__':
 #         Players.append(rnn.GetModel())
 #         rnn.LoadWeights(Players[i], name)
 # =============================================================================
+#    model = rnn.GetModel()
+#    for i in range(150):
+#        cards = js.Shuffle()
+#        cards.append(np.random.randint(6))
+#        print(rnn.Evaluate(model.predict(rnn.PrepareInput(js.LocalPov(cards)))))
+    
     modellist = []
     for i in range(4):
+        print("iteration: ",i)
         modellist.append(rnn.GetModel())
-        rnn.LoadWeights(modellist[i],"Basic")
-        rnn.Mutate(modellist[i],0.3*i)
-        print("iteration of loading: ",i)
+        print("loaded")
+        rnn.LoadWeights(modellist[i],"TESTSAVE")
+        print("loaded weights")
+        rnn.Mutate(modellist[i],0.3*i+0.1)
+        print("mutated")
     print("starting...")
     print(SingleGame(modellist))
     
-    Cards = js.Shuffle()
-    print(Cards)
-    Round = 0
-    
-    style = np.random.randint(6) #subject to change
-    Cards.append(style) #add trump
-    
-    
-    Round += 1
-    Round %= 4
-    
+#    
+#    for i in range(15):
+#        cards = js.Shuffle()
+#        cards.append(np.random.randint(6))
+#        print(rnn.Evaluate(modellist[0].predict(rnn.PrepareInput(cards))))
+#    
     
 
         
