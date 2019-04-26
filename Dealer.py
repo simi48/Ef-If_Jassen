@@ -57,7 +57,7 @@ def SingleGame(ModelArray, trump = None):
             playedcards = []
             for player in range(4): #4 players playing one card at a time.
                 activeplayer = (player + startingplayer) %4 #offset to different players
-                print(player," ",activeplayer)
+#                print(player," ",activeplayer)
                 local = js.LocalPov(GlobalCards,activeplayer)
                 suggested_move = rnn.Evaluate(ModelArray[activeplayer].predict(rnn.PrepareInput(local)))
                 tmp = suggested_move
@@ -65,26 +65,33 @@ def SingleGame(ModelArray, trump = None):
                     for i in range(36):
                         if(js.LegalMove(local,local[i],called, player = 1)):
                             suggested_move = i
-                            '''!!!CAUTION currently will allow a card to be played the player does not have on hand, if he has no supported colour!!!'''
+                    if(tmp==suggested_move):
+                        suggested_move = local.index(1)
                 
                 #malus
                 if(tmp!=suggested_move):
                     points[activeplayer]-=10000
+                    print("nay")
+                else:
+                    print("yay")
                 
                 #set the called colour
                 if(player==0):
                     called = js.Colour([suggested_move])
                     called = called[0]
                 GlobalCards[suggested_move] = 8+activeplayer
-                playedcards.append(activeplayer)
+                playedcards.append(suggested_move)
             startingplayer = js.RoundWinner(playedcards,GlobalCards[36],startingplayer)
         
         #screwing up globalcards, but wont need them after anyway:
         for i in range(36):
             GlobalCards[i] -= 8
         print(js.CountPoints(GlobalCards))
-        points = points + js.CountPoints(GlobalCards)
-        
+        test = points + js.CountPoints(GlobalCards)
+        if(test == points):
+            print(GlobalCards)
+        else:
+            points = test
         
     return points
 
