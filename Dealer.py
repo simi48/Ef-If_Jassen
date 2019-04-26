@@ -55,8 +55,8 @@ def SingleGame(ModelArray, trump = None):
         for turn in range(9): #everyone has 9 cards
             called = None
 #            playedcards = []*36
+            playedcards = [None]*4
             for player in range(4): #4 players playing one card at a time.
-                playedcards = [None]*4
                 activeplayer = (player + startingplayer) %4 #offset to different players
 #                print(player," ",activeplayer)
                 local = js.LocalPov(GlobalCards,activeplayer)
@@ -83,7 +83,8 @@ def SingleGame(ModelArray, trump = None):
                     called = js.Colour([suggested_move])
                     called = called[0]
                 GlobalCards[suggested_move] = 8+activeplayer
-            playedcards[activeplayer] = suggested_move
+                playedcards[activeplayer] = suggested_move
+                print(playedcards)
             print(playedcards)
             startingplayer = js.RoundWinner(playedcards,GlobalCards[36],startingplayer)
         
@@ -117,6 +118,7 @@ if __name__ == '__main__':
         modellist.append(rnn.GetModel())
         rnn.LoadWeights(modellist[i],"Basic")
         rnn.Mutate(modellist[i],0.3*i)
+        print("iteration of loading: ",i)
     print("starting...")
     print(SingleGame(modellist))
     
