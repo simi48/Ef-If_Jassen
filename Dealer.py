@@ -52,6 +52,7 @@ def SingleGame(ModelArray, trump = None):
         else:
             GlobalCards.append(np.random.randint(6))
         startingplayer = stage
+        controllarray = []
         for turn in range(9): #everyone has 9 cards
             called = None
 #            playedcards = []*36
@@ -83,9 +84,11 @@ def SingleGame(ModelArray, trump = None):
                     called = js.Colour([suggested_move])
                     called = called[0]
                 GlobalCards[suggested_move] = 8+activeplayer
+                controllarray.append(suggested_move)
                 playedcards[activeplayer] = suggested_move
                 print(playedcards)
             print(playedcards)
+            print("controllarray\n",controllarray,"\n")
             startingplayer = js.RoundWinner(playedcards,GlobalCards[36],startingplayer)
         
         #screwing up globalcards, but wont need them after anyway:
