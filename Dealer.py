@@ -54,7 +54,7 @@ def SingleGame(ModelArray, trump = None):
         startingplayer = stage
         for turn in range(9): #everyone has 9 cards
             called = None
-            playedcards = []
+            playedcards = []*37
             for player in range(4): #4 players playing one card at a time.
                 activeplayer = (player + startingplayer) %4 #offset to different players
 #                print(player," ",activeplayer)
@@ -80,7 +80,7 @@ def SingleGame(ModelArray, trump = None):
                     called = js.Colour([suggested_move])
                     called = called[0]
                 GlobalCards[suggested_move] = 8+activeplayer
-                playedcards.append(suggested_move)
+                playedcards[suggested_move] = activeplayer
             startingplayer = js.RoundWinner(playedcards,GlobalCards[36],startingplayer)
         
         #screwing up globalcards, but wont need them after anyway:

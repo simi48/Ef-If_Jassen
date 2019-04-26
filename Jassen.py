@@ -202,7 +202,7 @@ def LegalMove(playerCards,playedCard,called,trump=0,player=0):
 #        print("not in players possession")
     else:
         if(called != None):
-            if(playedColour!=called and playedColour != trump-2):
+            if(playedColour!= called and playedColour != trump-2):
                 Ret=False
 #                print("incorrectColour")
     
