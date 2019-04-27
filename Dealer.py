@@ -101,30 +101,35 @@ def ChooseTrump(Cards, StartingPlayer):
     for i in range(4): #check for special card combinations
         if((myCards[checkBuur] == 1) and (myCards[checkNell] == 1) and (myCards[checkAce] == 1)):
             ret = i + 2
+#            print('1')
             break
-        elif((myCards[checkNell] == 1) and (myCards[checkAce] == 1) and (colOutput[i] > 2)):
+        elif((myCards[checkNell] == 1) and (myCards[checkAce] == 1) and ((colOutput[i] - 2) > 2)):
             ret = i + 2
+#            print('2')
             break
-        elif((myCards[checkBuur] == 1) and (myCards[checkNell] == 1) and (ace > 1) and (colOutput[i] > 0)):
+        elif((myCards[checkBuur] == 1) and (myCards[checkNell] == 1) and (ace > 1) and ((colOutput[i] - 3) > 0)):
             ret = i + 2
+#            print('3')
             break
-        elif((myCards[checkBuur] == 1) and (colOutput[i] > 2)):
+        elif((myCards[checkBuur] == 1) and ((colOutput[i] - 1) > 2)):
             ret = i + 2
+#            print('4')
             break
         elif((colOutput[i] > 4)):
             ret = i + 2
+#            print('5')
             break
         checkBuur += 9
         checkNell += 9
         checkAce += 9
     
-    if (ret == None): #in case the player has no special combinations, select the playstyle whith which the player can get the most points regardless of whether he wins the round
+    if(ret == None): #in case the player has no special combinations, select the playstyle whith which the player can get the most points regardless of whether he wins the round
         for i in range(6):
             tmp = js.CountPoints(Cards, trump = i)
             points.append(tmp[StartingPlayer])
         tmp = np.argmax(points)
         ret = tmp
-          
+     
     return ret
     
 
@@ -160,8 +165,8 @@ def SingleGame(ModelArray, trump = None, queue = None):
         if(trump != None):
             GlobalCards.append(trump)
         else:
-            ChooseTrump(GlobalCards, stage) #if-clause ought to be deleted (maybe)
-#            GlobalCards.append(np.random.randint(6))
+            ps = ChooseTrump(GlobalCards, stage)
+            GlobalCards.append(ps)
         startingplayer = stage
         controllarray = []
         for turn in range(9): #everyone has 9 cards
@@ -254,7 +259,7 @@ if __name__ == '__main__':
 #        print("loaded")
 #        rnn.LoadWeights(modellist[i],"TESTSAVE")
 #        print("loaded weights")
-        rnn.Mutate(modellist[i],0.3*i+0.1)
+        rnn.Mutate(modellist[i], 0.3*i+0.1)
 #        print("mutated")
     print("starting...")
 #    print(SingleGame(modellist))
@@ -263,7 +268,7 @@ if __name__ == '__main__':
         score = SingleGame(modellist)
         for i in range(4):
             points[i] += score[i]
-    print("Points:\n",points)
+    print("Points:\n", points)
 #    
 #    for i in range(15):
 #        cards = js.Shuffle()
@@ -271,5 +276,4 @@ if __name__ == '__main__':
 #        print(rnn.Evaluate(modellist[0].predict(rnn.PrepareInput(cards))))
 #    
     
-
         

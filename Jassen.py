@@ -29,7 +29,7 @@ import numpy as np
 np.set_printoptions(linewidth=np.inf)
 
 
-def CountPoints(cards,trump=None):
+def CountPoints(cards, trump=None):
     '''Counts points for each player.
     
     Parameters:
@@ -52,24 +52,24 @@ def CountPoints(cards,trump=None):
     '''
     #All Cards?
     ret = []
-    if(len(cards)<36):
+    if(len(cards) < 36):
         print("Pls use standard 36 Card layout")
         return ret
     if(trump == None):
-        if(len(cards)==37):
+        if(len(cards) == 37):
             trump = cards[36]
         else:
             trump = 0
     
     #PlayerCount/ArraySize
-    playerCount=0
+    playerCount = 0
     for i in range(len(cards)):
-        if(cards[i]<0):
+        if(cards[i] < 0):
             print("Players ID cannot be negative")
             return ret
-        if(playerCount<cards[i]):
-            playerCount=cards[i]
-    Ret=[0]*(playerCount+1)
+        if(playerCount < cards[i]):
+            playerCount = cards[i]
+    Ret = [0]*(playerCount + 1)
     
     #Banner
     Ret[cards[4]]+=10
@@ -88,7 +88,7 @@ def CountPoints(cards,trump=None):
     Ret[cards[33]]+=3
     
     #Ace / 6 ;for trump==1 => 6 is highest
-    if(trump==1):
+    if(trump == 1):
         Ret[cards[0]]+=11
         Ret[cards[9]]+=11
         Ret[cards[18]]+=11
@@ -101,7 +101,7 @@ def CountPoints(cards,trump=None):
         
     #where is switch when you need it?
     #8 & Under (+Nell)
-    if(trump==0 or trump==1):
+    if(trump == 0 or trump == 1):
         #8
         Ret[cards[2]]+=8
         Ret[cards[11]]+=8
@@ -112,28 +112,28 @@ def CountPoints(cards,trump=None):
         Ret[cards[14]]+=2
         Ret[cards[23]]+=2
         Ret[cards[32]]+=2
-    elif(trump==2):
+    elif(trump == 2):
         Ret[cards[5]]+=20 #Buur
         Ret[cards[3]]+=14 #Nell
         #Under
         Ret[cards[14]]+=2
         Ret[cards[23]]+=2
         Ret[cards[32]]+=2
-    elif(trump==3):
+    elif(trump == 3):
         Ret[cards[14]]+=20 #Buur
         Ret[cards[12]]+=14 #Nell
         #Under
         Ret[cards[5]]+=2
         Ret[cards[23]]+=2
         Ret[cards[32]]+=2
-    elif(trump==4):
+    elif(trump == 4):
         Ret[cards[23]]+=20 #Buur
         Ret[cards[21]]+=14 #Nell
         #Under
         Ret[cards[14]]+=2
         Ret[cards[5]]+=2
         Ret[cards[32]]+=2
-    elif(trump==5):
+    elif(trump == 5):
         Ret[cards[32]]+=20 #Buur
         Ret[cards[30]]+=14 #Nell
         #Under
@@ -141,14 +141,14 @@ def CountPoints(cards,trump=None):
         Ret[cards[23]]+=2
         Ret[cards[5]]+=2
     else:
-        if(trump<0 or trump>5):
+        if(trump < 0 or trump > 5):
             print("well fuck, ought to have chosen a proper trump (note: check the 37th element of the card array if trump was left blank)")
-            Ret=[]
+            Ret = []
     return Ret
 
 
 
-def LegalMove(playerCards,playedCard,called,trump=0,player=0):
+def LegalMove(playerCards, playedCard, called, trump = 0, player = 0):
     '''
     Checks whether a played card was playable
     
@@ -188,22 +188,22 @@ def LegalMove(playerCards,playedCard,called,trump=0,player=0):
                 if played card was not an acceptable choice.
     '''
     
-    if(len(playerCards)!=36 and len(playerCards)!=37 and len(playerCards)!=38):
+    if(len(playerCards) != 36 and len(playerCards) != 37 and len(playerCards) != 38):
         print("Card array is not comprised of 36 (or 37) cards.")
-    elif(len(playerCards)==37):
+    elif(len(playerCards) == 37):
         trump = playerCards[36]
-    if(playedCard<0 or playedCard>=len(playerCards)):
+    if(playedCard < 0 or playedCard >= len(playerCards)):
         print("played card is outside of card array. May throw error, may give false results.")
     Ret = True
     playedColour = Colour([playedCard])
     playedColour = playedColour[0]
-    if(playerCards[playedCard]!=player):
+    if(playerCards[playedCard] != player):
         Ret = False
 #        print("not in players possession")
     else:
         if(called != None):
             if(playedColour!= called and playedColour != (trump-2)):
-                Ret=False
+                Ret = False
 #                print("incorrectColour")
     
     
@@ -228,17 +228,17 @@ def Colour(playedCards):
     '''
     playedColour = []
     for i in range(len(playedCards)):
-        if(playedCards[i]<9):
+        if(playedCards[i] < 9):
             playedColour.append(0)
-        elif(playedCards[i]<18):
+        elif(playedCards[i] < 18):
             playedColour.append(1)
-        elif(playedCards[i]<27):
+        elif(playedCards[i] < 27):
             playedColour.append(2)
         else:
             playedColour.append(3)
     return playedColour
 
-def RoundWinner(playedCards,trump=0,callingPlayer=None):
+def RoundWinner(playedCards, trump = 0, callingPlayer = None):
     '''
     Calculates which player (array index) has won the round.
     
@@ -265,83 +265,83 @@ def RoundWinner(playedCards,trump=0,callingPlayer=None):
     '''
     warning = False
     for i in range(len(playedCards)):
-        if(playedCards[i]>35 or playedCards[i]<0):
+        if(playedCards[i] > 35 or playedCards[i] < 0):
             warning = True
     if(warning):
         print("Card values are out of bounds, results will not reflect reality")
     playedColour=Colour(playedCards)
     
-    Ret=None
-    if(callingPlayer==None):
+    Ret = None
+    if(callingPlayer == None):
         callingPlayer = playedColour[0]
     else:
         callingPlayer = playedColour[callingPlayer]
     #Check for Trump
-    if(playedColour.count(trump-2)!=0):
-        trumpCards=[]
+    if(playedColour.count(trump-2) != 0):
+        trumpCards = []
         #if there is only one trump, EZ win
-        if(playedColour.count(trump-2)==1):
+        if(playedColour.count(trump-2) == 1):
             Ret=playedColour.index(trump-2)
         else:
             #which players have trumpcards
             for i in range(len(playedColour)):
-                if(playedColour[i]==trump-2):
+                if(playedColour[i] == trump-2):
                     trumpCards.append(i) #saves which players had trump
                     
             
             #General
             Ret = trumpCards[0]
             for i in range(len(trumpCards)):
-                if(playedCards[trumpCards[i]]>Ret):
+                if(playedCards[trumpCards[i]] > Ret):
                     Ret = trumpCards[i]
             #Nell
             for i in range(len(trumpCards)):
-                if(playedCards[trumpCards[i]]%9==3):
+                if(playedCards[trumpCards[i]]%9 == 3):
                     Ret=trumpCards[i]
             #Buur
             for i in range(len(trumpCards)):
-                if(playedCards[trumpCards[i]]%9==5):
+                if(playedCards[trumpCards[i]]%9 == 5):
                     Ret=trumpCards[i]
-    elif(trump==1):
+    elif(trump == 1):
         #6 Beats all
-        if(playedColour.count(callingPlayer)==1):
+        if(playedColour.count(callingPlayer) == 1):
             #if only one person played appropriate colour
             Ret = playedColour.index(callingPlayer)
         else:
-            colourCards=[]
+            colourCards = []
             #which players played appropriate colour
             for i in range(len(playedColour)):
-                if(playedColour[i]==callingPlayer):
+                if(playedColour[i] == callingPlayer):
                     colourCards.append(i)#players which played correct colour
             #If no trump, only general
             Ret = colourCards[0]
             for i in range(len(colourCards)):
                 
-                if(playedCards[colourCards[i]]<playedCards[Ret]):
+                if(playedCards[colourCards[i]] < playedCards[Ret]):
                     Ret = colourCards[i]
     else:
         #for when no trump is present and ace wins
-        if(playedColour.count(callingPlayer)==1):
+        if(playedColour.count(callingPlayer) == 1):
             #if only one person played appropriate colour
             Ret = playedColour.index(callingPlayer)
         else:
-            colourCards=[]
+            colourCards = []
             #which players played appropriate colour
             for i in range(len(playedColour)):
-                if(playedColour[i]==callingPlayer):
+                if(playedColour[i] == callingPlayer):
                     colourCards.append(i)#players which played correct colour
             #If no trump, only general
             Ret = colourCards[0]
             for i in range(len(colourCards)):
                 
-                if(playedCards[colourCards[i]]>playedCards[Ret]):
+                if(playedCards[colourCards[i]] > playedCards[Ret]):
                     Ret = colourCards[i]
     return Ret
 
 
 
 
-def LocalPov(Cards, player=0):
+def LocalPov(Cards, player = 0):
     '''
     Transcribes Global Card array to local card array from pov of a player. (used for RNN Input)
     
@@ -380,35 +380,35 @@ def LocalPov(Cards, player=0):
 
 
     '''
-    if(len(Cards)!=36 and len(Cards)!=37):
+    if(len(Cards) != 36 and len(Cards) != 37):
         print("Card array is not equal to 36/37. (len="+str(len(Cards))+")")
-    if(player<0 or player>3):
+    if(player < 0 or player > 3):
         print("Player "+str(player)+" is out of bounds, will not return correct values")
     Ret = [0]*37
     for i in range(36):
-        if(Cards[i]==player+4):
+        if(Cards[i] == player+4):
             print("Player can see which card he played this turn. pls reconsider! Card["+str(i)+"]"+"\nThis may throw an error down the line")
-            Ret[i]=None
+            Ret[i] = None
         #For cards in hand
-        elif(Cards[i]<4):
-            if(Cards[i]%4==player):
-                Ret[i]=1
+        elif(Cards[i] < 4):
+            if(Cards[i]%4 == player):
+                Ret[i] = 1
         #For Cards being played
-        elif(Cards[i]<8):
+        elif(Cards[i] < 8):
             Ret[i]=(Cards[i]-player)%4 + 1
         #For Cards already played
-        elif(Cards[i]<12):
+        elif(Cards[i] < 12):
             Ret[i]=(Cards[i]-player)%4 + 5
         else:
             print("Card Value out of bounds: Cards["+str(i)+"]="+str(Cards[i]))
-            Ret[i]=None
+            Ret[i] = None
         #Playstyle / trump
-    if(len(Cards)==37):
-        Ret[36]=Cards[36]
+    if(len(Cards) == 37):
+        Ret[36] = Cards[36]
     return Ret
 
 
-def Shuffle(playercount=4):
+def Shuffle(playercount = 4):
     '''
     Shuffles the 36 Cards.
     
@@ -420,7 +420,7 @@ def Shuffle(playercount=4):
         Array[int]:
             An array of standard 36 Card distributed among `playercount` players, in values of range(`playercount`)
     '''
-    if(36%playercount!=0):
+    if(36%playercount != 0):
         print("Not all players have the same amount of cards")
     Ret = []
     for i in range(36):
@@ -447,36 +447,36 @@ def CTT(SingleCard):
             Card given in plain text.
     '''
     Ret = ""
-    if(SingleCard<0 or SingleCard>35):
+    if(SingleCard < 0 or SingleCard > 35):
         Ret = "Card out of range, will display incorrect answer:\n "
     colour = Colour([SingleCard])
     colour = colour[0]
     
-    if(colour==0):
+    if(colour == 0):
         Ret = Ret + "Rosen"
-    elif(colour==1):
+    elif(colour == 1):
         Ret = Ret + "Eichel"
-    elif(colour==2):
+    elif(colour == 2):
         Ret = Ret + "Schellen"
-    elif(colour==3):
+    elif(colour == 3):
         Ret = Ret + "Schilten"
-    if(SingleCard%9==0):
+    if(SingleCard%9 == 0):
         Ret = Ret + " 6"
-    elif(SingleCard%9==1):
+    elif(SingleCard%9 == 1):
         Ret = Ret + " 7"
-    elif(SingleCard%9==2):
+    elif(SingleCard%9 == 2):
         Ret = Ret + " 8"
-    elif(SingleCard%9==3):
+    elif(SingleCard%9 == 3):
         Ret = Ret + " 9"
-    elif(SingleCard%9==4):
+    elif(SingleCard%9 == 4):
         Ret = Ret + " 10"
-    elif(SingleCard%9==5):
+    elif(SingleCard%9 == 5):
         Ret = Ret + " Under"
-    elif(SingleCard%9==6):
+    elif(SingleCard%9 == 6):
         Ret = Ret + " Ober"
-    elif(SingleCard%9==7):
+    elif(SingleCard%9 == 7):
         Ret = Ret + " König"
-    elif(SingleCard%9==8):
+    elif(SingleCard%9 == 8):
         Ret = Ret + " As"
 
     return Ret
@@ -501,7 +501,7 @@ def CsTT(CardArray):
     return Ret
 
 
-def CsTT36(cardArray,player=0):
+def CsTT36(cardArray, player = 0):
     '''
     Finds Card names for selected Cards
     
@@ -516,11 +516,11 @@ def CsTT36(cardArray,player=0):
         Array(str):
             Cards of selected person given in plain text.
     '''
-    if(len(cardArray)!=36):
+    if(len(cardArray) != 36):
         print("Cardarray lenght is not 36; may not accuratly portray cards. len(cardArray) = "+str(len(cardArray)))
     tmp = []
     for i in range(len(cardArray)):
-        if(cardArray[i]==player):
+        if(cardArray[i] == player):
             tmp.append(i)
     Ret = CsTT(tmp)
     return Ret
