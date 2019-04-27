@@ -233,7 +233,7 @@ def SingleGame(ModelArray, trump = None, queue = None):
         queue.put(points)
 
 
-def TrainTable(model_list,epochs=1000,batch=10, mutations = [0.03],verbose=True):
+def TrainTable(model_list,epochs=1000,batch=10, mutations = [0.03],verbose=True,queue = None):
     '''
     TrainTable entertains one table of players (rnn models) while slowly mutating and improving them (at random so it will take a while)
     Parameters:
@@ -250,6 +250,13 @@ def TrainTable(model_list,epochs=1000,batch=10, mutations = [0.03],verbose=True)
         verbose (boolean):
             determines whether a progressbar is displayed (shows for True)
     '''
+    
+    
+    '''apparently, numpy is not compatible with MPing tf models. so, I guess remove numpy from this part? (or sneak around it by using evaluate instead of np.argmax()
+    this might backfire though, because evaluate is lietarylla armgax. eh. will see tmrw
+    '''
+    
+    
     #setup
     #right length
     if(len(model_list) != 4):
@@ -296,14 +303,43 @@ def TrainTable(model_list,epochs=1000,batch=10, mutations = [0.03],verbose=True)
             tmp=[]
             for i in range(4):
                 tmp.append(model_list[np.argmax(points)])
+                print("got here")
                 points.pop(np.argmax(points))
             model_list = tmp
-    return model_list
+    if(queue==None):
+        return model_list
+    else:
+        queue.put(model_list)
+
+def MPTrain(model_list,generations = 100, epochs = 10000, batch = 10,mutations = 0.03):
+    '''
+    '''
+    #Basics of MP
+    processes = multiprocessing.cpu_count()
+    queue = multiprocessing.Queue()
+    
+    #amount of required RNNs
+    while(len(model_list)<processes*4):
+        model_list.append(rnn.GetModel())
+    #4RNNs for each table
+    np.reshape(model_list,[processes,4])
+    process_list = []
+    for i in range(processes):
+        process_list.append(multiprocessing.Process(target=TrainTable, args=(model_list[i], epochs, batch, [mutations], False, queue)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
+    for prcs in process_list:
+        prcs.start() #start processes
+    for i in range(processes):
+        model_list[i] = queue.get()
+    for prcs in process_list:
+        prcs.join()
+    
+    return process_list
 
 # =============================================================================
 # Main
 # =============================================================================
 if __name__ == '__main__':
+    MPTrain([])
     Players = []
 # =============================================================================
 #     for i in range(4):
