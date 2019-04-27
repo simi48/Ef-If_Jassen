@@ -64,7 +64,7 @@ def TrainArrayInputRaw():
     
     
     Ret.append(np.random.randint(6))
-    if(called!=None):
+    if(called != None):
         called = js.Colour([called])
         Ret.append(called[0])
     else:
@@ -91,7 +91,7 @@ def CheckArray(trainInput):
     for i in range(36):
         if(js.LegalMove(trainInput,i,trainInput[37])):
             Ret.append(i)
-    if(len(Ret)!=1):
+    if(len(Ret) != 1):
         Ret = None
     else:
         Ret = Ret[0]
@@ -114,18 +114,18 @@ def TrainArray(length, queue = None):
             [int][0]: training array (created with TrainArrayInputRaw).
             [int][1]: only legal move for the corresponding training array.
     '''
-    SP=False #serial process y/n
-    if( queue==None):
-        SP=True
+    SP = False #serial process y/n
+    if( queue == None):
+        SP = True
     if(SP):
-        Ret=[0]*length
+        Ret = [0]*length
     else:
-        Ret=[0]*2
+        Ret = [0]*2
     for i in range(length):
         if(SP):
             Ret[i] = [0]*2
         RawArray = TrainArrayInputRaw()
-        while(CheckArray(RawArray)==None):
+        while(CheckArray(RawArray) == None):
             RawArray = TrainArrayInputRaw()
         if(SP):
             Ret[i][1] = CheckArray(RawArray)
@@ -144,7 +144,7 @@ def test(length):
     return length
 
 
-def MPTrainArrayIntermediate(length,queue):
+def MPTrainArrayIntermediate(length, queue):
     tmp = test(TrainArray(length))
 #    print(tmp)
     queue.put(tmp)
@@ -170,10 +170,10 @@ def MPTrainArray(length):
     processes = multiprocessing.cpu_count()
     queue = multiprocessing.Queue()
     Collect = []
-    process_list=[]
+    process_list = []
     prcs_length = int(length/processes)
     for i in range(processes):
-        process_list.append(multiprocessing.Process(target=TrainArray,args=(prcs_length,queue)))#define process
+        process_list.append(multiprocessing.Process(target=TrainArray, args=(prcs_length, queue)))#define process
     for prcs in process_list:
         prcs.start() #start processes
     for _ in tqdm(range(prcs_length*processes)):
@@ -195,14 +195,14 @@ def GetModel():
         Tensorflow_Model
     '''
     Model = tf.keras.models.Sequential()
-    Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37),name='input'))
+    Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37), name='input'))
     #Model.add(tf.keras.layers.Dense(36, name='Dense1'))
-    Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM1',return_sequences=True, stateful=True)) #Stateful = remember what happended last time
-    Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM2M_MEMORY',return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM2M_MEMORY', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
     Model.add(tf.keras.layers.Dropout(0.5))
     Model.add(tf.keras.layers.Dense(36))
     
-    Model.compile(loss='categorical_crossentropy',optimizer='adam',metrics=['accuracy'])        #maybe if we decide to use handmade training data for not playing incorrect cards.
+    Model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])        #maybe if we decide to use handmade training data for not playing incorrect cards.
     
     tf.global_variables_initializer()      #absolutly necessary! but still not working...?
     return Model
@@ -223,7 +223,7 @@ def PrepareInput(input):
         Numpy Matrix:
             Input Matrix for the RNN.
     '''
-    return np.reshape(input,[1,1,37])
+    return np.reshape(input, [1,1,37])
 
 
 def PrepareInputArray(input_array):
@@ -235,7 +235,7 @@ def PrepareInputArray(input_array):
         input_array(array[array[int]])
     '''
     
-    Ret=[]
+    Ret = []
     for i in input_array:
         Ret.append(PrepareInput(i))
     return Ret
@@ -257,7 +257,7 @@ def Evaluate(RNN_Output):
     return np.argmax(RNN_Output)
 
 
-def TrainModelBasics(model,size, Multiprocessing = None): #Multiprocessing does not work in Spyder, to make use of this execute from Anaconda using `python JassRNN.py`
+def TrainModelBasics(model, size, Multiprocessing = None): #Multiprocessing does not work in Spyder, to make use of this execute from Anaconda using `python JassRNN.py`
     '''
     Trains the Model to not be completely stupid
     
@@ -273,8 +273,8 @@ def TrainModelBasics(model,size, Multiprocessing = None): #Multiprocessing does 
             *NOTE Multiprocessing will not work in Spyder IDE. To make use of this, execute Code in standalone console
             
     '''
-    if(Multiprocessing==None):
-        Multiprocessing= size>5000
+    if(Multiprocessing == None):
+        Multiprocessing = size>5000
     print("Generating Data")
     if (Multiprocessing):
         training_data = MPTrainArray(size)
@@ -291,12 +291,12 @@ def TrainModelBasics(model,size, Multiprocessing = None): #Multiprocessing does 
         tmp = [0]*36
         tmp[training_data[i][1]] = 1
         y.append(tmp)
-    x=np.reshape(x,(len(x),1,1,37))
-    y=np.reshape(y,(len(y),1,1,36))
+    x = np.reshape(x,(len(x),1,1,37))
+    y = np.reshape(y,(len(y),1,1,36))
     print("Adjusting Network")
     for i in tqdm(range(len(x))):
-        model.fit(x[i],y[i],batch_size=1, verbose = 0,use_multiprocessing=Multiprocessing) #*NOTE it works with `use_multiprocessing=True` but I have no idea what it does or whether it helps at all
-        if(i%10==0):
+        model.fit(x[i], y[i], batch_size=1, verbose = 0, use_multiprocessing=Multiprocessing) #*NOTE it works with `use_multiprocessing=True` but I have no idea what it does or whether it helps at all
+        if(i%10 == 0):
             model.reset_states()
             
 def Mutate(model, mutation_factor, reset = True):
@@ -322,7 +322,7 @@ def Mutate(model, mutation_factor, reset = True):
     weight_Matrix = model.get_weights()
     for i in weight_Matrix:
         for z in range(len(i)):
-            if(np.random.random()<mutation_factor):
+            if(np.random.random() < mutation_factor):
                 i[z] = np.random.random()*2-1 #should set a value between 1 and -1
     model.set_weights(weight_Matrix)
     if(reset):
@@ -443,6 +443,6 @@ if __name__ == '__main__':
     #n = amount of iterations, but i reckon you guesse :)
     n = 35
     for i in range(n):
-        print("Iteration ",i+1,"of ",n)
-        TrainModelBasics(Model,100000)
-        SaveWeights(Model,"Basic")
+        print("Iteration ", i+1,"of ", n)
+        TrainModelBasics(Model, 100000)
+        SaveWeights(Model, "Basic")

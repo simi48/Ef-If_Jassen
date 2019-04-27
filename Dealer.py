@@ -20,13 +20,13 @@ import JassRNN as rnn
 import Jassen as js
 
 
-def ChooseTrump(MyCards, StartingPlayer):
+def ChooseTrump(Cards, StartingPlayer):
     '''
     ChooseTrump allows the AI to choose the best possible playstyle (At least I hope so, it's not like I'm a pro at Jass)
     depending on the cards in their possesion.
     
     Parameters:
-        MyCards (array[int]):
+        Cards (array[int]):
             An array with the standard 36-cards layout.
 
         StartingPlayer(int):
@@ -36,6 +36,102 @@ def ChooseTrump(MyCards, StartingPlayer):
         Trump(int):
             The suggested playstyle for the next round.
     '''
+    
+    myCards = js.LocalPov(Cards, StartingPlayer)
+    colInput = []
+    colOutput = []
+    points = []
+    roses = 0
+    acorn = 0
+    bell = 0
+    shield = 0
+    ace = 0
+    checkAce = 8
+# =============================================================================
+#     six = 0
+#     checkSix = 0
+#     buur = 0
+#     checkBuur = 5
+#     nell = 0
+#     checkNell = 3
+# =============================================================================
+    ret = None
+    
+    for i in range(36): #prepare Input for Colour()
+        if(myCards[i] == 1):
+            colInput.append(i)
+        if(i == checkAce):
+            if(myCards[i] == 1): #count special cards
+                ace += 1
+                checkAce += 9
+# ============================================================================= in case further precision for the playstyle selection is needed
+#         elif(i == checkSix): 
+#             if(myCards[i] == 1):
+#                 six += 1
+#                 checkSix += 9
+#         elif(i == checkNell):
+#             if(myCards[i] == 1):
+#                 nell += 1
+#                 checkNell += 9
+#         elif(i == checkBuur):
+#             if(myCards[i] == 1):
+#                 buur += 1
+#                 checkBuur += 9
+# =============================================================================
+                
+    colours = js.Colour(colInput)
+    
+    checkBuur = 5
+    checkNell = 3
+    checkAce = 8
+    for b in range(len(colours)): #Count how many cards of each colour the player has
+        if(colours[b] == 0):
+            roses += 1
+        elif(colours[b] == 1):
+            acorn += 1
+        elif(colours[b] == 2):
+            bell += 1
+        elif(colours[b] == 3):
+            shield += 1
+    colOutput.append(roses)
+    colOutput.append(acorn)
+    colOutput.append(bell)
+    colOutput.append(shield)
+    
+    for i in range(4): #check for special card combinations
+        if((myCards[checkBuur] == 1) and (myCards[checkNell] == 1) and (myCards[checkAce] == 1)):
+            ret = i + 2
+#            print('1')
+            break
+        elif((myCards[checkNell] == 1) and (myCards[checkAce] == 1) and ((colOutput[i] - 2) > 2)):
+            ret = i + 2
+#            print('2')
+            break
+        elif((myCards[checkBuur] == 1) and (myCards[checkNell] == 1) and (ace > 1) and ((colOutput[i] - 3) > 0)):
+            ret = i + 2
+#            print('3')
+            break
+        elif((myCards[checkBuur] == 1) and ((colOutput[i] - 1) > 2)):
+            ret = i + 2
+#            print('4')
+            break
+        elif((colOutput[i] > 4)):
+            ret = i + 2
+#            print('5')
+            break
+        checkBuur += 9
+        checkNell += 9
+        checkAce += 9
+    
+    if(ret == None): #in case the player has no special combinations, select the playstyle whith which the player can get the most points regardless of whether he wins the round
+        for i in range(6):
+            tmp = js.CountPoints(Cards, trump = i)
+            points.append(tmp[StartingPlayer])
+        tmp = np.argmax(points)
+        ret = tmp
+     
+    return ret
+    
 
 
 
@@ -59,8 +155,8 @@ def SingleGame(ModelArray, trump = None, queue = None):
     Returns:
         Array[int]:
             An Array of the points each AI made during this game.
-            
     '''
+    
     called = None
     points = [0,0,0,0]
     for stage in range(4): #everyone gets to begin once.
@@ -69,7 +165,8 @@ def SingleGame(ModelArray, trump = None, queue = None):
         if(trump != None):
             GlobalCards.append(trump)
         else:
-            GlobalCards.append(np.random.randint(6)) ##############################ChoseTrump()
+            ps = ChooseTrump(GlobalCards, stage)
+            GlobalCards.append(ps)
         startingplayer = stage
         controllarray = []
         for turn in range(9): #everyone has 9 cards
@@ -230,7 +327,7 @@ if __name__ == '__main__':
         score = SingleGame(modellist)
         for i in range(4):
             points[i] += score[i]
-    print("Points:\n",points)
+    print("Points:\n", points)
 #    
 #    for i in range(15):
 #        cards = js.Shuffle()
@@ -238,5 +335,4 @@ if __name__ == '__main__':
 #        print(rnn.Evaluate(modellist[0].predict(rnn.PrepareInput(cards))))
 #    
     
-
         
