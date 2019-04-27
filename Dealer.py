@@ -69,7 +69,7 @@ def SingleGame(ModelArray, trump = None, queue = None):
         if(trump != None):
             GlobalCards.append(trump)
         else:
-            GlobalCards.append(np.random.randint(6))
+            GlobalCards.append(np.random.randint(6)) ##############################ChoseTrump()
         startingplayer = stage
         controllarray = []
         for turn in range(9): #everyone has 9 cards
@@ -136,6 +136,72 @@ def SingleGame(ModelArray, trump = None, queue = None):
         queue.put(points)
 
 
+def TrainTable(model_list,epochs=1000,batch=10, mutations = [0.03],verbose=True):
+    '''
+    TrainTable entertains one table of players (rnn models) while slowly mutating and improving them (at random so it will take a while)
+    Parameters:
+        model_list (Array[tf.keras.model.sequential]):
+            an array of models. this array will be extended (at random) or diminished to the length of 4
+        epochs (int):
+            determines for how many epochs is to be trained (models are updated/learn once every epoch).
+            defaults to 1000, but it is recommended to do upwards of 10000
+        batch (int):
+            determines how many games are played to determine which RNN is the best.
+        mutations (Array[float]):
+            indicates how much RNNs are mutated.
+            defaults to 0.03
+        verbose (boolean):
+            determines whether a progressbar is displayed (shows for True)
+    '''
+    #setup
+    #right length
+    if(len(model_list) != 4):
+        print("len(model_list) = ",len(model_list),"    :: !=4\nmodel_list will be corrected")
+        while(len(model_list)<4):
+            model_list.append(rnn.GetModel())
+        while(len(model_list)>4):
+            model_list.pop()
+            
+    #just in case of None
+    for i in model_list:
+        if(i==None):
+            i = rnn.GetModel()
+    #setting mutationfactors, if they weren't specified
+    while(len(mutations)<3):
+        mutations.append(0.03)
+    while(len(mutations)<3):
+        mutations.pop()
+    for i in mutations:
+        if(i==None):
+            i = 0.03
+        elif(i<0):
+            i = 0.03
+        elif(i>1):
+             i = 0.03
+    
+    #at this point, model_list should be ready for use.
+    #models are mutated once every epoch
+    for epoch in (tqdm(range(epochs)) if verbose else range(epochs)):
+        points = [0,0,0,0] #each epoch resets everything
+        for batch in range(batch):
+            score = SingleGame(model_list)
+            for i in range(4):
+                points[i] +=score[i]
+        best = np.argmax(points)
+        #mutate models for them to improve
+        if(epoch != epochs-1):
+            model_list[0] = model_list[best]
+            for z in range(1,4):
+                model_list[i] = model_list[0]
+                rnn.Mutate(model_list[i],mutations[i-1])
+        #if last epoch, dont mutate models, but sort them and return.
+        else:
+            tmp=[]
+            for i in range(4):
+                tmp.append(model_list[np.argmax(points)])
+                points.pop(np.argmax(points))
+            model_list = tmp
+    return model_list
 
 # =============================================================================
 # Main
@@ -153,17 +219,10 @@ if __name__ == '__main__':
 #        cards = js.Shuffle()
 #        cards.append(np.random.randint(6))
 #        print(rnn.Evaluate(model.predict(rnn.PrepareInput(js.LocalPov(cards)))))
-    modellist = []          
-    m = rnn.GetModel()
-    print("__innit__ & mutating")
-    for i in tqdm(range(4)):
-#        print("iteration: ",i)
-        modellist.append(m)
-#        print("loaded")
-#        rnn.LoadWeights(modellist[i],"TESTSAVE")
-#        print("loaded weights")
-        rnn.Mutate(modellist[i],0.3*i+0.1)
-#        print("mutated")
+    print("test start")
+    modellist = TrainTable([],epochs = 10000,verbose = True)
+    print("test complete")
+    
     print("starting...")
 #    print(SingleGame(modellist))
     points = [0]*4

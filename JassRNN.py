@@ -404,6 +404,33 @@ def CreateCheckpointCallback(epoches):
     cp_callback = tf.keras.callbacks.ModelCheckpoint(checkpoint_path, save_weights_only = True, verbose = epoches)
     
     return cp_callback
+
+
+def Reproduce(ModelA, ModelB,ratio=0.5):
+    '''
+    Creates a new RNN that is the direct descendent of the two parent models
+    Parameters:
+        ModelA (tf.keras.model.sequential):
+            One Parent RNN
+        
+        ModelB (tf.keras.model.sequential):
+            The other Parent RNN
+        
+        ratio (float):
+            a float values of [0,1] determining which RNN contributes how much to the child.
+    Returns:
+        RNN Model
+    '''
+    A = ModelA.get_weights()
+    B = ModelB.get_weights()
+    for i in range(len(A)):
+        for z in range(len(A[i])):
+            if(np.random.random()<ratio):
+                A[i][z] = B[i][z]
+    ret = GetModel()
+    ret.load_weights(A)
+    return ret
+    
 # =============================================================================
 # Main
 # =============================================================================
