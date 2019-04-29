@@ -45,6 +45,16 @@ def ChooseTrump(Cards, StartingPlayer):
             The suggested playstyle for the next round.
     '''
     
+    #checking for wrong Cardarrays
+    if(len(Cards) > 37 or len(Cards) < 36):
+        print("Only standard Cardarrays of length 36 or 37 are accepted. Please use the correct format.")
+        return None
+    
+    #checking for invalid players
+    if(StartingPlayer < 0 or StartingPlayer > 3):
+        print("There can only be four players starting with player 0 and ending with player 3. Please reconsider the starting player")
+        return None
+    
     myCards = LocalPov(Cards, StartingPlayer)
     colInput = []
     colOutput = []

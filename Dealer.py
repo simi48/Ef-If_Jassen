@@ -198,7 +198,7 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
     else:
         queue.put(model_list)
 
-def MPTrain(model_list,generations = 100, epochs = 10000, batch = 10,mutations = 0.03):
+def MPTrain(model_list, generations = 100, epochs = 10000, batch = 10, mutations = 0.03):
     '''
     '''
     #Basics of MP
