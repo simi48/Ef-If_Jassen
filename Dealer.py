@@ -339,8 +339,10 @@ def MPTrain(model_list,generations = 100, epochs = 10000, batch = 10,mutations =
 # Main
 # =============================================================================
 if __name__ == '__main__':
-    MPTrain([])
-    Players = []
+# =============================================================================
+#     MPTrain([])
+#     Players = []
+# =============================================================================
 # =============================================================================
 #     for i in range(4):
 #         name = 'p' + str(i)
@@ -372,7 +374,7 @@ if __name__ == '__main__':
 #        cards.append(np.random.randint(6))
 #        print(rnn.Evaluate(modellist[0].predict(rnn.PrepareInput(cards))))
 #    
-cards = js.Shuffle() #Testing ChooseTrump
-tmp = iChooseTrump(cards, 0) 
-print(tmp) 
+    cards = js.Shuffle() #Testing ChooseTrump
+    tmp = iChooseTrump(cards, 0) 
+    print(tmp) 
         
