@@ -28,7 +28,7 @@ def SingleGame(ModelArray, trump = None, queue = None):
         ModelArray (Array[tf.keras.model.sequential]):
             An array of len(Array)=4 of tf models.
         
-        limited (int):
+        trump (int):
             A boolean signifying what trump the game will use. If trump = None (default) a random playstyle will be selected.\n
             - 0=ace;
             - 1=6;
@@ -118,27 +118,28 @@ def SingleGame(ModelArray, trump = None, queue = None):
         queue.put(points)
 
 
-def TrainTable(model_list,epochs=1000,batch=10, mutations = [0.03],verbose=True,queue = None):
+def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbose = True, queue = None):
     '''
     TrainTable entertains one table of players (rnn models) while slowly mutating and improving them (at random so it will take a while)
     Parameters:
         model_list (Array[tf.keras.model.sequential]):
-            an array of models. this array will be extended (at random) or diminished to the length of 4
+            An array of models. This array will be extended (at random) or diminished to the length of 4
         epochs (int):
-            determines for how many epochs is to be trained (models are updated/learn once every epoch).
-            defaults to 1000, but it is recommended to do upwards of 10000
+            Determines for how many epochs is to be trained (models are updated/learn once every epoch).
+            Defaults to 1000, but it is recommended to do upwards of 10000
         batch (int):
-            determines how many games are played to determine which RNN is the best.
+            Determines how many games are played to determine which RNN is the best.
         mutations (Array[float]):
-            indicates how much RNNs are mutated.
-            defaults to 0.03
+            Indicates how much RNNs are mutated.
+            Defaults to 0.03
         verbose (boolean):
-            determines whether a progressbar is displayed (shows for True)
+            Determines whether a progressbar is displayed (shows for True)
     '''
     
     
     '''apparently, numpy is not compatible with MPing tf models. so, I guess remove numpy from this part? (or sneak around it by using evaluate instead of np.argmax()
-    this might backfire though, because evaluate is lietarylla armgax. eh. will see tmrw
+    this might backfire though, because evaluate is lietarylla armgax. eh. will see tmrw, define queue in parameters 
+    and define queue in SingleGame you lazy shit!
     '''
     
     
@@ -146,26 +147,26 @@ def TrainTable(model_list,epochs=1000,batch=10, mutations = [0.03],verbose=True,
     #right length
     if(len(model_list) != 4):
         print("len(model_list) = ",len(model_list),"    :: !=4\nmodel_list will be corrected")
-        while(len(model_list)<4):
+        while(len(model_list) < 4):
             model_list.append(rnn.GetModel())
-        while(len(model_list)>4):
+        while(len(model_list) > 4):
             model_list.pop()
             
     #just in case of None
     for i in model_list:
-        if(i==None):
+        if(i == None):
             i = rnn.GetModel()
     #setting mutationfactors, if they weren't specified
-    while(len(mutations)<3):
+    while(len(mutations) < 3):
         mutations.append(0.03)
-    while(len(mutations)<3):
+    while(len(mutations) > 3):
         mutations.pop()
     for i in mutations:
-        if(i==None):
+        if(i == None):
             i = 0.03
-        elif(i<0):
+        elif(i < 0):
             i = 0.03
-        elif(i>1):
+        elif(i > 1):
              i = 0.03
     
     #at this point, model_list should be ready for use.
@@ -175,22 +176,23 @@ def TrainTable(model_list,epochs=1000,batch=10, mutations = [0.03],verbose=True,
         for batch in range(batch):
             score = SingleGame(model_list)
             for i in range(4):
-                points[i] +=score[i]
+                points[i] += score[i]
         best = np.argmax(points)
         #mutate models for them to improve
         if(epoch != epochs-1):
             model_list[0] = model_list[best]
             for z in range(1,4):
                 model_list[i] = model_list[0]
-                rnn.Mutate(model_list[i],mutations[i-1])
+                rnn.Mutate(model_list[i], mutations[i-1])
         #if last epoch, dont mutate models, but sort them and return.
         else:
-            tmp=[]
+            tmp = []
             for i in range(4):
                 tmp.append(model_list[np.argmax(points)])
                 print("got here")
                 points.pop(np.argmax(points))
             model_list = tmp
+    
     if(queue==None):
         return model_list
     else:
