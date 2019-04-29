@@ -20,7 +20,7 @@ import JassRNN as rnn
 import Jassen as js
 
 
-def ChooseTrump(Cards, StartingPlayer):
+def iChooseTrump(Cards, StartingPlayer):
     '''
     ChooseTrump allows the AI to choose the best possible playstyle (At least I hope so, it's not like I'm a pro at Jass)
     depending on the cards in their possesion.
@@ -165,7 +165,7 @@ def SingleGame(ModelArray, trump = None, queue = None):
         if(trump != None):
             GlobalCards.append(trump)
         else:
-            ps = ChooseTrump(GlobalCards, stage)
+            ps = js.ChooseTrump(GlobalCards, stage)
             GlobalCards.append(ps)
         startingplayer = stage
         controllarray = []
@@ -352,23 +352,27 @@ if __name__ == '__main__':
 #        cards = js.Shuffle()
 #        cards.append(np.random.randint(6))
 #        print(rnn.Evaluate(model.predict(rnn.PrepareInput(js.LocalPov(cards)))))
-    print("test start")
-    modellist = TrainTable([],epochs = 10000,verbose = True)
-    print("test complete")
-    
-    print("starting...")
-#    print(SingleGame(modellist))
-    points = [0]*4
-    for i in tqdm(range(100)):
-        score = SingleGame(modellist)
-        for i in range(4):
-            points[i] += score[i]
-    print("Points:\n", points)
+# =============================================================================
+#     print("test start")
+#     modellist = TrainTable([],epochs = 10000,verbose = True)
+#     print("test complete")
+#     
+#     print("starting...")
+# #    print(SingleGame(modellist))
+#     points = [0]*4
+#     for i in tqdm(range(100)):
+#         score = SingleGame(modellist)
+#         for i in range(4):
+#             points[i] += score[i]
+#     print("Points:\n", points)
+# =============================================================================
 #    
 #    for i in range(15):
 #        cards = js.Shuffle()
 #        cards.append(np.random.randint(6))
 #        print(rnn.Evaluate(modellist[0].predict(rnn.PrepareInput(cards))))
 #    
-    
+cards = js.Shuffle() #Testing ChooseTrump
+tmp = iChooseTrump(cards, 0) 
+print(tmp) 
         
