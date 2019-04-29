@@ -189,9 +189,13 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
             tmp = []
             for i in range(4):
                 tmp.append(model_list[np.argmax(points)])
-                print("got here")
+#                print("got here")
+#                print(points)
+#                points[np.argmax(points)] = -99999999999999999999
+                model_list.pop(np.argmax(points))
                 points.pop(np.argmax(points))
             model_list = tmp
+            print(model_list)
     
     if(queue==None):
         return model_list
@@ -226,7 +230,7 @@ def MPTrain(model_list,generations = 100, epochs = 10000, batch = 10,mutations =
 # Main
 # =============================================================================
 if __name__ == '__main__':
-    MPTrain([])
+    TrainTable([],epochs=2)
     Players = []
 # =============================================================================
 #     for i in range(4):
