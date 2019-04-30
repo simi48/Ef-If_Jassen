@@ -287,20 +287,55 @@ def MPTrain(model_list, generations = 100, epochs = 10000, batch = 10, mutations
         #Now we have a list of several models; gotta find the best one I guess? or just breed and relocate them...
         #for now ill just breed and relocate...
         
-        for modelout in range(processes):
-            pass
+        
+        #new table = 3 of las rounds winners
+        for table in range(processes):
+            for model in range(1,4):
+                model_list[table][model] = model_list[(table+1+table)%processes][0]
+        #and the final player is a wild card
+        for table in range(processes):
+            model_list[table][3] = rnn.Reproduce(model_list[np.random.randint(processes)][np.random.randint(3)],model_list[np.random.randint(processes)][np.random.randint(3)],np.random.random())
     
     
     
     
     return model_list
 
+
+
+def BestPlayer(model_list):
+    '''
+    '''
+    if(len(model_lis)%4!=0):
+        print("len(model_list) = ",len(model_list),"   ::  !=4\nthis may throw an error down the line")
+    points = []
+    for i in range(len(model_list)):
+        points.append(0)
+    table = []
+    for i in range(len(model_list)%4):
+        table.append([None]*4)
+    for model in range(len(model_list)):
+        if(model%len(model_list)==0 or model%len(model_list)==1):
+            table[0][model%4] = model_list[model]
+        elif(model%3 == 0 or model%3 == 2 or len(model_list)==8):
+            table[1][model-2]
+
+
 # =============================================================================
 # Main
 # =============================================================================
 if __name__ == '__main__':
     print("\n"*100)  ##cls
-    MPTrain([],epochs = 500)
+    array = []
+    
+    
+    #just a test
+    for r in range(8):
+        for c in range(4):
+            array.append(rnn.GetModel())
+            rnn.LoadWeights(array[r+c],("MPTDefault"+"_"+str(r)+"-"+str(c)))
+    
+    MPTrain(array)
     Players = []
 # =============================================================================
 #     for i in range(4):

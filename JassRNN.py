@@ -437,7 +437,7 @@ def Reproduce(ModelA, ModelB,ratio=0.5):
             if(np.random.random()<ratio):
                 A[i][z] = B[i][z]
     ret = GetModel()
-    ret.load_weights(A)
+    ret.set_weights(A)
     return ret
     
 # =============================================================================
