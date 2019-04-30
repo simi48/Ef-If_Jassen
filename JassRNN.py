@@ -17,6 +17,15 @@ import Jassen as js
 import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
 from tqdm import tqdm  #using anaconda/pip: pip install tqdm
 
+
+
+#Important: Makes sure that not all ge GPU memory is hogged. (noteworthy when Multiprocessing multiple RNNs)
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
+
+
+
 def TrainArrayInputRaw():
     '''
     Creates a array (36 cards) where every card gets one of the 11 possible conditions randomly assigned to it. 

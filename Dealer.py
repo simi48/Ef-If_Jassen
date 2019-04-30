@@ -118,7 +118,7 @@ def SingleGame(ModelArray, trump = None, queue = None):
         queue.put(points)
 
 
-def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbose = True, queue = None):
+def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbose = True):
     '''
     TrainTable entertains one table of players (rnn models) while slowly mutating and improving them (at random so it will take a while)
     Parameters:
@@ -146,7 +146,8 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
     #setup
     #right length
     if(len(model_list) != 4):
-        print("len(model_list) = ",len(model_list),"    :: !=4\nmodel_list will be corrected")
+        if(verbose):
+            print("len(model_list) = ",len(model_list),"    :: !=4\nmodel_list will be corrected")
         while(len(model_list) < 4):
             model_list.append(rnn.GetModel())
         while(len(model_list) > 4):
@@ -197,10 +198,24 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
             model_list = tmp
             print(model_list)
     
-    if(queue==None):
-        return model_list
-    else:
-        queue.put(model_list)
+    return model_list
+
+def TFSessMP(modelweights,epochs,batch,mutations,verbose,queue):
+    Ret = []
+    model_list = []
+    print("1")
+#    for i in range(len(modelweights)):
+    for i in range(2):
+        model_list.append(rnn.GetModel())
+        print("2 (",i,")")
+#        model_list[i].load_weights(modelweights[i])
+        print("3 (",i,")")
+    print("got here")
+#    model_list = TrainTable(model_list,epochs,batch,mutations,verbose)
+    model_list = TrainTable([],epochs,batch,mutations,verbose)
+    for i in model_list:
+        Ret.append(i.get_weights)
+    queue.put(Ret)
 
 def MPTrain(model_list, generations = 100, epochs = 10000, batch = 10, mutations = 0.03):
     '''
@@ -208,21 +223,28 @@ def MPTrain(model_list, generations = 100, epochs = 10000, batch = 10, mutations
     #Basics of MP
     processes = multiprocessing.cpu_count()
     queue = multiprocessing.Queue()
-    
+    processes = 2
     #amount of required RNNs
     while(len(model_list)<processes*4):
         model_list.append(rnn.GetModel())
     #4RNNs for each table
+    weights = []
+    for i in model_list:
+        weights.append(i)
     np.reshape(model_list,[processes,4])
+    np.reshape(weights,[processes,4])
     process_list = []
     for i in range(processes):
-        process_list.append(multiprocessing.Process(target=TrainTable, args=(model_list[i], epochs, batch, [mutations], False, queue)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
+        process_list.append(multiprocessing.Process(target=TFSessMP, args=([], epochs, batch, [mutations], True, queue)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
     for prcs in process_list:
+        print("before prcs ",prcs)
         prcs.start() #start processes
+        print("prcs",prcs,"started")
     for i in range(processes):
-        model_list[i] = queue.get()
+        model_list[i].set_weights(queue.get())
     for prcs in process_list:
         prcs.join()
+        print(prcs)
     
     return process_list
 
@@ -230,7 +252,7 @@ def MPTrain(model_list, generations = 100, epochs = 10000, batch = 10, mutations
 # Main
 # =============================================================================
 if __name__ == '__main__':
-    TrainTable([],epochs=2)
+    MPTrain([])
     Players = []
 # =============================================================================
 #     for i in range(4):
@@ -264,6 +286,6 @@ if __name__ == '__main__':
 #        print(rnn.Evaluate(modellist[0].predict(rnn.PrepareInput(cards))))
 #    
     cards = js.Shuffle() #Testing ChooseTrump
-    tmp = iChooseTrump(cards, 0) 
+#    tmp = iChooseTrump(cards, 0) 
     print(tmp) 
         
