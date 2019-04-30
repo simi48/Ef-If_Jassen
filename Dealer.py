@@ -4,7 +4,7 @@ Project:       Deep Jass
 
 File:           Dealer.py
 
-Purpose:        Recurring Neural Network to learn how to play cards.
+Purpose:        Assortment of functions required to train the Recurrent Neural Network to play against other Networks (Simulate a game)
 
 Created on:     24.04.2019 11:02:27
 Author:         Simon Thür; Marc Matter
@@ -333,7 +333,7 @@ if __name__ == '__main__':
 #        cards.append(np.random.randint(6))
 #        print(rnn.Evaluate(modellist[0].predict(rnn.PrepareInput(cards))))
 #    
-    cards = js.Shuffle() #Testing ChooseTrump
+#    cards = js.Shuffle() #Testing ChooseTrump
 #    tmp = iChooseTrump(cards, 0) 
-    print(tmp) 
+#    print(tmp) 
         
