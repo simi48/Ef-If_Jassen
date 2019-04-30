@@ -200,59 +200,107 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
     
     return model_list
 
-def TFSessMP(modelweights,epochs,batch,mutations,verbose,queue):
-    Ret = []
+def TFSessMP(name,epochs,batch,mutations,verbose,queue):
+#    Ret = []
     model_list = []
-    print("1")
+#    print("1")
 #    for i in range(len(modelweights)):
-    for i in range(2):
+    for i in range(4):
         model_list.append(rnn.GetModel())
-        print("2 (",i,")")
+#        print("2 (",i,")")
 #        model_list[i].load_weights(modelweights[i])
-        print("3 (",i,")")
-    print("got here")
+        nametmp = name+str(i)
+        print(nametmp)
+        print(name)
+        rnn.LoadWeights(model_list[i],(name+str(i)))
+#        print("3 (",i,")")
+#    print("got here")
 #    model_list = TrainTable(model_list,epochs,batch,mutations,verbose)
-    model_list = TrainTable([],epochs,batch,mutations,verbose)
-    for i in model_list:
-        Ret.append(i.get_weights)
-    queue.put(Ret)
+    model_list = TrainTable(model_list,epochs,batch,mutations,verbose)
+    for i in range(len(model_list)):
+        rnn.SaveWeights(model_list[i],(name+str(i)))
+#    queue.put(None)
+    '''make Ret var from RAM and not VRAM, or save to harddisk?'''
 
-def MPTrain(model_list, generations = 100, epochs = 10000, batch = 10, mutations = 0.03):
+def MPTrain(model_list, generations = 100, epochs = 10000, batch = 10, mutations = 0.03,name = "MPTDefault"):
     '''
     '''
     #Basics of MP
-    processes = multiprocessing.cpu_count()
+#    processes = multiprocessing.cpu_count() ##I tend to run out of ram this way
+    processes = 8
     queue = multiprocessing.Queue()
-    processes = 2
-    #amount of required RNNs
+#    processes = 2
+    
+            #amount of required RNNs
     while(len(model_list)<processes*4):
         model_list.append(rnn.GetModel())
-    #4RNNs for each table
-    weights = []
-    for i in model_list:
-        weights.append(i)
-    np.reshape(model_list,[processes,4])
-    np.reshape(weights,[processes,4])
-    process_list = []
-    for i in range(processes):
-        process_list.append(multiprocessing.Process(target=TFSessMP, args=([], epochs, batch, [mutations], True, queue)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
-    for prcs in process_list:
-        print("before prcs ",prcs)
-        prcs.start() #start processes
-        print("prcs",prcs,"started")
-    for i in range(processes):
-        model_list[i].set_weights(queue.get())
-    for prcs in process_list:
-        prcs.join()
-        print(prcs)
+    for generation in tqdm(range(generations)):
+        
+        #4RNNs for each table
+#        weights = []
+#        for i in model_list:
+#            weights.append(i)
+        model_list = np.reshape(model_list,[processes,4])
+        
+#        print("\n"*100)
+#        print(model_list)
+#        print(model_list[0][0])
+        
+        #########
+        #save weights
+        for r in range(len(model_list)):
+            for c in range(len(model_list[r])):
+                tmpName = (""+name+"_"+str(r)+"-"+str(c))
+                print(tmpName)
+                rnn.SaveWeights(model_list[r][c],tmpName)
+        #########
+        
+        process_list = []
+#        model_list = [] #clear up some (v)ram? not sure if it helps though. if required, be sure to add another model_list below with RNNs inside it.
+        for i in range(processes):
+            
+            #########
+            MPname = name+"_"+str(i)+"-" ##as in line244 (ish) where the model was saved. the c) will be added in TFSESSMP()
+            #if not required remove `name` from prcs_list.append(process)
+            #########
+            process_list.append(multiprocessing.Process(target=TFSessMP, args=(MPname, epochs, batch, [mutations], True, queue)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
+        for prcs in process_list:
+#            print("before prcs ",prcs)
+            prcs.start() #start processes
+#            print("prcs",prcs,"started")
+        print(process_list)
+#        for i in range(processes):
+##            model_list[i].set_weights(queue.get())     needs to get fixed   maybe
+#            pass
+        for prcs in process_list:
+            prcs.join()
+            print(prcs)
+        
+        
+        #########
+        #get weights
+        for r in range(len(model_list)):
+            for c in range(len(model_list[r])):
+                rnn.LoadWeights(model_list[r][c],(""+name+"_"+str(r)+"-"+str(c)))
+        #########
+        
+        #Now we have a list of several models; gotta find the best one I guess? or just breed and relocate them...
+        #for now ill just breed and relocate...
+        
+        for modelout in range(processes):
+            pass
     
-    return process_list
+    
+    
+    
+    return model_list
 
 # =============================================================================
 # Main
 # =============================================================================
 if __name__ == '__main__':
-    MPTrain([])
+    print("\n"*100)  ##cls
+    MPTrain([],epochs = 500)
     Players = []
 # =============================================================================
 #     for i in range(4):
