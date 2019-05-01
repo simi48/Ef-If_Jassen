@@ -18,7 +18,7 @@ import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython
 from tqdm import tqdm  #using anaconda/pip: pip install tqdm
 import JassRNN as rnn
 import Jassen as js
-
+from time import ctime
 
 def SingleGame(ModelArray, trump = None, queue = None):
     '''
@@ -134,12 +134,18 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
             Defaults to 0.03
         verbose (boolean):
             Determines whether a progressbar is displayed (shows for True)
+            
+    Returns:
+        Array(tf.keras.model.sequential)
+        a list of RNNs, where the best one is at index `0` and the worst one is at index `3`
     '''
     
     
     '''apparently, numpy is not compatible with MPing tf models. so, I guess remove numpy from this part? (or sneak around it by using evaluate instead of np.argmax()
     this might backfire though, because evaluate is lietarylla armgax. eh. will see tmrw, define queue in parameters 
+    
     and define queue in SingleGame you lazy shit!
+    fuck off^
     '''
     
     
@@ -200,7 +206,35 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
     
     return model_list
 
-def TFSessMP(name,epochs,batch,mutations,verbose,queue):
+def TFSessMP(name,epochs,batch,mutations,verbose):
+    '''
+    TFSessMP
+    An intermediate layer between MPTrain() and TrainTable(), which is responsible for crossloading RNNs (as they are stored in ram which complicates things a bit when using MP)
+    It loads the weights from the harddisk where it was saved by MPTrain(). This has the tradoff between speed and backups on the go.
+    
+    Parameters:
+        name (str):
+            the name with which the fiels were stored on the harddisk. (the same that was given to MPTrain(name="MPTDefault"))
+        
+        epochs (int):
+            the amount of epochs to be handed to `TrainTable()`
+        
+        batch (int):
+            the amount of batches to be handed to `TrainTable()`
+        
+        mutations(array[float]):
+            the mutations to be given to `TrainTable()`
+        
+        verbose (boolean):
+            the verbose value to be given to `TrainTable()` (which will show the progress bar (works fine in MP))
+        
+        queue (multiprocessing.Queue()):
+            `removed`
+        
+    Returns:
+        None
+        stores the weights on the harddisk, where it found them.
+    '''
 #    Ret = []
     model_list = []
 #    print("1")
@@ -222,13 +256,42 @@ def TFSessMP(name,epochs,batch,mutations,verbose,queue):
 #    queue.put(None)
     '''make Ret var from RAM and not VRAM, or save to harddisk?'''
 
-def MPTrain(model_list, generations = 100, epochs = 10000, batch = 10, mutations = 0.03,name = "MPTDefault"):
+def MPTrain(model_list, generations = 100, epochs = 10000, batch = 50, mutations = 0.03,name = "MPTDefault"):
     '''
+    MPTrain trains a list of (at this point in time) 36 RNNs and then returns this list.
+    The training works as follows: seperate RNNs to 8 tables; randomly mutate and check which one is the best. once every 5 generations find the ultimate best RNN and set it to each table.
+    
+    Parameters:
+        model_list (Array[tf.keras.model.sequential]):
+            A list of RNNs that will face each other and improve. (list will be lenghtend or shortend as needed, can be empty.)
+        
+        generations(int):
+            Defines for how many generations RNNs will be trained. Every 5th generation will place the best RNN at each table.
+            Defaults to generations = 100
+        
+        epochs (int):
+            Defines how many epochs will be made at each table before mixing. (epoch is passed down to `TFSessMP()` and from there to `TrainTable()`)
+            Defaults to epochs = 10000
+        
+        batch (int):
+            Defines how many batche will be pataken in each epoch. (batch is passed down to `TFSessMP()` and from there to `TrainTable()`)
+            Defaults to batch = 50
+        
+        mutations (int):
+            the desired mutation factor (will be passed donw to `TFSessMP()` and from there to `TrainTable()`)
+            Defaults to mutations = 0.03
+        
+        name (str):
+            The name with which RNNs are to be stored and found on the harddisk. (will also influence the points.txt file in /points where the points of the best player are written to)
+            Defaults to name = 'MPTDefault'
+    
+    Returns:
+        Array[tf.keras.model.sequential]:
+            An array of RNNs.
     '''
     #Basics of MP
 #    processes = multiprocessing.cpu_count() ##I tend to run out of ram this way
     processes = 8
-    queue = multiprocessing.Queue()
 #    processes = 2
     
             #amount of required RNNs
@@ -263,7 +326,7 @@ def MPTrain(model_list, generations = 100, epochs = 10000, batch = 10, mutations
             MPname = name+"_"+str(i)+"-" ##as in line244 (ish) where the model was saved. the c) will be added in TFSESSMP()
             #if not required remove `name` from prcs_list.append(process)
             #########
-            process_list.append(multiprocessing.Process(target=TFSessMP, args=(MPname, epochs, batch, [mutations], True, queue)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
+            process_list.append(multiprocessing.Process(target=TFSessMP, args=(MPname, epochs, batch, [mutations], True)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
         for prcs in process_list:
 #            print("before prcs ",prcs)
             prcs.start() #start processes
@@ -292,33 +355,104 @@ def MPTrain(model_list, generations = 100, epochs = 10000, batch = 10, mutations
         for table in range(processes):
             for model in range(1,4):
                 model_list[table][model] = model_list[(table+1+table)%processes][0]
-        #and the final player is a wild card
-        for table in range(processes):
-            model_list[table][3] = rnn.Reproduce(model_list[np.random.randint(processes)][np.random.randint(3)],model_list[np.random.randint(processes)][np.random.randint(3)],np.random.random())
+        
+        if(generation%5!=0):
+            #and the final player is a wild card
+            print("Mutatin' dem Babies")
+            for table in range(processes):
+                model_list[table][3] = rnn.Reproduce(model_list[np.random.randint(processes)][np.random.randint(3)],model_list[np.random.randint(processes)][np.random.randint(3)],np.random.random())
+        else:
+            #plant best player into all rounds
+            print("Find best RNN and spread it 'round")
+            best = BestPlayer(model_list)
+            with open('points/'+name+'-points'+'.txt', 'a') as f:
+                print(best[1],"\t",ctime(),file=f)
+            print(best[1])
+            bestmodel = model_list[int(best[0]/4)][best[0]%4] #check this pls
+            for table in range(processes):
+                model_list[table][3] = bestmodel
     
     
     
     
     return model_list
 
-
+def BestPlayerLtd(model_list,rounds):
+    '''
+    BestPlayerLtd finds the best RNN of 4 over a certain amount of rounds.
+    Parameters:
+        model_list (array[tf.keras.sequential]):
+            An array len(model_list)=4 of RNNs
+        
+        rounds (int):
+            Determines for how many rounds the participating RNNs need to play each other.
+    
+    Returns:
+        Array[int]:
+            The points each RNN made (points[c] ≙ points made by model_list[c])
+    '''
+    points = [0]*4
+    for _ in range(rounds):
+        roundpoints = SingleGame(model_list)
+        for i in range(4):
+            points[i] += roundpoints[i]
+    
+    
+    return points
 
 def BestPlayer(model_list):
     '''
+    BestPlayer() finds the best RNN of the given input RNNs.
+    
+    Parameters:
+        model_list (Array[tf.keras.model.sequential]):
+            An Array containing 4 or more RNNs (len(model_list)>=4).
+    
+    Returns:
+        Array[int]:
+            Array[0]:
+                The index of the best RNN
+            Array[1]:
+                How many points the best RNN made.
     '''
-    if(len(model_lis)%4!=0):
-        print("len(model_list) = ",len(model_list),"   ::  !=4\nthis may throw an error down the line")
+    model_list = np.reshape(model_list,-1) ##just because of MPTrain, where i'll prolly forget to reshape them... so yeah, now i definetly wont but hey
+    if(len(model_list)%4!=0):
+        print("len(model_list) = ",len(model_list),"   ::  !=4\nthis may throw an error down the line (not this function though, as it is now compatible with any len as long as len>=4)")
     points = []
     for i in range(len(model_list)):
         points.append(0)
-    table = []
-    for i in range(len(model_list)%4):
-        table.append([None]*4)
-    for model in range(len(model_list)):
-        if(model%len(model_list)==0 or model%len(model_list)==1):
-            table[0][model%4] = model_list[model]
-        elif(model%3 == 0 or model%3 == 2 or len(model_list)==8):
-            table[1][model-2]
+    table = [None]*4
+    
+    #lazy thought...
+    #take one player, iterate the rest, then iterate the one player onece everyone was iterated through
+    print(len(model_list))
+    for player in tqdm(range(len(model_list))):
+        table[0] = model_list[player]
+        for other_players in range(len(model_list)-1):
+            for opponent in range(1,4):
+                table[opponent] = model_list[(other_players + opponent)%len(model_list)]
+            
+            ##get sum points
+            score = BestPlayerLtd(model_list,2)
+            points[player] += score[0]
+            for opponent in range(1,4):
+                points[(other_players + opponent)%len(model_list)] = score[opponent]
+    
+    Ret = [np.argmax(points),points[np.argmax(points)]]
+    
+    return Ret
+    
+    
+# =============================================================================
+#     
+#     for i in range(len(model_list)%4):
+#         table.append([None]*4)
+#     for model in range(len(model_list)):
+#         if(model%len(model_list)==0 or model%len(model_list)==1):
+#             table[0][model%4] = model_list[model]
+#         elif(model%3 == 0 or model%3 == 2 or len(model_list)==8):
+#             table[1][model-2]
+# =============================================================================
 
 
 # =============================================================================
@@ -334,6 +468,8 @@ if __name__ == '__main__':
         for c in range(4):
             array.append(rnn.GetModel())
             rnn.LoadWeights(array[r+c],("MPTDefault"+"_"+str(r)+"-"+str(c)))
+    print("loaded models")
+#    print(BestPlayer(array))
     
     MPTrain(array)
     Players = []
