@@ -111,12 +111,12 @@ def SingleGame(ModelArray, trump = None, queue = None):
 #        print(score)
         for i in range(4):
             points[i] += score[i]
+            ModelArray[i].reset_states()
         
     if(queue == None):
         return points
     else:
         queue.put(points)
-
 
 def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbose = True):
     '''
@@ -256,7 +256,7 @@ def TFSessMP(name,epochs,batch,mutations,verbose):
 #    queue.put(None)
     '''make Ret var from RAM and not VRAM, or save to harddisk?'''
 
-def MPTrain(model_list, generations = 100, epochs = 10000, batch = 50, mutations = 0.03,name = "MPTDefault"):
+def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations = 0.03,name = "MPTDefault"):
     '''
     MPTrain trains a list of (at this point in time) 36 RNNs and then returns this list.
     The training works as follows: seperate RNNs to 8 tables; randomly mutate and check which one is the best. once every 5 generations find the ultimate best RNN and set it to each table.
@@ -271,11 +271,11 @@ def MPTrain(model_list, generations = 100, epochs = 10000, batch = 50, mutations
         
         epochs (int):
             Defines how many epochs will be made at each table before mixing. (epoch is passed down to `TFSessMP()` and from there to `TrainTable()`)
-            Defaults to epochs = 10000
+            Defaults to epochs = 25000
         
         batch (int):
             Defines how many batche will be pataken in each epoch. (batch is passed down to `TFSessMP()` and from there to `TrainTable()`)
-            Defaults to batch = 50
+            Defaults to batch = 10
         
         mutations (int):
             the desired mutation factor (will be passed donw to `TFSessMP()` and from there to `TrainTable()`)
@@ -371,6 +371,11 @@ def MPTrain(model_list, generations = 100, epochs = 10000, batch = 50, mutations
             bestmodel = model_list[int(best[0]/4)][best[0]%4] #check this pls
             for table in range(processes):
                 model_list[table][3] = bestmodel
+            
+            
+            #maybe lend a helping hand to one of them...
+            if(generation!=generation-1 and generation%2==0):
+                rnn.TrainModelBasics(model_list[np.random.randint(len(model_list))][3],100000,True)
     
     
     
@@ -394,6 +399,8 @@ def BestPlayerLtd(model_list,rounds):
     points = [0]*4
     for _ in range(rounds):
         roundpoints = SingleGame(model_list)
+        for model in model_list:
+            model.reset_states()
         for i in range(4):
             points[i] += roundpoints[i]
     
