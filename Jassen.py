@@ -376,7 +376,7 @@ def RoundWinner(playedCards, trump = 0, callingPlayer = None):
             - 4=bell;
             - 5=shield;
         
-        callingplyer (int):
+        callingplayer (int):
             Indicates which colour was called for; which player is calling the colour:\n
             if nothing is selected, defaults to index 0 (player 0)
         
