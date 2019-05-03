@@ -470,7 +470,7 @@ def BestPlayer(model_list):
 # Main
 # =============================================================================
 if __name__ == '__main__':
-    print("\n"*100)  ##cls
+    system('cls')
     array = []
     
     
