@@ -19,6 +19,7 @@ from tqdm import tqdm  #using anaconda/pip: pip install tqdm
 import JassRNN as rnn
 import Jassen as js
 from time import ctime
+from os import system
 
 def SingleGame(ModelArray, trump = None, queue = None):
     '''
@@ -372,6 +373,9 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             for table in range(processes):
                 model_list[table][3] = bestmodel
             
+            #if git is installed, push changes to GitHub
+            system('git commit -a -m "_AutoPushWeights_"')
+            system('git push')
             
             #maybe lend a helping hand to one of them...
             if(generation!=generation-1 and generation%2==0):
