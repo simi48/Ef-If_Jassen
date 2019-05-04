@@ -1,6 +1,7 @@
 package org.tensorflow.lite.examples.detection;
 
 import android.content.Intent;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -21,9 +22,8 @@ public class MainMenuActivity extends AppCompatActivity {
 
         ImageView backImg = (ImageView) findViewById(R.id.backImg);
         Button playBtn = (Button) findViewById(R.id.btnPlay);
-
-        int imgRes = getResources().getIdentifier("@drawable/main_back", null, this.getCallingPackage());
-        backImg.setImageResource(imgRes);
+        
+        backImg.setImageResource(R.drawable.main_back);
 
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
