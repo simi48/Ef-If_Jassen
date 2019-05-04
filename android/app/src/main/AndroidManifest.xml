@@ -16,14 +16,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity
-            android:name=".DetectorActivity"
-            android:label="@string/activity_name_detection"
-            android:screenOrientation="portrait">
+        <activity android:name=".MainMenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".DetectorActivity"
+            android:label="@string/activity_name_detection"
+            android:screenOrientation="portrait">
         </activity>
 
     </application>

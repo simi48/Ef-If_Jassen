@@ -1,17 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rltvLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#363030">
+
+    <ImageView
+        android:id="@+id/backImg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/bckImg"
+        app:srcCompat="@color/colorPrimaryDark"
+        android:layout_margin="20sp" />
 
     <Button
-        android:id="@+id/PlayGame"
-        android:layout_width="wrap_content"
+        android:id="@+id/btnPlay"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="160sp"
-        android:layout_marginTop="320sp"
-        android:backgroundTint="#00FFFFFF"
-        android:onClick="onClick"
-        android:textAlignment="textStart"
-        android:textSize="30sp"
-        tools:text="@string/PlayButtonText" />
+        android:layout_centerInParent="true"
+        android:layout_margin="20sp"
+        android:background="#50606F"
+        android:text="@string/PlayButtonText"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="#2196F3"
+        android:textSize="40sp" />
+
 </RelativeLayout>
