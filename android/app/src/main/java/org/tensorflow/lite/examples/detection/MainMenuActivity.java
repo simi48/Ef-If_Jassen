@@ -30,7 +30,7 @@ public class MainMenuActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "onClick: Clicked playBtn");
 
-                Intent intent = new Intent(MainMenuActivity.this, CameraActivity.class);
+                Intent intent = new Intent(MainMenuActivity.this, DetectorActivity.class);
                 startActivity(intent);
             }
         });
