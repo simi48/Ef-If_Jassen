@@ -20,10 +20,10 @@ public class MainMenuActivity extends AppCompatActivity {
         setContentView(R.layout.main_menu);
         Log.d(TAG, "onCreate: Starting");
 
-        ImageView backImg = (ImageView) findViewById(R.id.backImg);
+        //ImageView backImg = (ImageView) findViewById(R.id.backImg);
         Button playBtn = (Button) findViewById(R.id.btnPlay);
         
-        backImg.setImageResource(R.drawable.main_back);
+        //backImg.setImageResource(R.drawable.main_back);
 
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
