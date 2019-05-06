@@ -20,7 +20,7 @@ import JassRNN as rnn
 import Jassen as js
 from time import ctime
 from os import system
-
+from time import sleep
 def SingleGame(ModelArray, trump = None, queue = None):
     '''
     SingleGame allows for 4 AIs to play one full game of cards (4 rounds, so everyone can go first once)
@@ -291,8 +291,8 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             An array of RNNs.
     '''
     #Basics of MP
-#    processes = multiprocessing.cpu_count() ##I tend to run out of ram this way
-    processes = 8
+    processes = multiprocessing.cpu_count() if multiprocessing.cpu_count() < 10 else 10 ##I tend to run out of ram this way (try 2)
+#    processes = 10
 #    processes = 2
     
             #amount of required RNNs
@@ -331,6 +331,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
         for prcs in process_list:
 #            print("before prcs ",prcs)
             prcs.start() #start processes
+#            sleep(10)        was an experiment, was successful-ish... idea was that windows tends to hog ram and as such if one were to slowly slice it away one could get more before recie3veing an error. This works, but then again, what's the point? it's just more data to crunch if you start even more processes, and loading and saving takes even longer so... yeah, ima pass on that.
 #            print("prcs",prcs,"started")
         print(process_list)
 #        for i in range(processes):
