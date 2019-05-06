@@ -439,7 +439,7 @@ def BestPlayer(model_list):
     print(len(model_list))
     for player in tqdm(range(len(model_list))):
         table[0] = model_list[player]
-        for other_players in range(len(model_list)-1):
+        for other_players in range(len(model_list)):
             for opponent in range(1,4):
                 table[opponent] = model_list[(other_players + opponent)%len(model_list)]
             
@@ -478,11 +478,11 @@ if __name__ == '__main__':
     for r in range(8):
         for c in range(4):
             array.append(rnn.GetModel())
-            rnn.LoadWeights(array[r+c],("MPTDefault"+"_"+str(r)+"-"+str(c)))
+            rnn.LoadWeights(array[r+c],("testsmall"+"_"+str(r)+"-"+str(c)))
     print("loaded models")
 #    print(BestPlayer(array))
     
-    MPTrain(array)
+    MPTrain(array,name = 'testsmall')
     Players = []
 # =============================================================================
 #     for i in range(4):
