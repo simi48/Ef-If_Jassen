@@ -368,7 +368,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             print("Find best RNN and spread it 'round")
             best = BestPlayer(model_list)
             with open('points/'+name+'-points'+'.txt', 'a') as f:
-                print(best[1],"\t",ctime(),file=f)
+                print(best[1],"\t => avg:\t",int(best[1]/(processes*3+1)),"\t",ctime(),file=f) #include avg in out (note that avg. is over two rounds)
             print(best[1])
             bestmodel = model_list[int(best[0]/4)][best[0]%4] #check this pls
             for table in range(processes):
