@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -20,10 +21,12 @@ public class MainMenuActivity extends AppCompatActivity {
         setContentView(R.layout.main_menu);
         Log.d(TAG, "onCreate: Starting");
 
-        ImageView backImg = (ImageView) findViewById(R.id.backImg);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
+        //ImageView backImg = (ImageView) findViewById(R.id.backImg);
         Button playBtn = (Button) findViewById(R.id.btnPlay);
         
-        backImg.setImageResource(R.drawable.main_back);
+        //backImg.setImageResource(R.drawable.main_back);
 
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
