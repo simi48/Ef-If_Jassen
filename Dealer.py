@@ -291,7 +291,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             An array of RNNs.
     '''
     #Basics of MP
-    processes = multiprocessing.cpu_count() if multiprocessing.cpu_count() < 10 else 10 ##I tend to run out of ram this way (try 2)
+    processes = multiprocessing.cpu_count() if multiprocessing.cpu_count() < 8 else 8 ##I tend to run out of ram this way (try 2)
 #    processes = 10
 #    processes = 2
     
