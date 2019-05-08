@@ -361,7 +361,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
         if(generation%5!=0):
             #and the final player is a wild card
             print("Mutatin' dem Babies")
-            for table in range(processes):
+            for table in tqdm(range(processes)):
                 model_list[table][3] = rnn.Reproduce(model_list[np.random.randint(processes)][np.random.randint(3)],model_list[np.random.randint(processes)][np.random.randint(3)],np.random.random())
         else:
             #plant best player into all rounds
