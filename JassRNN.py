@@ -439,7 +439,16 @@ def Reproduce(ModelA, ModelB,ratio=0.5):
     ret = GetModel()
     ret.set_weights(A)
     return ret
-    
+
+
+def TFLite(model):
+    keras_file = "tmp_keras_model.h5"
+    tf.keras.models.save_model(model, keras_file)
+    # Convert to TensorFlow Lite model.
+    converter = tf.lite.TFLiteConverter.from_keras_model_file(keras_file)
+    tflite_model = converter.convert()
+    open("converted_model.tflite", "wb").write(tflite_model)
+
 # =============================================================================
 # Main
 # =============================================================================
