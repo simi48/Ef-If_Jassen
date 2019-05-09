@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/main_back_stockfree"
+    android:autoSizeTextType="uniform"
     >
 
     <!--
@@ -33,7 +34,7 @@
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="5"
-        android:text="@string/PlayButtonText"
+        android:text="@string/playButtonText"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
@@ -55,7 +56,7 @@
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="5"
-        android:text="@string/SettingsButtonText"
+        android:text="@string/settingsButtonText"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"

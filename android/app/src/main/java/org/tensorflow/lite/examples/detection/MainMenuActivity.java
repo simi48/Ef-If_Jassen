@@ -26,7 +26,7 @@ public class MainMenuActivity extends AppCompatActivity {
         //ImageView backImg = (ImageView) findViewById(R.id.backImg);
         Button playBtn = (Button) findViewById(R.id.btnPlay);
         
-        //backImg.setImageResource(R.drawable.main_back);
+        //backImg.setImageResource(R.drawable.main_back_stockfree);
 
         playBtn.setOnClickListener(new View.OnClickListener() {
             @Override
