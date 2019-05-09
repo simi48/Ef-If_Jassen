@@ -4,7 +4,8 @@
     android:id="@+id/rltvLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/main_back_stockfree">
+    android:background="@drawable/main_back_stockfree"
+    >
 
     <!--
     <ImageView
@@ -13,18 +14,19 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/bckImg"
         app:srcCompat="@color/colorPrimaryDark"
-        android:layout_margin="20sp" />
+        android:layout_margin="20dp" />
     -->
 
     <Button
         android:id="@+id/btnPlay"
         android:layout_width="360dp"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/mainCaption"
         android:layout_centerInParent="true"
-        android:layout_marginStart="20sp"
-        android:layout_marginTop="20sp"
-        android:layout_marginEnd="20sp"
-        android:layout_marginBottom="20sp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:background="@drawable/buttonshape"
 
         android:shadowColor="#000000"
@@ -43,9 +45,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnPlay"
         android:layout_centerHorizontal="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginTop="7dp"
-
+        android:layout_marginBottom="20dp"
         android:background="@drawable/buttonshape"
+
         android:shadowColor="#000000"
         android:shadowDx="0"
         android:shadowDy="0"
