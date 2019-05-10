@@ -16,6 +16,7 @@ import numpy as np
 import Jassen as js
 import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
 from tqdm import tqdm  #using anaconda/pip: pip install tqdm
+from os import remove
 
 
 
@@ -441,13 +442,26 @@ def Reproduce(ModelA, ModelB,ratio=0.5):
     return ret
 
 
-def TFLite(model):
+def TFLite(model,path = None):
+    if(path == None):
+        path = ''
+    elif(path[-4:]!='/'):
+        path = path + '/'
     keras_file = "tmp_keras_model.h5"
     tf.keras.models.save_model(model, keras_file)
     # Convert to TensorFlow Lite model.
     converter = tf.lite.TFLiteConverter.from_keras_model_file(keras_file)
-    tflite_model = converter.convert()
+    if(tf.__version__=='1.12.0'):
+        tf.contrib.lite.TFLiteConverter()
+    elif(tf.__version>'1.12.0'):
+        
+        tflite_model = converter.convert()
+    else:
+        print("Pleas update your Tensorflow version or write your own function/edit this one to convert to TFLite. (JassRNN.py/TFLite(model)  ; line ≈445)")
+        remove(keras_file)
+        return None
     open("converted_model.tflite", "wb").write(tflite_model)
+    remove(keras_file)
 
 # =============================================================================
 # Main

@@ -119,7 +119,7 @@ def SingleGame(ModelArray, trump = None, queue = None):
     else:
         queue.put(points)
 
-def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbose = True):
+def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.01], verbose = True):
     '''
     TrainTable entertains one table of players (rnn models) while slowly mutating and improving them (at random so it will take a while)
     Parameters:
@@ -132,7 +132,7 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
             Determines how many games are played to determine which RNN is the best.
         mutations (Array[float]):
             Indicates how much RNNs are mutated.
-            Defaults to 0.03
+            Defaults to 0.01
         verbose (boolean):
             Determines whether a progressbar is displayed (shows for True)
             
@@ -166,16 +166,16 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
             i = rnn.GetModel()
     #setting mutationfactors, if they weren't specified
     while(len(mutations) < 3):
-        mutations.append(0.03)
+        mutations.append(0.01)
     while(len(mutations) > 3):
         mutations.pop()
     for i in mutations:
         if(i == None):
-            i = 0.03
+            i = 0.01
         elif(i < 0):
-            i = 0.03
+            i = 0.01
         elif(i > 1):
-             i = 0.03
+             i = 0.01
     
     #at this point, model_list should be ready for use.
     #models are mutated once every epoch
@@ -257,7 +257,7 @@ def TFSessMP(name,epochs,batch,mutations,verbose):
 #    queue.put(None)
     '''make Ret var from RAM and not VRAM, or save to harddisk?'''
 
-def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations = 0.03,name = "MPTDefault"):
+def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations = 0.003,name = "MPTDefault"):
     '''
     MPTrain trains a list of (at this point in time) 36 RNNs and then returns this list.
     The training works as follows: seperate RNNs to 8 tables; randomly mutate and check which one is the best. once every 5 generations find the ultimate best RNN and set it to each table.
@@ -280,7 +280,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
         
         mutations (int):
             the desired mutation factor (will be passed donw to `TFSessMP()` and from there to `TrainTable()`)
-            Defaults to mutations = 0.03
+            Defaults to mutations = 0.003
         
         name (str):
             The name with which RNNs are to be stored and found on the harddisk. (will also influence the points.txt file in /points where the points of the best player are written to)
@@ -296,6 +296,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
 #    processes = 2
     
             #amount of required RNNs
+    mutations = [mutations]*2
     while(len(model_list)<processes*4):
         model_list.append(rnn.GetModel())
     for generation in tqdm(range(generations)):
@@ -373,7 +374,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             bestmodel = model_list[int(best[0]/4)][best[0]%4] #check this pls
             for table in range(processes):
                 model_list[table][3] = bestmodel
-            
+            rnn.TFLite(bestmodel)
             #if git is installed, push changes to GitHub
             system('git commit -a -m "_AutoPushWeights_"')
             system('git push')
