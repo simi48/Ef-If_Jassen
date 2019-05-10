@@ -328,7 +328,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             MPname = name+"_"+str(i)+"-" ##as in line244 (ish) where the model was saved. the c) will be added in TFSESSMP()
             #if not required remove `name` from prcs_list.append(process)
             #########
-            process_list.append(multiprocessing.Process(target=TFSessMP, args=(MPname, epochs, batch, [mutations], True)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
+            process_list.append(multiprocessing.Process(target=TFSessMP, args=(MPname, epochs, batch, mutations, True)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
         for prcs in process_list:
 #            print("before prcs ",prcs)
             prcs.start() #start processes
