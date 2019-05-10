@@ -374,7 +374,11 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             bestmodel = model_list[int(best[0]/4)][best[0]%4] #check this pls
             for table in range(processes):
                 model_list[table][3] = bestmodel
-            rnn.TFLite(bestmodel)
+                
+                
+#            rnn.TFLite(bestmodel)
+                
+                
             #if git is installed, push changes to GitHub
             system('git commit -a -m "_AutoPushWeights_"')
             system('git push')

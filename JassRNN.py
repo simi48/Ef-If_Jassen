@@ -445,21 +445,21 @@ def Reproduce(ModelA, ModelB,ratio=0.5):
 def TFLite(model,path = None):
     if(path == None):
         path = ''
-    elif(path[-4:]!='/'):
+    elif(path[-1:]!='/'):
         path = path + '/'
     keras_file = "tmp_keras_model.h5"
     tf.keras.models.save_model(model, keras_file)
     # Convert to TensorFlow Lite model.
-    converter = tf.lite.TFLiteConverter.from_keras_model_file(keras_file)
     if(tf.__version__=='1.12.0'):
-        tf.contrib.lite.TFLiteConverter()
+        converter = tf.contrib.lite.TFLiteConverter.from_keras_model_file(keras_file)
     elif(tf.__version>'1.12.0'):
+        converter = tf.lite.TFLiteConverter.from_keras_model_file(keras_file)
         
-        tflite_model = converter.convert()
     else:
         print("Pleas update your Tensorflow version or write your own function/edit this one to convert to TFLite. (JassRNN.py/TFLite(model)  ; line ≈445)")
         remove(keras_file)
         return None
+    tflite_model = converter.convert()
     open("converted_model.tflite", "wb").write(tflite_model)
     remove(keras_file)
 
@@ -467,14 +467,28 @@ def TFLite(model,path = None):
 # Main
 # =============================================================================
 if __name__ == '__main__':
-    LocalCards = TrainArray(1)
-    LocalCards0 = PrepareInput(LocalCards[0][0])
-    Cp_callback = CreateCheckpointCallback(5) #callbacks = [Cp_callback], parameter for model.fit
-    Model = GetModel()
-    LoadWeights(Model,"Basic")
-    #n = amount of iterations, but i reckon you guesse :)
-    n = 35
-    for i in range(n):
-        print("Iteration ", i+1,"of ", n)
-        TrainModelBasics(Model, 100000)
-        SaveWeights(Model, "Basic")
+    model = GetModel()
+    old = model.get_weights()
+    LoadWeights(model,'testsmall_0-0')
+    new = model.get_weights()
+    SaveRNN(model,'test')
+    LoadRNN(model,'test')
+    
+    print((old[2] == new[2]).any())
+    TFLite(model)
+    
+    
+# =============================================================================
+#     
+#     LocalCards = TrainArray(1)
+#     LocalCards0 = PrepareInput(LocalCards[0][0])
+#     Cp_callback = CreateCheckpointCallback(5) #callbacks = [Cp_callback], parameter for model.fit
+#     Model = GetModel()
+#     LoadWeights(Model,"Basic")
+#     #n = amount of iterations, but i reckon you guesse :)
+#     n = 35
+#     for i in range(n):
+#         print("Iteration ", i+1,"of ", n)
+#         TrainModelBasics(Model, 100000)
+#         SaveWeights(Model, "Basic")
+# =============================================================================
