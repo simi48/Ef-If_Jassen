@@ -19,6 +19,7 @@
 #                               - Parameter card_amount for createScene()
 #                                 --> user can specify the amount of cards
 #                               and a lot of other fancy stuff
+# 2.1       11.05.2019  M7ma    added thumb_fan option
 #
 # Copyright © Michael Siebenmann, Marc Matter, Simon Thür, Ramon Heeb
 # Frauenfeld, Switzerland. All rights reserved
@@ -182,90 +183,73 @@ def createScene(idx, card_amount, mode):
     # load 3 random cards, a random background and a transparent background for superimposing
     bg_file = "D:\Deep_Jass\\Backgrounds\\" + random.choice(os.listdir("D:\Deep_Jass\\Backgrounds"))
     tr_bg = Image.new('RGBA', (1000, 1000), (0, 0, 0, 0))
-    background = imageio.imread(bg_file) #read you image
+    background = imageio.imread(bg_file) #read image
+    background = np_to_PIL(background).resize((imgW, imgH)) # scale background
     
-    # choose a random card and save it in a variable, so we can pass it to Yolo later
-    classes = []
-    for i in range(card_amount):
-        classes.append(random.randint(0, 35))
+    classes     = []
+    cards       = []
+    areas       = []
+    rot_angles  = []
     
-    cards = []
-    for i in range(card_amount):
-        cards.append(Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(random.randint(1, 2)) + "\\" + str(classes[i]) + ".jpg").convert('RGBA'))
-    
-    # Scale images to desired values
-    background = np_to_PIL(background).resize((imgW, imgH))
+    angle_dif = 0
     
     for i in range(card_amount):
-        cards[i] = cards[i].resize((cardW, cardH))
+        classes.append(random.randint(0, 35))                                               # choose random cards
+        cards.append(Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(random.randint(1, 2)) 
+        + "\\" + str(classes[i]) + ".jpg").convert('RGBA'))                                 # open the corresponding card images
+        cards[i] = cards[i].resize((cardW, cardH))                                          # resize card images
+        if (mode == "random"):
+            areas.append((random.randint(100, 600), (random.randint(100, 600))))            # generate random coordinates for cards
+            rot_angles.append(random.randint(0, 359))
+        elif (mode == "thumb_fan"):
+            points = [(500, 300)]
+            points = rotatePoints((imgW/2, imgH/2), points, angle_dif, cards[i])
+            areas.append((int(points[0][0]), int(points[0][1])-100))
+            rot_angles.append(angle_dif)
+            angle_dif += 20
+        else:
+            print("Invalid mode!")
+            exit
+                                                   # generate random rotation angles for the cards
+        cards[i] = cards[i].rotate(rot_angles[i], expand = 1)                               # rotate the cards
+        tr_bg.paste(cards[i], areas[i], cards[i])                                           # paste rotated cards onto image
     
-    # random coordinates for the cards
-    areas = []
-    
-    for i in range(card_amount):
-        areas.append((random.randint(100, 600), (random.randint(100, 600))))
-    
-    print("My areas:" + str(areas))
-    # random angles for rotation
-    rot_angles = []
-    
-    for i in range(card_amount):
-        rot_angles.append(random.randint(0, 359))
-    
-    # rotate cards
-    for i in range(card_amount):
-        cards[i] = cards[i].rotate(rot_angles[i], expand = 1)
-    
-    # superimpose transparent background and the three cards
-    for i in range(card_amount):
-        tr_bg.paste(cards[i], areas[i], cards[i])
-        
     final = PIL_to_np(tr_bg)
     
-    # create keypoints on images
+    
     keypoints = []
+    bbs = []
+    cardsYOLO = []
     
     for i in range(card_amount):
         keypoints.append(np.float32([
                 (areas[i][0],           areas[i][1]),
                 (areas[i][0] + cardW,   areas[i][1]),
-                (areas[i][0],           areas[i][1]+cardH),
-                (areas[i][0] + cardW,   areas[i][1]+cardH)]))
-    
-    # rotate keypoints
-    for i in range(card_amount):
-        keypoints[i] = rotatePoints((areas[i][0] + cardW/2, areas[i][1] + cardH/2), keypoints[i], rot_angles[i], cards[i])
-    
-    
-    # convert array to keypointsonimage type
-    for i in range(card_amount):
-        keypoints[i] = ia.KeypointsOnImage.from_coords_array(keypoints[i], shape=final.shape)
+                (areas[i][0],           areas[i][1] + cardH),
+                (areas[i][0] + cardW,   areas[i][1] + cardH)]))                             # calculate keypoints
+            
+        keypoints[i] = rotatePoints((areas[i][0] + cardW/2, areas[i][1] + cardH/2), 
+                 keypoints[i], rot_angles[i], cards[i])                                     # rotate keypoints
+        keypoints[i] = ia.KeypointsOnImage.from_coords_array(keypoints[i], 
+                 shape=final.shape)                                                         # convert array to keypointsonimage type
+        keypoints[i] = transformScene_det.augment_keypoints(keypoints[i])                   # augment keypoints
+        bbs.append(kps_to_BB(keypoints[i]))                                                 # get bounding boxes from keypoints
+        cardsYOLO.append((classes[i], (bbs[i].x1+bbs[i].x2)/2, (bbs[i].y1+bbs[i].y2)/2, 
+                          abs(bbs[i].x1-bbs[i].x2), abs(bbs[i].y1-bbs[i].y2)))              # generate lists for YOLO, format: 
+                                                                                            # [class, x_center, y_center, width, height]
     
     cards_aug = transformScene_det.augment_image(final)
-    cards_aug = np_to_PIL(cards_aug) # convert back to PIL Image
-    
-    for i in range(card_amount):
-        keypoints[i] = transformScene_det.augment_keypoints(keypoints[i])
+    cards_aug = np_to_PIL(cards_aug)
     
     # paste cards on the random background
     background.paste(cards_aug, (0,0), cards_aug)
     
     final = PIL_to_np(background)
     
-    bbs = []
-    
-    for i in range(card_amount):
-        bbs.append(kps_to_BB(keypoints[i]))
-    
-    # lists for YOLO, format: [class, x_center, y_center, width, height]
-    cardsYOLO = []
-    
-    for i in range(card_amount):
-        cardsYOLO.append((classes[i], (bbs[i].x1+bbs[i].x2)/2, (bbs[i].y1+bbs[i].y2)/2, abs(bbs[i].x1-bbs[i].x2), abs(bbs[i].y1-bbs[i].y2)))
-    
-    for i in range(card_amount):
-        final = bbs[i].draw_on_image(final, thickness=3)
-        final = keypoints[i].draw_on_image(final, size=14, color=[255, 0, 255])
+    # draw keypoints and bounding boxes on image
+#    for i in range(card_amount):
+#        final = bbs[i].draw_on_image(final, thickness=3)
+#        final = keypoints[i].draw_on_image(final, size=14, color=[255, 0, 255])
         
     display(final)
  
@@ -278,6 +262,9 @@ def createScene(idx, card_amount, mode):
 # Main Program
 # -----------------------------------------------------------------------------
 
-# generate 5 scenes
-for idx in tqdm(range(3)):
-    createScene(idx, 5, 1)
+# generate scenes
+for idx in tqdm(range(10)):
+    if random.random() < 0.5:
+        createScene(idx, random.randint(3, 9), "thumb_fan")
+    else:
+        createScene(idx, random.randint(1, 5), "random")
