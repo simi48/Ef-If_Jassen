@@ -2,9 +2,10 @@
 
 # -----------------------------------------------------------------------------
 # This script generates a set of training data for a playing card recognition
-# software. More precisely, it generates a scene of 3 randomly augmented
-# random playing cards on a random background. It also draws bounding boxes
-# around the images, in order to use them in classification.
+# software. More precisely, it generates a scene of a random amount of randomly 
+# augmented random playing cards on a random background (did I mention that 
+# it's all random?). It also draws bounding boxes around the images, in order
+# to use them in classification.
 #
 # Author:   Michael Siebenmann
 # Date :    11.03.2019
@@ -13,6 +14,11 @@
 # Version   Date        Who     Changes
 # 1.0       11.03.2019  M7ma    created
 # 1.1		27.03.2019	M7ma	createScene() function working
+# 2.0       11.05.2019  M7ma    complete overhaul:
+#                               - better readability
+#                               - Parameter card_amount for createScene()
+#                                 --> user can specify the amount of cards
+#                               and a lot of other fancy stuff
 #
 # Copyright © Michael Siebenmann, Marc Matter, Simon Thür, Ramon Heeb
 # Frauenfeld, Switzerland. All rights reserved
@@ -125,14 +131,14 @@ def np_to_PIL(img):
     np_img = Image.fromarray(img)
     return np_img
 
-def create_txt(idx, card1, card2, card3):
-    txt_file = open("I:\Informatik_Ergaenzung\\Aufgaben\\Deep_Jass\\Textfiles\\" + str(idx) + "_scene.txt", "w")
-       
-    txt_file.write(str(card1[0]) + " " + str(card1[1]) + " " + str(card1[2]) + " " + str(card1[3]) + " " + str(card1[4]) + "\n")
-    txt_file.write(str(card2[0]) + " " + str(card2[1]) + " " + str(card2[2]) + " " + str(card2[3]) + " " + str(card2[4]) + "\n")
-    txt_file.write(str(card3[0]) + " " + str(card3[1]) + " " + str(card3[2]) + " " + str(card3[3]) + " " + str(card3[4]) + "\n")
-    txt_file.close()
+def create_txt(idx, cardsYOLO):
+    txt_file = open("G:\Informatik_Ergaenzung\\Aufgaben\\Deep_Jass\\Testi\\" + str(idx) + "_scene.txt", "w")
     
+    for i in range(len(cardsYOLO)):
+        txt_file.write(str(cardsYOLO[i][0]) + " " + str(cardsYOLO[i][1]*0.001) + " " + str(cardsYOLO[i][2]*0.001) 
+        + " " + str(cardsYOLO[i][3]*0.001) + " " + str(cardsYOLO[i][4]*0.001) + "\n")
+
+    txt_file.close()    
     
     return txt_file
 
@@ -170,7 +176,7 @@ def display(image):
         fig,ax=plt.subplots(1,figsize=(8,8))
         ax.imshow(image)
 
-def createScene(idx):
+def createScene(idx, card_amount, mode):
     transformScene_det = transformScene.to_deterministic()
     
     # load 3 random cards, a random background and a transparent background for superimposing
@@ -179,120 +185,99 @@ def createScene(idx):
     background = imageio.imread(bg_file) #read you image
     
     # choose a random card and save it in a variable, so we can pass it to Yolo later
-    c1 = random.randint(0, 35)
-    c2 = random.randint(0, 35)
-    c3 = random.randint(0, 35)
+    classes = []
+    for i in range(card_amount):
+        classes.append(random.randint(0, 35))
     
-    card1 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(random.randint(1, 2)) + "\\" + str(c1) + ".jpg").convert('RGBA') #read first random card
-    card2 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(random.randint(1, 2)) + "\\" + str(c2) + ".jpg").convert('RGBA') #read second random card
-    card3 = Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(random.randint(1, 2)) + "\\" + str(c3) + ".jpg").convert('RGBA') #read third random card
+    cards = []
+    for i in range(card_amount):
+        cards.append(Image.open("D:\Deep_Jass\\Jasskarten\\Set" + str(random.randint(1, 2)) + "\\" + str(classes[i]) + ".jpg").convert('RGBA'))
     
     # Scale images to desired values
     background = np_to_PIL(background).resize((imgW, imgH))
-    card1 = card1.resize((cardW, cardH))
-    card2 = card2.resize((cardW, cardH))
-    card3 = card3.resize((cardW, cardH))
+    
+    for i in range(card_amount):
+        cards[i] = cards[i].resize((cardW, cardH))
     
     # random coordinates for the cards
-    x1 = random.randint(100, 600)
-    x2 = random.randint(100, 600)
-    x3 = random.randint(100, 600)
-    y1 = random.randint(100, 600)
-    y2 = random.randint(100, 600)
-    y3 = random.randint(100, 600)
+    areas = []
     
-    area1 = (x1, y1)
-    area2 = (x2, y2)
-    area3 = (x3, y3)
+    for i in range(card_amount):
+        areas.append((random.randint(100, 600), (random.randint(100, 600))))
     
+    print("My areas:" + str(areas))
     # random angles for rotation
-    a = random.randint(0, 359)
-    b = random.randint(0, 359)
-    c = random.randint(0, 359)
+    rot_angles = []
+    
+    for i in range(card_amount):
+        rot_angles.append(random.randint(0, 359))
     
     # rotate cards
-    card1 = card1.rotate(a, expand = 1)
-    card2 = card2.rotate(b, expand = 1)
-    card3 = card3.rotate(c, expand = 1)
+    for i in range(card_amount):
+        cards[i] = cards[i].rotate(rot_angles[i], expand = 1)
     
     # superimpose transparent background and the three cards
-    tr_bg.paste(card1, area1, card1)
-    tr_bg.paste(card2, area2, card2)
-    tr_bg.paste(card3, area3, card3)
-    
-    cards = PIL_to_np(tr_bg)
+    for i in range(card_amount):
+        tr_bg.paste(cards[i], areas[i], cards[i])
+        
+    final = PIL_to_np(tr_bg)
     
     # create keypoints on images
-    keypoints1 = np.float32([
-    (x1, y1),
-    (x1+cardW, y1),
-    (x1, y1+cardH),
-    (x1+cardW, y1+cardH)
-    ])
+    keypoints = []
     
-    keypoints2 = np.float32([
-    (x2, y2),
-    (x2+cardW, y2),
-    (x2, y2+cardH),
-    (x2+cardW, y2+cardH)
-    ])
-    
-    keypoints3 = np.float32([
-    (x3, y3),
-    (x3+cardW, y3),
-    (x3, y3+cardH),
-    (x3+cardW, y3+cardH)
-    ])
+    for i in range(card_amount):
+        keypoints.append(np.float32([
+                (areas[i][0],           areas[i][1]),
+                (areas[i][0] + cardW,   areas[i][1]),
+                (areas[i][0],           areas[i][1]+cardH),
+                (areas[i][0] + cardW,   areas[i][1]+cardH)]))
     
     # rotate keypoints
-    keypoints1 = rotatePoints((x1+cardW/2, y1+cardH/2), keypoints1, a, card1)
-    keypoints2 = rotatePoints((x2+cardW/2, y2+cardH/2), keypoints2, b, card2)
-    keypoints3 = rotatePoints((x3+cardW/2, y3+cardH/2), keypoints3, c, card3)
+    for i in range(card_amount):
+        keypoints[i] = rotatePoints((areas[i][0] + cardW/2, areas[i][1] + cardH/2), keypoints[i], rot_angles[i], cards[i])
+    
     
     # convert array to keypointsonimage type
-    keypoints1 = ia.KeypointsOnImage.from_coords_array(keypoints1, shape=cards.shape)
-    keypoints2 = ia.KeypointsOnImage.from_coords_array(keypoints2, shape=cards.shape)
-    keypoints3 = ia.KeypointsOnImage.from_coords_array(keypoints3, shape=cards.shape)
+    for i in range(card_amount):
+        keypoints[i] = ia.KeypointsOnImage.from_coords_array(keypoints[i], shape=final.shape)
     
-    cards_aug = transformScene_det.augment_image(cards)
+    cards_aug = transformScene_det.augment_image(final)
     cards_aug = np_to_PIL(cards_aug) # convert back to PIL Image
     
-    keypoints1_aug = transformScene_det.augment_keypoints(keypoints1)
-    keypoints2_aug = transformScene_det.augment_keypoints(keypoints2)
-    keypoints3_aug = transformScene_det.augment_keypoints(keypoints3)
+    for i in range(card_amount):
+        keypoints[i] = transformScene_det.augment_keypoints(keypoints[i])
     
     # paste cards on the random background
     background.paste(cards_aug, (0,0), cards_aug)
     
-    cards = PIL_to_np(background)
-    bb1 = kps_to_BB(keypoints1_aug)
-    bb2 = kps_to_BB(keypoints2_aug)
-    bb3 = kps_to_BB(keypoints3_aug)
+    final = PIL_to_np(background)
+    
+    bbs = []
+    
+    for i in range(card_amount):
+        bbs.append(kps_to_BB(keypoints[i]))
     
     # lists for YOLO, format: [class, x_center, y_center, width, height]
-    card1YOLO = [c1, (bb1.x1+bb1.x2)/2, (bb1.y1+bb1.y2)/2, abs(bb1.x1-bb1.x2), abs(bb1.y1-bb1.y2)]
-    card2YOLO = [c2, (bb2.x1+bb2.x2)/2, (bb2.y1+bb2.y2)/2, abs(bb2.x1-bb2.x2), abs(bb2.y1-bb2.y2)]
-    card3YOLO = [c3, (bb2.x1+bb3.x2)/2, (bb3.y1+bb3.y2)/2, abs(bb3.x1-bb3.x2), abs(bb3.y1-bb3.y2)]
+    cardsYOLO = []
     
-    #final = bb1.draw_on_image(cards, thickness=3)
-    #final = bb2.draw_on_image(final, thickness=3)
-    #final = bb3.draw_on_image(final, thickness=3)
+    for i in range(card_amount):
+        cardsYOLO.append((classes[i], (bbs[i].x1+bbs[i].x2)/2, (bbs[i].y1+bbs[i].y2)/2, abs(bbs[i].x1-bbs[i].x2), abs(bbs[i].y1-bbs[i].y2)))
     
-    #final = keypoints1_aug.draw_on_image(final, size=14, color=[255, 0, 255])
-    #final = keypoints2_aug.draw_on_image(final, size=14, color=[255, 0, 255])
-    #final = keypoints3_aug.draw_on_image(final, size=14, color=[255, 0, 255])
-    
-    #display(cards)
-    
+    for i in range(card_amount):
+        final = bbs[i].draw_on_image(final, thickness=3)
+        final = keypoints[i].draw_on_image(final, size=14, color=[255, 0, 255])
+        
+    display(final)
+ 
     # generate .txt for YOLOv2
-    create_txt(idx, card1YOLO, card2YOLO, card3YOLO)
+    create_txt(idx, cardsYOLO)
     
-    np_to_PIL(cards).save("I:\Informatik_Ergaenzung\\Aufgaben\\Deep_Jass\\Szenen\\" + str(idx) + '_scene.jpg')
+    np_to_PIL(final).save("G:\Informatik_Ergaenzung\\Aufgaben\\Deep_Jass\\Testi\\" + str(idx) + '_scene.jpg')
 
 # -----------------------------------------------------------------------------
 # Main Program
 # -----------------------------------------------------------------------------
 
 # generate 5 scenes
-for idx in tqdm(range(10000)):
-    createScene(idx)
+for idx in tqdm(range(3)):
+    createScene(idx, 5, 1)
