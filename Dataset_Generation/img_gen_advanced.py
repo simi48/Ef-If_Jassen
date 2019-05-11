@@ -13,7 +13,7 @@
 # History:
 # Version   Date        Who     Changes
 # 1.0       11.03.2019  M7ma    created
-# 1.1		27.03.2019	M7ma	createScene() function working
+# 1.1       27.03.2019	M7ma	createScene() function working
 # 2.0       11.05.2019  M7ma    complete overhaul:
 #                               - better readability
 #                               - Parameter card_amount for createScene()
