@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class ValidationActivity extends AppCompatActivity {
 
@@ -23,6 +24,9 @@ public class ValidationActivity extends AppCompatActivity {
 
         Button continueBtn = (Button) findViewById(R.id.btnContinue);
         Button scanAgainBtn = (Button) findViewById(R.id.btnScanAgain);
+
+        ImageView card1 = (ImageView) findViewById(R.id.cardOne);
+        card1.setImageResource(R.drawable.c0);
 
         continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
