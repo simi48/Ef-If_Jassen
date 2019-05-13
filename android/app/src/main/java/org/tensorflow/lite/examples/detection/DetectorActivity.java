@@ -143,24 +143,24 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       }
 
       if(i % 9 < 6) {
-        myCards[0].setCardTitle(cardType + Integer.toString(i + 6));
-        myCards[0].setConfidence(0);
+        myCards[i].setCardTitle(cardType + Integer.toString(i + 6));
+        myCards[i].setConfidence(0);
       }
       else if(i % 9 == 6){
-        myCards[1].setCardTitle(cardType + "Under");
-        myCards[1].setConfidence(0);
+        myCards[i].setCardTitle(cardType + "Under");
+        myCards[i].setConfidence(0);
       }
       else if(i % 9 == 7){
-        myCards[2].setCardTitle(cardType + "Ober");
-        myCards[2].setConfidence(0);
+        myCards[i].setCardTitle(cardType + "Ober");
+        myCards[i].setConfidence(0);
       }
       else if(i % 9 == 8){
-        myCards[3].setCardTitle(cardType + "König");
-        myCards[3].setConfidence(0);
+        myCards[i].setCardTitle(cardType + "König");
+        myCards[i].setConfidence(0);
       }
       else if(i % 9 == 0){
-        myCards[4].setCardTitle(cardType + "Ass");
-        myCards[4].setConfidence(0);
+        myCards[i].setCardTitle(cardType + "Ass");
+        myCards[i].setConfidence(0);
       }
     }
 
@@ -316,9 +316,9 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 //
                 //
                 for (int i = 0; i < 36; i++){ //write Confidence of each recognised card into the card array
-                  if(myCards[i].CardTitle.equals(result.getTitle())){
-                    if(myCards[i].Confidence < result.getConfidence()){
-                      myCards[i].Confidence = result.getConfidence();
+                  if(myCards[i].getCardTitle().equals(result.getTitle())){
+                    if(myCards[i].getConfidence() < result.getConfidence()){
+                      myCards[i].setConfidence(result.getConfidence());
                     }
                   }
                 }
