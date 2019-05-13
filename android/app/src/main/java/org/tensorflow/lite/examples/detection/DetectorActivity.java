@@ -44,17 +44,42 @@ import org.tensorflow.lite.examples.detection.tflite.Classifier;
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel;
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker;
 
+//
+//
+//
+//
+import org.tensorflow.lite.examples.detection.env.CardRecog;
+//
+//
+//
+//
+
 /**
  * An activity that uses a TensorFlowMultiBoxDetector and ObjectTracker to detect and then track
  * objects.
  */
 public class DetectorActivity extends CameraActivity implements OnImageAvailableListener {
 
-  public class CardRecog{ //array which is able to hold 36 cards with names attached to them
-    String CardTitle;
-    double Confidence;
-  }
-
+  //
+  //
+  //
+  //
+//  public class CardRecog{ //array which is able to hold 36 cards with names attached to them
+//    private String CardTitle;
+//    private double Confidence;
+//
+//    public void setCardTitle(String name){
+//      CardTitle = name;
+//    }
+//
+//    public void setConfidence(int confidence){
+//      Confidence = confidence;
+//    }
+//  }
+  //
+  //
+  //
+  //
   private static final Logger LOGGER = new Logger();
 
   // Configuration values for the prepackaged SSD model.
@@ -92,14 +117,21 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
   private BorderedText borderedText;
 
+  //
+  //
+  //
+  //
+  public CardRecog[] myCards = fillCardNames();
 
-  private CardRecog[] tmpCards = new CardRecog[36];
-  public CardRecog[] myCards = fillCardNames(tmpCards);
 
+  public CardRecog[] fillCardNames(){ //fill CardRecog with the names of the cards
+    CardRecog myCard;
+    CardRecog[] myCards = new CardRecog[36];
 
-  public CardRecog[] fillCardNames(CardRecog[] myCards){ //fill CardRecog with the names of the cards
     String cardType = "Rosen ";
     for(int i = 0; i < 36; i++){
+      myCard = new CardRecog();
+      myCards[i] = myCard;
       if(i == 9){
         cardType = "Eicheln ";
       }
@@ -111,24 +143,24 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       }
 
       if(i % 9 < 6) {
-        myCards[i].CardTitle = cardType + Integer.toString(i + 6);
-        myCards[i].Confidence = 0;
+        myCards[0].setCardTitle(cardType + Integer.toString(i + 6));
+        myCards[0].setConfidence(0);
       }
       else if(i % 9 == 6){
-        myCards[i].CardTitle = cardType + "Under";
-        myCards[i].Confidence = 0;
+        myCards[1].setCardTitle(cardType + "Under");
+        myCards[1].setConfidence(0);
       }
       else if(i % 9 == 7){
-        myCards[i].CardTitle = cardType + "Ober";
-        myCards[i].Confidence = 0;
+        myCards[2].setCardTitle(cardType + "Ober");
+        myCards[2].setConfidence(0);
       }
       else if(i % 9 == 8){
-        myCards[i].CardTitle = cardType + "König";
-        myCards[i].Confidence = 0;
+        myCards[3].setCardTitle(cardType + "König");
+        myCards[3].setConfidence(0);
       }
       else if(i % 9 == 0){
-        myCards[i].CardTitle = cardType + "Ass";
-        myCards[i].Confidence = 0;
+        myCards[4].setCardTitle(cardType + "Ass");
+        myCards[4].setConfidence(0);
       }
     }
 
@@ -136,8 +168,13 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   }
 
 
-  Button continueBtn = (Button) findViewById(R.id.btnContinueScan);
-  TextView myText = (TextView) findViewById(R.id.mainCaptionScan);
+//  Button continueBtn = (Button) findViewById(R.id.btnContinueScan);
+//  TextView myText = (TextView) findViewById(R.id.mainCaptionScan);
+  //
+  //
+  //
+  //
+
 
   @Override
   public void onPreviewSizeChosen(final Size size, final int rotation) {
@@ -274,7 +311,10 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
                 result.setLocation(location);
                 mappedRecognitions.add(result);
-
+                //
+                //
+                //
+                //
                 for (int i = 0; i < 36; i++){ //write Confidence of each recognised card into the card array
                   if(myCards[i].CardTitle.equals(result.getTitle())){
                     if(myCards[i].Confidence < result.getConfidence()){
@@ -282,6 +322,10 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                     }
                   }
                 }
+                //
+                //
+                //
+                //
               }
             }
 
