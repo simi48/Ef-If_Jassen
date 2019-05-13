@@ -29,6 +29,8 @@ import android.media.ImageReader.OnImageAvailableListener;
 import android.os.SystemClock;
 import android.util.Size;
 import android.util.TypedValue;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -47,6 +49,12 @@ import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker;
  * objects.
  */
 public class DetectorActivity extends CameraActivity implements OnImageAvailableListener {
+
+  public class CardRecog{ //array which is able to hold 36 cards with names attached to them
+    String CardTitle;
+    double Confidence;
+  }
+
   private static final Logger LOGGER = new Logger();
 
   // Configuration values for the prepackaged SSD model.
@@ -83,6 +91,53 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private byte[] luminanceCopy;
 
   private BorderedText borderedText;
+
+
+  private CardRecog[] tmpCards = new CardRecog[36];
+  public CardRecog[] myCards = fillCardNames(tmpCards);
+
+
+  public CardRecog[] fillCardNames(CardRecog[] myCards){ //fill CardRecog with the names of the cards
+    String cardType = "Rosen ";
+    for(int i = 0; i < 36; i++){
+      if(i == 9){
+        cardType = "Eicheln ";
+      }
+      if(i == 18){
+        cardType = "Schellen ";
+      }
+      if(i == 27){
+        cardType = "Schilten ";
+      }
+
+      if(i % 9 < 6) {
+        myCards[i].CardTitle = cardType + Integer.toString(i + 6);
+        myCards[i].Confidence = 0;
+      }
+      else if(i % 9 == 6){
+        myCards[i].CardTitle = cardType + "Under";
+        myCards[i].Confidence = 0;
+      }
+      else if(i % 9 == 7){
+        myCards[i].CardTitle = cardType + "Ober";
+        myCards[i].Confidence = 0;
+      }
+      else if(i % 9 == 8){
+        myCards[i].CardTitle = cardType + "König";
+        myCards[i].Confidence = 0;
+      }
+      else if(i % 9 == 0){
+        myCards[i].CardTitle = cardType + "Ass";
+        myCards[i].Confidence = 0;
+      }
+    }
+
+    return myCards;
+  }
+
+
+  Button continueBtn = (Button) findViewById(R.id.btnContinueScan);
+  TextView myText = (TextView) findViewById(R.id.mainCaptionScan);
 
   @Override
   public void onPreviewSizeChosen(final Size size, final int rotation) {
@@ -219,6 +274,14 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
                 result.setLocation(location);
                 mappedRecognitions.add(result);
+
+                for (int i = 0; i < 36; i++){ //write Confidence of each recognised card into the card array
+                  if(myCards[i].CardTitle.equals(result.getTitle())){
+                    if(myCards[i].Confidence < result.getConfidence()){
+                      myCards[i].Confidence = result.getConfidence();
+                    }
+                  }
+                }
               }
             }
 
