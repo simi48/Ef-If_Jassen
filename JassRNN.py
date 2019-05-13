@@ -210,7 +210,7 @@ def GetModel():
     Model.add(tf.keras.layers.CuDNNLSTM(50, name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
     Model.add(tf.keras.layers.Dense(30, name='Interpret'))
     Model.add(tf.keras.layers.Dropout(0.5))
-    Model.add(tf.keras.layers.Dense(36))
+    Model.add(tf.keras.layers.Dense(36, name='output'))
     
     Model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])        #maybe if we decide to use handmade training data for not playing incorrect cards.
     
