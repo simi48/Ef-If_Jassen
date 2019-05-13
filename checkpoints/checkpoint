@@ -1,2 +1,2 @@
-model_checkpoint_path: "MPTDefault_7-3"
-all_model_checkpoint_paths: "MPTDefault_7-3"
+model_checkpoint_path: "testsmall_7-3"
+all_model_checkpoint_paths: "testsmall_7-3"
