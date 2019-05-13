@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginStart="20dp"
-            android:layout_marginTop="650dp"
+            android:layout_marginTop="350dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:background="@drawable/buttonshape"
@@ -82,7 +82,7 @@
 
     </RelativeLayout>
 
-    <!--<include-->
-        <!--android:id="@+id/bottom_sheet_layout"-->
-        <!--layout="@layout/layout_bottom_sheet" />-->
+    <include
+        android:id="@+id/bottom_sheet_layout"
+        layout="@layout/layout_bottom_sheet" />
 </android.support.design.widget.CoordinatorLayout>
