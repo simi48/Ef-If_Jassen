@@ -20,7 +20,7 @@ import JassRNN as rnn
 import Jassen as js
 from time import ctime
 from os import system
-
+from time import sleep
 def SingleGame(ModelArray, trump = None, queue = None):
     '''
     SingleGame allows for 4 AIs to play one full game of cards (4 rounds, so everyone can go first once)
@@ -119,7 +119,7 @@ def SingleGame(ModelArray, trump = None, queue = None):
     else:
         queue.put(points)
 
-def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbose = True):
+def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.01], verbose = True):
     '''
     TrainTable entertains one table of players (rnn models) while slowly mutating and improving them (at random so it will take a while)
     Parameters:
@@ -132,7 +132,7 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
             Determines how many games are played to determine which RNN is the best.
         mutations (Array[float]):
             Indicates how much RNNs are mutated.
-            Defaults to 0.03
+            Defaults to 0.01
         verbose (boolean):
             Determines whether a progressbar is displayed (shows for True)
             
@@ -166,16 +166,16 @@ def TrainTable(model_list, epochs = 1000, batch = 10, mutations = [0.03], verbos
             i = rnn.GetModel()
     #setting mutationfactors, if they weren't specified
     while(len(mutations) < 3):
-        mutations.append(0.03)
+        mutations.append(0.01)
     while(len(mutations) > 3):
         mutations.pop()
     for i in mutations:
         if(i == None):
-            i = 0.03
+            i = 0.01
         elif(i < 0):
-            i = 0.03
+            i = 0.01
         elif(i > 1):
-             i = 0.03
+             i = 0.01
     
     #at this point, model_list should be ready for use.
     #models are mutated once every epoch
@@ -257,7 +257,7 @@ def TFSessMP(name,epochs,batch,mutations,verbose):
 #    queue.put(None)
     '''make Ret var from RAM and not VRAM, or save to harddisk?'''
 
-def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations = 0.03,name = "MPTDefault"):
+def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations = 0.003,name = "MPTDefault"):
     '''
     MPTrain trains a list of (at this point in time) 36 RNNs and then returns this list.
     The training works as follows: seperate RNNs to 8 tables; randomly mutate and check which one is the best. once every 5 generations find the ultimate best RNN and set it to each table.
@@ -280,7 +280,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
         
         mutations (int):
             the desired mutation factor (will be passed donw to `TFSessMP()` and from there to `TrainTable()`)
-            Defaults to mutations = 0.03
+            Defaults to mutations = 0.003
         
         name (str):
             The name with which RNNs are to be stored and found on the harddisk. (will also influence the points.txt file in /points where the points of the best player are written to)
@@ -291,11 +291,12 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             An array of RNNs.
     '''
     #Basics of MP
-#    processes = multiprocessing.cpu_count() ##I tend to run out of ram this way
-    processes = 8
+    processes = multiprocessing.cpu_count() if multiprocessing.cpu_count() < 8 else 8 ##I tend to run out of ram this way (try 2)
+#    processes = 10
 #    processes = 2
     
             #amount of required RNNs
+    mutations = [mutations]*2
     while(len(model_list)<processes*4):
         model_list.append(rnn.GetModel())
     for generation in tqdm(range(generations)):
@@ -327,10 +328,11 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             MPname = name+"_"+str(i)+"-" ##as in line244 (ish) where the model was saved. the c) will be added in TFSESSMP()
             #if not required remove `name` from prcs_list.append(process)
             #########
-            process_list.append(multiprocessing.Process(target=TFSessMP, args=(MPname, epochs, batch, [mutations], True)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
+            process_list.append(multiprocessing.Process(target=TFSessMP, args=(MPname, epochs, batch, mutations, True)))#define process (hope it works... because there are some syntax cabbages I dislike here...)
         for prcs in process_list:
 #            print("before prcs ",prcs)
             prcs.start() #start processes
+#            sleep(10)        was an experiment, was successful-ish... idea was that windows tends to hog ram and as such if one were to slowly slice it away one could get more before recie3veing an error. This works, but then again, what's the point? it's just more data to crunch if you start even more processes, and loading and saving takes even longer so... yeah, ima pass on that.
 #            print("prcs",prcs,"started")
         print(process_list)
 #        for i in range(processes):
@@ -360,19 +362,23 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
         if(generation%5!=0):
             #and the final player is a wild card
             print("Mutatin' dem Babies")
-            for table in range(processes):
+            for table in tqdm(range(processes)):
                 model_list[table][3] = rnn.Reproduce(model_list[np.random.randint(processes)][np.random.randint(3)],model_list[np.random.randint(processes)][np.random.randint(3)],np.random.random())
         else:
             #plant best player into all rounds
             print("Find best RNN and spread it 'round")
             best = BestPlayer(model_list)
             with open('points/'+name+'-points'+'.txt', 'a') as f:
-                print(best[1],"\t",ctime(),file=f)
+                print(best[1],"\t => avg:\t",int(best[1]/(processes*3+1)),"\t",ctime(),file=f) #include avg in out (note that avg. is over two rounds)
             print(best[1])
             bestmodel = model_list[int(best[0]/4)][best[0]%4] #check this pls
             for table in range(processes):
                 model_list[table][3] = bestmodel
-            
+                
+                
+#            rnn.TFLite(bestmodel)
+                
+                
             #if git is installed, push changes to GitHub
             system('git commit -a -m "_AutoPushWeights_"')
             system('git push')
@@ -439,7 +445,7 @@ def BestPlayer(model_list):
     print(len(model_list))
     for player in tqdm(range(len(model_list))):
         table[0] = model_list[player]
-        for other_players in range(len(model_list)-1):
+        for other_players in range(len(model_list)):
             for opponent in range(1,4):
                 table[opponent] = model_list[(other_players + opponent)%len(model_list)]
             
@@ -478,11 +484,11 @@ if __name__ == '__main__':
     for r in range(8):
         for c in range(4):
             array.append(rnn.GetModel())
-            rnn.LoadWeights(array[r+c],("MPTDefault"+"_"+str(r)+"-"+str(c)))
+            rnn.LoadWeights(array[r+c],("testsmall"+"_"+str(r)+"-"+str(c)))
     print("loaded models")
 #    print(BestPlayer(array))
     
-    MPTrain(array)
+    MPTrain(array,name = 'testsmall')
     Players = []
 # =============================================================================
 #     for i in range(4):

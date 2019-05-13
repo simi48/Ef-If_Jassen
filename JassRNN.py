@@ -16,6 +16,7 @@ import numpy as np
 import Jassen as js
 import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
 from tqdm import tqdm  #using anaconda/pip: pip install tqdm
+from os import remove
 
 
 
@@ -206,10 +207,10 @@ def GetModel():
     Model = tf.keras.models.Sequential()
     Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37), name='input'))
     #Model.add(tf.keras.layers.Dense(36, name='Dense1'))
-    Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
-    Model.add(tf.keras.layers.CuDNNLSTM(40, name='LSTM2M_MEMORY', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.CuDNNLSTM(50, name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.Dense(30, name='Interpret'))
     Model.add(tf.keras.layers.Dropout(0.5))
-    Model.add(tf.keras.layers.Dense(36))
+    Model.add(tf.keras.layers.Dense(36, name='output'))
     
     Model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])        #maybe if we decide to use handmade training data for not playing incorrect cards.
     
@@ -439,19 +440,55 @@ def Reproduce(ModelA, ModelB,ratio=0.5):
     ret = GetModel()
     ret.set_weights(A)
     return ret
-    
+
+
+def TFLite(model,path = None):
+    if(path == None):
+        path = ''
+    elif(path[-1:]!='/'):
+        path = path + '/'
+    keras_file = "tmp_keras_model.h5"
+    tf.keras.models.save_model(model, keras_file)
+    # Convert to TensorFlow Lite model.
+    if(tf.__version__=='1.12.0'):
+        converter = tf.contrib.lite.TFLiteConverter.from_keras_model_file(keras_file)
+    elif(tf.__version>'1.12.0'):
+        converter = tf.lite.TFLiteConverter.from_keras_model_file(keras_file)
+        
+    else:
+        print("Pleas update your Tensorflow version or write your own function/edit this one to convert to TFLite. (JassRNN.py/TFLite(model)  ; line ≈445)")
+        remove(keras_file)
+        return None
+    tflite_model = converter.convert()
+    open("converted_model.tflite", "wb").write(tflite_model)
+    remove(keras_file)
+
 # =============================================================================
 # Main
 # =============================================================================
 if __name__ == '__main__':
-    LocalCards = TrainArray(1)
-    LocalCards0 = PrepareInput(LocalCards[0][0])
-    Cp_callback = CreateCheckpointCallback(5) #callbacks = [Cp_callback], parameter for model.fit
-    Model = GetModel()
-    LoadWeights(Model,"Basic")
-    #n = amount of iterations, but i reckon you guesse :)
-    n = 35
-    for i in range(n):
-        print("Iteration ", i+1,"of ", n)
-        TrainModelBasics(Model, 100000)
-        SaveWeights(Model, "Basic")
+    model = GetModel()
+    old = model.get_weights()
+    LoadWeights(model,'testsmall_0-0')
+    new = model.get_weights()
+    SaveRNN(model,'test')
+    LoadRNN(model,'test')
+    
+    print((old[2] == new[2]).any())
+    TFLite(model)
+    
+    
+# =============================================================================
+#     
+#     LocalCards = TrainArray(1)
+#     LocalCards0 = PrepareInput(LocalCards[0][0])
+#     Cp_callback = CreateCheckpointCallback(5) #callbacks = [Cp_callback], parameter for model.fit
+#     Model = GetModel()
+#     LoadWeights(Model,"Basic")
+#     #n = amount of iterations, but i reckon you guesse :)
+#     n = 35
+#     for i in range(n):
+#         print("Iteration ", i+1,"of ", n)
+#         TrainModelBasics(Model, 100000)
+#         SaveWeights(Model, "Basic")
+# =============================================================================
