@@ -2,7 +2,7 @@ package org.tensorflow.lite.examples.detection.env;
 
 public class CardRecog{ //array which is able to hold 36 cards with names attached to them
     private String CardTitle;
-    private double Confidence;
+    private float Confidence;
 
     public CardRecog(){
     }
@@ -11,7 +11,15 @@ public class CardRecog{ //array which is able to hold 36 cards with names attach
         CardTitle = name;
     }
 
-    public void setConfidence(int confidence){
+    public void setConfidence(float confidence){
         Confidence = confidence;
+    }
+
+    public String getCardTitle(){
+        return CardTitle;
+    }
+
+    public float getConfidence(){
+        return Confidence;
     }
 }
