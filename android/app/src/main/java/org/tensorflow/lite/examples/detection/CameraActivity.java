@@ -19,7 +19,9 @@ package org.tensorflow.lite.examples.detection;
 import android.Manifest;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
@@ -44,6 +46,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -85,6 +88,16 @@ public abstract class CameraActivity extends AppCompatActivity
   private ImageView plusImageView, minusImageView;
   private SwitchCompat apiSwitchCompat;
   private TextView threadsTextView;
+  //
+  //
+  //
+  //
+  public boolean canClick = false;
+  public Button continueBtn;
+  //
+  //
+  //
+  //
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -111,7 +124,35 @@ public abstract class CameraActivity extends AppCompatActivity
     gestureLayout = findViewById(R.id.gesture_layout);
     sheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
     bottomSheetArrowImageView = findViewById(R.id.bottom_sheet_arrow);
+    //
+    //
+    //
+    //
+    continueBtn = (Button) findViewById(R.id.btnContinueScan);
+    TextView myText = (TextView) findViewById(R.id.mainCaptionScan);
 
+    continueBtn.setTextColor(Color.RED);
+
+    continueBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if(canClick){
+          LOGGER.d("Loading Validation" + this);
+
+          Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
+          startActivity(intent);
+        }
+
+        if(!canClick){
+          Toast.makeText(CameraActivity.this, "You have to at least scan 9 cards to continue!", Toast.LENGTH_LONG).show();
+        }
+      }
+    });
+
+    //
+    //
+    //
+    //
     ViewTreeObserver vto = gestureLayout.getViewTreeObserver();
     vto.addOnGlobalLayoutListener(
         new ViewTreeObserver.OnGlobalLayoutListener() {
