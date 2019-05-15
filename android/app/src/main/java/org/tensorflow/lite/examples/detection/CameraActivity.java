@@ -55,6 +55,15 @@ import android.widget.Toast;
 import java.nio.ByteBuffer;
 import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
+//
+//
+//
+//
+import org.tensorflow.lite.examples.detection.env.CardRecog;
+//
+//
+//
+//
 
 public abstract class CameraActivity extends AppCompatActivity
     implements OnImageAvailableListener,
@@ -94,6 +103,52 @@ public abstract class CameraActivity extends AppCompatActivity
   //
   public boolean canClick = true;
   public Button continueBtn;
+  public int count = 0;
+  public CardRecog[] myCards = fillCardNames();
+
+
+  public CardRecog[] fillCardNames(){ //fill CardRecog with the names of the cards
+    CardRecog myCard;
+    CardRecog[] myCards = new CardRecog[36];
+
+    String cardType = "Rosen ";
+    for(int i = 0; i < 36; i++){
+      myCard = new CardRecog();
+      myCards[i] = myCard;
+      if(i == 9){
+        cardType = "Eicheln ";
+      }
+      if(i == 18){
+        cardType = "Schellen ";
+      }
+      if(i == 27){
+        cardType = "Schilten ";
+      }
+
+      if(i % 9 < 6) {
+        myCards[i].setCardTitle(cardType + Integer.toString(i + 6));
+        myCards[i].setConfidence(0);
+      }
+      else if(i % 9 == 6){
+        myCards[i].setCardTitle(cardType + "Under");
+        myCards[i].setConfidence(0);
+      }
+      else if(i % 9 == 7){
+        myCards[i].setCardTitle(cardType + "Ober");
+        myCards[i].setConfidence(0);
+      }
+      else if(i % 9 == 8){
+        myCards[i].setCardTitle(cardType + "König");
+        myCards[i].setConfidence(0);
+      }
+      else if(i % 9 == 0){
+        myCards[i].setCardTitle(cardType + "Ass");
+        myCards[i].setConfidence(0);
+      }
+    }
+
+    return myCards;
+  }
   //
   //
   //
@@ -139,12 +194,15 @@ public abstract class CameraActivity extends AppCompatActivity
         if(canClick){
           LOGGER.d("Loading Validation" + this);
 
+
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
+
           startActivity(intent);
         }
 
         if(!canClick){
-          Toast.makeText(CameraActivity.this, "You have to at least scan 9 cards to continue!", Toast.LENGTH_LONG).show();
+          int tmp = 9 - count;
+          Toast.makeText(CameraActivity.this, "You have to scan at least " + tmp + " more cards to continue!", Toast.LENGTH_LONG).show();
         }
       }
     });
@@ -208,6 +266,15 @@ public abstract class CameraActivity extends AppCompatActivity
 
     plusImageView.setOnClickListener(this);
     minusImageView.setOnClickListener(this);
+  }
+
+  private CardRecog[] sortCards(CardRecog[] sorted){
+
+    CardRecog[] unsorted = sorted;
+
+    for (int a = 0; a < sorted.length -1; )
+
+    return sorted;
   }
 
   protected int[] getRgbBytes() {
