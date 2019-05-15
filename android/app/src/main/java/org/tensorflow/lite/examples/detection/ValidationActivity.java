@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 
 public class ValidationActivity extends AppCompatActivity {
 
@@ -23,6 +24,27 @@ public class ValidationActivity extends AppCompatActivity {
 
         Button continueBtn = (Button) findViewById(R.id.btnContinue);
         Button scanAgainBtn = (Button) findViewById(R.id.btnScanAgain);
+
+        ImageView card1 = (ImageView) findViewById(R.id.cardOne);
+        ImageView card2 = (ImageView) findViewById(R.id.cardTwo);
+        ImageView card3 = (ImageView) findViewById(R.id.cardThree);
+        ImageView card4 = (ImageView) findViewById(R.id.cardFour);
+        ImageView card5 = (ImageView) findViewById(R.id.cardFive);
+        ImageView card6 = (ImageView) findViewById(R.id.cardSix);
+        ImageView card7 = (ImageView) findViewById(R.id.cardSeven);
+        ImageView card8 = (ImageView) findViewById(R.id.cardEight);
+        ImageView card9 = (ImageView) findViewById(R.id.cardNine);
+
+        card1.setImageResource(R.drawable.c0);
+        card2.setImageResource(R.drawable.c14);
+        card3.setImageResource(R.drawable.c6);
+        card4.setImageResource(R.drawable.c24);
+        card5.setImageResource(R.drawable.c35);
+        card6.setImageResource(R.drawable.c16);
+        card7.setImageResource(R.drawable.c6);
+        card8.setImageResource(R.drawable.c18);
+        card9.setImageResource(R.drawable.c21);
+
 
         continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override

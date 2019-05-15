@@ -61,26 +61,6 @@ import org.tensorflow.lite.examples.detection.env.CardRecog;
  */
 public class DetectorActivity extends CameraActivity implements OnImageAvailableListener {
 
-  //
-  //
-  //
-  //
-//  public class CardRecog{ //array which is able to hold 36 cards with names attached to them
-//    private String CardTitle;
-//    private double Confidence;
-//
-//    public void setCardTitle(String name){
-//      CardTitle = name;
-//    }
-//
-//    public void setConfidence(int confidence){
-//      Confidence = confidence;
-//    }
-//  }
-  //
-  //
-  //
-  //
   private static final Logger LOGGER = new Logger();
 
   // Configuration values for the prepackaged SSD model.
@@ -118,60 +98,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
   private BorderedText borderedText;
 
-  //
-  //
-  //
-  //
-  public CardRecog[] myCards = fillCardNames();
-  private int count = 0;
 
-
-  public CardRecog[] fillCardNames(){ //fill CardRecog with the names of the cards
-    CardRecog myCard;
-    CardRecog[] myCards = new CardRecog[36];
-
-    String cardType = "Rosen ";
-    for(int i = 0; i < 36; i++){
-      myCard = new CardRecog();
-      myCards[i] = myCard;
-      if(i == 9){
-        cardType = "Eicheln ";
-      }
-      if(i == 18){
-        cardType = "Schellen ";
-      }
-      if(i == 27){
-        cardType = "Schilten ";
-      }
-
-      if(i % 9 < 6) {
-        myCards[i].setCardTitle(cardType + Integer.toString(i + 6));
-        myCards[i].setConfidence(0);
-      }
-      else if(i % 9 == 6){
-        myCards[i].setCardTitle(cardType + "Under");
-        myCards[i].setConfidence(0);
-      }
-      else if(i % 9 == 7){
-        myCards[i].setCardTitle(cardType + "Ober");
-        myCards[i].setConfidence(0);
-      }
-      else if(i % 9 == 8){
-        myCards[i].setCardTitle(cardType + "König");
-        myCards[i].setConfidence(0);
-      }
-      else if(i % 9 == 0){
-        myCards[i].setCardTitle(cardType + "Ass");
-        myCards[i].setConfidence(0);
-      }
-    }
-
-    return myCards;
-  }
-  //
-  //
-  //
-  //
 
 
   @Override
@@ -315,15 +242,15 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 //
 
                 for (int i = 0; i < 36; i++){ //write Confidence of each recognised card into the card array
-                  if(myCards[i].getCardTitle().equals(result.getTitle())){
-                    if(myCards[i].getConfidence() < result.getConfidence()){
-                      myCards[i].setConfidence(result.getConfidence());
+                  if(DetectorActivity.super.myCards[i].getCardTitle().equals(result.getTitle())){
+                    if(DetectorActivity.super.myCards[i].getConfidence() < result.getConfidence()){
+                      DetectorActivity.super.myCards[i].setConfidence(result.getConfidence());
                     }
                   }
-                  if(myCards[i].getConfidence() > 0){
-                    count++;
+                  if(DetectorActivity.super.myCards[i].getConfidence() > 0){
+                    DetectorActivity.super.count++;
                   }
-                  if(count > 9){
+                  if(DetectorActivity.super.count > 9){
                     DetectorActivity.super.canClick = true;
                     DetectorActivity.super.continueBtn.setTextColor(Color.WHITE);
                   }
@@ -354,6 +281,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
           }
         });
   }
+
 
   @Override
   protected int getLayoutId() {
