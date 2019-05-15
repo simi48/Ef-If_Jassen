@@ -26,6 +26,7 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.media.ImageReader.OnImageAvailableListener;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Size;
 import android.util.TypedValue;
@@ -122,6 +123,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   //
   //
   public CardRecog[] myCards = fillCardNames();
+  private int count = 0;
 
 
   public CardRecog[] fillCardNames(){ //fill CardRecog with the names of the cards
@@ -166,10 +168,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
     return myCards;
   }
-
-
-//  Button continueBtn = (Button) findViewById(R.id.btnContinueScan);
-//  TextView myText = (TextView) findViewById(R.id.mainCaptionScan);
   //
   //
   //
@@ -315,13 +313,23 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 //
                 //
                 //
+
                 for (int i = 0; i < 36; i++){ //write Confidence of each recognised card into the card array
                   if(myCards[i].getCardTitle().equals(result.getTitle())){
                     if(myCards[i].getConfidence() < result.getConfidence()){
                       myCards[i].setConfidence(result.getConfidence());
                     }
                   }
+                  if(myCards[i].getConfidence() > 0){
+                    count++;
+                  }
+                  if(count > 9){
+                    DetectorActivity.super.canClick = true;
+                    DetectorActivity.super.continueBtn.setTextColor(Color.WHITE);
+                  }
                 }
+
+
                 //
                 //
                 //
