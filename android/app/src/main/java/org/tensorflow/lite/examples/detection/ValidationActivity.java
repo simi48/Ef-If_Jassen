@@ -24,7 +24,6 @@ public class ValidationActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: Starting");
 
 
-
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
         Button continueBtn = (Button) findViewById(R.id.btnContinue);

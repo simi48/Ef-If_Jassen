@@ -225,8 +225,6 @@ public abstract class CameraActivity extends AppCompatActivity
           sorted = sortCards(myCards);
 
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
-          intent.putExtra("Extra_myCards_sorted", sorted);
-          intent.putExtra("Extra_myCards_unsorted", myCards);
 
           startActivity(intent);
         }
