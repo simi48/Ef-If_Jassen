@@ -194,12 +194,8 @@ public abstract class CameraActivity extends AppCompatActivity
         if(canClick){
           LOGGER.d("Loading Validation" + this);
 
-          CardRecog[] sorted;
-          sorted = sortCards(myCards);
 
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
-          intent.putExtra("Extra_myCards_sorted", sorted);
-          intent.putExtra("Extra_myCards_unsorted", myCards);
 
           startActivity(intent);
         }
@@ -272,30 +268,14 @@ public abstract class CameraActivity extends AppCompatActivity
     minusImageView.setOnClickListener(this);
   }
 
-  //
-  //
-  //
-  //
-  private CardRecog[] sortCards(CardRecog[] sorted){ //The purpose of this method is to sort the Card array through putting those cards with a higher confidence first
+  private CardRecog[] sortCards(CardRecog[] sorted){
 
     CardRecog[] unsorted = sorted;
 
-    for (int a = 0; a < sorted.length -2; a++){
-      for (int b = 0; b < sorted.length -2; b++){
-        if (sorted[b + 1].getConfidence() > sorted[b].getConfidence()){
-          sorted[b] = sorted[b + 1];
-          sorted[b + 1] = unsorted[b];
-          unsorted = sorted;
-        }
-      }
-    }
+    for (int a = 0; a < sorted.length -1; )
 
     return sorted;
   }
-  //
-  //
-  //
-  //
 
   protected int[] getRgbBytes() {
     imageConverter.run();

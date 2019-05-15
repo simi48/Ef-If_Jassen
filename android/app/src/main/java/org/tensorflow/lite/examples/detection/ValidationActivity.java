@@ -9,21 +9,16 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import org.tensorflow.lite.examples.detection.env.CardRecog;
 
 public class ValidationActivity extends AppCompatActivity {
 
     private static final String TAG = "ValidationActivity";
-    public CardRecog[] myCardsSorted;
-    public CardRecog[] myCardsUnsorted;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.validation);
         Log.d(TAG, "onCreate: Starting");
-
-
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 
