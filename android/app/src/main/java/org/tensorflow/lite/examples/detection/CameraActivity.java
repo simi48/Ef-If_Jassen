@@ -92,7 +92,7 @@ public abstract class CameraActivity extends AppCompatActivity
   //
   //
   //
-  public boolean canClick = false;
+  public boolean canClick = true;
   public Button continueBtn;
   //
   //
