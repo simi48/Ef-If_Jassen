@@ -184,7 +184,7 @@ public abstract class CameraActivity extends AppCompatActivity
     //
     //
     continueBtn = (Button) findViewById(R.id.btnContinueScan);
-    TextView myText = (TextView) findViewById(R.id.mainCaptionScan);
+//    TextView myText = (TextView) findViewById(R.id.mainCaptionScan);
 
     continueBtn.setTextColor(Color.RED);
 
