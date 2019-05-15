@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2019 The TensorFlow Authors. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -129,46 +129,19 @@ public abstract class CameraActivity extends AppCompatActivity
         myCards[i].setCardTitle(cardType + Integer.toString(i + 6));
         myCards[i].setConfidence(0);
       }
-//      else if(i % 9 == 6){
-//        myCards[i].setCardTitle(cardType + "Under");
-//        myCards[i].setConfidence(0);
-//      }
-//
-//      else if(i % 9 == 7){
-//        myCards[i].setCardTitle(cardType + "Ober");
-//        myCards[i].setConfidence(0);
-//      }
-//      else if(i % 9 == 8){
-//        myCards[i].setCardTitle(cardType + "König");
-//        myCards[i].setConfidence(0);
-//      }
-
-      myCards[5].setCardTitle("person");
-      myCards[5].setConfidence(0);
-      myCards[6].setCardTitle("car");
-      myCards[6].setConfidence(0);
-      myCards[7].setCardTitle("cup");
-      myCards[7].setConfidence(0);
-      myCards[14].setCardTitle("fork");
-      myCards[14].setConfidence(0);
-      myCards[15].setCardTitle("knife");
-      myCards[15].setConfidence(0);
-      myCards[16].setCardTitle("banana");
-      myCards[16].setConfidence(0);
-      myCards[23].setCardTitle("scissors");
-      myCards[23].setConfidence(0);
-      myCards[24].setCardTitle("toothbrush");
-      myCards[24].setConfidence(0);
-      myCards[25].setCardTitle("mouse");
-      myCards[25].setConfidence(0);
-      myCards[32].setCardTitle("keyboard");
-      myCards[32].setConfidence(0);
-      myCards[33].setCardTitle("spoon");
-      myCards[33].setConfidence(0);
-      myCards[34].setCardTitle("bottle");
-      myCards[34].setConfidence(0);
-
-      /*else*/ if(i % 9 == 0){
+      else if(i % 9 == 6){
+        myCards[i].setCardTitle(cardType + "Under");
+        myCards[i].setConfidence(0);
+      }
+      else if(i % 9 == 7){
+        myCards[i].setCardTitle(cardType + "Ober");
+        myCards[i].setConfidence(0);
+      }
+      else if(i % 9 == 8){
+        myCards[i].setCardTitle(cardType + "König");
+        myCards[i].setConfidence(0);
+      }
+      else if(i % 9 == 0){
         myCards[i].setCardTitle(cardType + "Ass");
         myCards[i].setConfidence(0);
       }
@@ -316,6 +289,7 @@ public abstract class CameraActivity extends AppCompatActivity
         }
       }
     }
+
     return sorted;
   }
   //
