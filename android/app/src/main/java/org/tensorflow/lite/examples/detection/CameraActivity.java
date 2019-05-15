@@ -268,15 +268,6 @@ public abstract class CameraActivity extends AppCompatActivity
     minusImageView.setOnClickListener(this);
   }
 
-  private CardRecog[] sortCards(CardRecog[] sorted){
-
-    CardRecog[] unsorted = sorted;
-
-    for (int a = 0; a < sorted.length -1; )
-
-    return sorted;
-  }
-
   protected int[] getRgbBytes() {
     imageConverter.run();
     return rgbBytes;
