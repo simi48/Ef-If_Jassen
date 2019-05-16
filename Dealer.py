@@ -342,14 +342,19 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             An array of RNNs.
     '''
     #Basics of MP
-    processes = multiprocessing.cpu_count() if multiprocessing.cpu_count() < 8 else 8 ##I tend to run out of ram this way (try 2)
+    processes = multiprocessing.cpu_count() if multiprocessing.cpu_count() < 8 else 8 ##I tend to run out of ram if its above 12 / starting from 10 and up it gets tricky
 #    processes = 10
-#    processes = 2
+    
+    ########################################################################################################
+    processes = 2
+    ########################################################################################################
     
             #amount of required RNNs
     mutations = [mutations]*2
     while(len(model_list)<processes*4):
         model_list.append(rnn.GetModel())
+    while(len(model_list)>processes*4):
+        model_list.pop()
     for generation in tqdm(range(generations)):
         
         #4RNNs for each table
@@ -438,7 +443,8 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             system('git push')
             
             #maybe lend a helping hand to one of them...
-            if(generation!=generation-1 and generation%2==0):
+            if(generation!=generations-1 and generation%2==0):
+                
                 rnn.TrainModelBasics(model_list[np.random.randint(len(model_list))][3],100000,True)
     
     
