@@ -539,7 +539,7 @@ if __name__ == '__main__':
         for c in range(4):
             array.append(rnn.GetModel())
             rnn.LoadWeights(array[r+c],("testsmall"+"_"+str(r)+"-"+str(c)))
-    print("loaded models")
+#    print("loaded models")
 #    print(BestPlayer(array))
     
     MPTrain(array,name = 'testsmall')

@@ -305,7 +305,7 @@ def TrainModelBasics(model, size, Multiprocessing = None): #Multiprocessing does
     y = np.reshape(y,(len(y),1,1,36))
     print("Adjusting Network")
     for i in tqdm(range(len(x))):
-        model.fit(x[i], y[i], batch_size=1, verbose = 0, use_multiprocessing=Multiprocessing) #*NOTE it works with `use_multiprocessing=True` but I have no idea what it does or whether it helps at all
+        model.fit(x[i], y[i], batch_size=1, verbose = 0, use_multiprocessing=False) #*NOTE it works with `use_multiprocessing=True` but I have no idea what it does or whether it helps at all
         if(i%10 == 0):
             model.reset_states()
             
@@ -456,25 +456,28 @@ def TFLite(model,path = None):
     Returns:
         None
     '''
-    if(path == None):
-        path = ''
-    elif(path[-1:]!='/'):
-        path = path + '/'
-    keras_file = "tmp_keras_model.h5"
-    tf.keras.models.save_model(model, keras_file)
-    # Convert to TensorFlow Lite model.
-    if(tf.__version__=='1.12.0'):
-        converter = tf.contrib.lite.TFLiteConverter.from_keras_model_file(keras_file)
-    elif(tf.__version>'1.12.0'):
-        converter = tf.lite.TFLiteConverter.from_keras_model_file(keras_file)
-        
-    else:
-        print("Pleas update your Tensorflow version or write your own function/edit this one to convert to TFLite. (JassRNN.py/TFLite(model)  ; line ≈445)")
-        remove(keras_file)
-        return None
-    tflite_model = converter.convert()
-    open("converted_model.tflite", "wb").write(tflite_model)
-    remove(keras_file)
+    try:
+        if(path == None):
+            path = ''
+        elif(path[-1:]!='/'):
+            path = path + '/'
+        keras_file = "tmp_keras_model.h5"
+        tf.keras.models.save_model(model, keras_file)
+        # Convert to TensorFlow Lite model.
+        if(tf.__version__=='1.12.0'):
+            converter = tf.contrib.lite.TFLiteConverter.from_keras_model_file(keras_file)
+        elif(tf.__version>'1.12.0'):
+            converter = tf.lite.TFLiteConverter.from_keras_model_file(keras_file)
+            
+        else:
+            print("Pleas update your Tensorflow version or write your own function/edit this one to convert to TFLite. (JassRNN.py/TFLite(model)  ; line ≈445)")
+            remove(keras_file)
+            return None
+        tflite_model = converter.convert()
+        open("converted_model.tflite", "wb").write(tflite_model)
+#    remove(keras_file)
+    except:
+        print('didnt work huh...\nTFLite conversion, but we already knew it wouldn\'t, work so what gives')
 
 
 # =============================================================================
