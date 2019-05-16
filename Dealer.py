@@ -69,6 +69,11 @@ def SingleGame(ModelArray, trump = None, queue = None):
 #                DebugVar = []
 #                for i in range(36):
 #                    DebugVar.append(js.LegalMove(local,i,called,trump = GlobalCards[36],player = 1))
+                
+                
+                '''Gonna revise this, seems fishy...'''
+                
+                
                 if(not js.LegalMove(local, suggested_move, called,trump = GlobalCards[36], player = 1)): #player 1 meaning that cards with value 1 are available for play (as is the case in local pov)
                     for i in range(36):
                         if(js.LegalMove(local, i, called, trump = GlobalCards[36], player = 1)):
@@ -82,6 +87,13 @@ def SingleGame(ModelArray, trump = None, queue = None):
                         elif(intermediate != 36):
                             suggested_move = intermediate
                             tmp = suggested_move
+                
+                '''
+                yes, very fishy...
+                also, I wanna add different mali(?) for different fauxpass.
+                also, fuck off ill write how I understand it so screw spellingz
+                (ill do it later, gotta do smth first rn brb (letting it train so this might get pushed, hence the message(also, not sure if its training correctly as I mentioned this part might be fishy)))
+                '''
                 
                 #malus
                 if(tmp != suggested_move):
@@ -375,8 +387,11 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             for table in range(processes):
                 model_list[table][3] = bestmodel
                 
-                
-#            rnn.TFLite(bestmodel)
+            #TFLite. fuck this thing.
+            try:
+                rnn.TFLite(bestmodel)
+            except:
+                print("fucking TFLite ain't working. Cabbage.")
                 
                 
             #if git is installed, push changes to GitHub
