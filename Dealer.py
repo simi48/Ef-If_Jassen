@@ -41,6 +41,9 @@ def SingleGame(ModelArray, trump = None, queue = None):
     Returns:
         Array[int]:
             An Array of the points each AI made during this game.
+    Raises:
+        SystemExit:
+            If this function is faulty in a vital part, it will force quit.
     '''
     
     called = None
@@ -105,7 +108,7 @@ def SingleGame(ModelArray, trump = None, queue = None):
                             suggested_move = local.index(1)
                         except:
                             print('Holy fucking shit we fucked up pls lets never get his message (SingleRound in Dealer.py , around line 107 as of writing this), if this shows up we\'re so fucking screwed')
-                            quit('fuck this shit i\'m out') #not sure if this function exitst but fuck it, lets hope we never find out.
+                            raise SystemExit('fuck this shit i\'m out') #not sure if this function exitst but fuck it, lets hope we never find out.
                             
                                     #find card with appropriate color
                     else:
@@ -121,7 +124,7 @@ def SingleGame(ModelArray, trump = None, queue = None):
                             suggested_move = tmp =local.index(1) #tmp is equal because no wrong color was played.
                         except:
                             print('Holy fucking shit we fucked up pls lets never get his message (SingleRound in Dealer.py , around line 107 as of writing this), if this shows up we\'re so fucking screwed')
-                            quit('fuck this shit i\'m out') #not sure if this function exitst but fuck it, lets hope we never find out.
+                            raise SystemExit('fuck this shit i\'m out') #not sure if this function exitst but fuck it, lets hope we never find out.
                         
                 
                 
