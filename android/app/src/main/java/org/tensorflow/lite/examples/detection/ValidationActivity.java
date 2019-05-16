@@ -9,10 +9,15 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import org.tensorflow.lite.examples.detection.env.JassFunctions;
 
 public class ValidationActivity extends AppCompatActivity {
 
     private static final String TAG = "ValidationActivity";
+    private String[] recCards = new String[9];
+    private ImageView[] imgViews = new ImageView[9];
+    private int[] normCards = new int[37];
+    private JassFunctions js = new JassFunctions();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -25,25 +30,43 @@ public class ValidationActivity extends AppCompatActivity {
         Button continueBtn = (Button) findViewById(R.id.btnContinue);
         Button scanAgainBtn = (Button) findViewById(R.id.btnScanAgain);
 
-        ImageView card1 = (ImageView) findViewById(R.id.cardOne);
-        ImageView card2 = (ImageView) findViewById(R.id.cardTwo);
-        ImageView card3 = (ImageView) findViewById(R.id.cardThree);
-        ImageView card4 = (ImageView) findViewById(R.id.cardFour);
-        ImageView card5 = (ImageView) findViewById(R.id.cardFive);
-        ImageView card6 = (ImageView) findViewById(R.id.cardSix);
-        ImageView card7 = (ImageView) findViewById(R.id.cardSeven);
-        ImageView card8 = (ImageView) findViewById(R.id.cardEight);
-        ImageView card9 = (ImageView) findViewById(R.id.cardNine);
 
-        card1.setImageResource(R.drawable.c0);
-        card2.setImageResource(R.drawable.c14);
-        card3.setImageResource(R.drawable.c6);
-        card4.setImageResource(R.drawable.c24);
-        card5.setImageResource(R.drawable.c35);
-        card6.setImageResource(R.drawable.c16);
-        card7.setImageResource(R.drawable.c6);
-        card8.setImageResource(R.drawable.c18);
-        card9.setImageResource(R.drawable.c21);
+        for (int i = 0; i < 9; i++){
+            //get all nine ImageViews of ValidationActivity
+            String cardID = "card" + (i + 1);
+            int resID = getResources().getIdentifier(cardID, "id", getPackageName());
+            imgViews[i] = (ImageView) findViewById(resID);
+
+            //get all nine recognised imgViews
+            //recCards[i] = getIntent().getStringExtra(cardID);
+        }
+
+//        test data
+        recCards[0] = "Eicheln 6";
+        recCards[1] = "Eicheln 7";
+        recCards[2] = "Eicheln 8";
+        recCards[3] = "Eicheln 9";
+        recCards[4] = "Eicheln 10";
+        recCards[5] = "Eicheln Under";
+        recCards[6] = "Rosen Ober";
+        recCards[7] = "Rosen König";
+        recCards[8] = "Schilten 6";
+
+        normCards = js.getNormArray(recCards);
+
+        //set values of the nine ImageViews
+        int memory = 0;
+        for(int a = 0; a < 9; a++){
+            for(int b = memory; b < 36; b++){
+                if(normCards[b] == 1){
+                    String drawableID = "c" + b;
+                    int resID = getResources().getIdentifier(drawableID,"drawable", getPackageName());
+                    imgViews[a].setImageResource(resID);
+                    memory = b + 1;
+                    break;
+                }
+            }
+        }
 
 
         continueBtn.setOnClickListener(new View.OnClickListener() {

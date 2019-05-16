@@ -59,6 +59,7 @@ import org.tensorflow.lite.examples.detection.env.Logger;
 //
 //
 //
+import org.tensorflow.lite.examples.detection.env.JassFunctions;
 import org.tensorflow.lite.examples.detection.env.CardRecog;
 //
 //
@@ -101,54 +102,11 @@ public abstract class CameraActivity extends AppCompatActivity
   //
   //
   //
+  private JassFunctions js = new JassFunctions();
   public boolean canClick = true;
   public Button continueBtn;
   public int count = 0;
-  public CardRecog[] myCards = fillCardNames();
-
-
-  public CardRecog[] fillCardNames(){ //fill CardRecog with the names of the cards
-    CardRecog myCard;
-    CardRecog[] myCards = new CardRecog[36];
-
-    String cardType = "Rosen ";
-    for(int i = 0; i < 36; i++){
-      myCard = new CardRecog();
-      myCards[i] = myCard;
-      if(i == 9){
-        cardType = "Eicheln ";
-      }
-      if(i == 18){
-        cardType = "Schellen ";
-      }
-      if(i == 27){
-        cardType = "Schilten ";
-      }
-
-      if(i % 9 < 6) {
-        myCards[i].setCardTitle(cardType + Integer.toString(i + 6));
-        myCards[i].setConfidence(0);
-      }
-      else if(i % 9 == 6){
-        myCards[i].setCardTitle(cardType + "Under");
-        myCards[i].setConfidence(0);
-      }
-      else if(i % 9 == 7){
-        myCards[i].setCardTitle(cardType + "Ober");
-        myCards[i].setConfidence(0);
-      }
-      else if(i % 9 == 8){
-        myCards[i].setCardTitle(cardType + "König");
-        myCards[i].setConfidence(0);
-      }
-      else if(i % 9 == 0){
-        myCards[i].setCardTitle(cardType + "Ass");
-        myCards[i].setConfidence(0);
-      }
-    }
-
-    return myCards;
-  }
+  public CardRecog[] myCards = js.fillCardNames();
   //
   //
   //
@@ -195,8 +153,11 @@ public abstract class CameraActivity extends AppCompatActivity
           LOGGER.d("Loading Validation" + this);
 
           CardRecog[] sorted = sortCards(myCards);
-
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
+
+          for (int i = 0; i < 9; i++){
+            intent.putExtra("card " + (i+1), sorted[i].getCardTitle());
+          }
 
           startActivity(intent);
         }

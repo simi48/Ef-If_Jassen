@@ -34,19 +34,19 @@
         android:textStyle="bold" />
 
     <ImageView
-        android:id="@+id/cardOne"
+        android:id="@+id/card1"
         android:layout_width="100dp"
         android:layout_height="125dp"
         android:layout_below="@id/valCaption"
         android:layout_marginStart="20dp"
         android:layout_marginTop="40dp"
         android:layout_marginEnd="20dp"
-        android:layout_toStartOf="@id/cardTwo"
+        android:layout_toStartOf="@id/card2"
         android:contentDescription="@string/cardVal"
         app:srcCompat="@color/colorPrimary" />
 
     <ImageView
-        android:id="@+id/cardTwo"
+        android:id="@+id/card2"
         android:layout_width="100dp"
         android:layout_height="125dp"
         app:srcCompat="@color/colorPrimary"
@@ -56,7 +56,7 @@
         android:layout_below="@id/valCaption"/>
 
     <ImageView
-        android:id="@+id/cardThree"
+        android:id="@+id/card3"
         android:layout_width="100dp"
         android:layout_height="125dp"
         app:srcCompat="@color/colorPrimary"
@@ -65,10 +65,10 @@
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         android:layout_below="@id/valCaption"
-        android:layout_toEndOf="@id/cardTwo"/>
+        android:layout_toEndOf="@id/card2"/>
 
     <ImageView
-        android:id="@+id/cardFour"
+        android:id="@+id/card4"
         android:layout_width="100dp"
         android:layout_height="125dp"
         app:srcCompat="@color/colorPrimary"
@@ -76,22 +76,22 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_below="@id/cardOne"
-        android:layout_toStartOf="@id/cardFive"
+        android:layout_below="@id/card1"
+        android:layout_toStartOf="@id/card5"
          />
 
     <ImageView
-        android:id="@+id/cardFive"
+        android:id="@+id/card5"
         android:layout_width="100dp"
         android:layout_height="125dp"
         app:srcCompat="@color/colorPrimary"
         android:contentDescription="@string/cardVal"
         android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/cardTwo"/>
+        android:layout_below="@id/card2"/>
 
     <ImageView
-        android:id="@+id/cardSix"
+        android:id="@+id/card6"
         android:layout_width="100dp"
         android:layout_height="125dp"
         app:srcCompat="@color/colorPrimary"
@@ -99,11 +99,11 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_below="@id/cardThree"
-        android:layout_toEndOf="@id/cardFive"/>
+        android:layout_below="@id/card3"
+        android:layout_toEndOf="@id/card5"/>
 
     <ImageView
-        android:id="@+id/cardSeven"
+        android:id="@+id/card7"
         android:layout_width="100dp"
         android:layout_height="125dp"
         app:srcCompat="@color/colorPrimary"
@@ -111,21 +111,21 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_below="@id/cardFour"
-        android:layout_toStartOf="@id/cardEight"/>
+        android:layout_below="@id/card4"
+        android:layout_toStartOf="@id/card8"/>
 
     <ImageView
-        android:id="@+id/cardEight"
+        android:id="@+id/card8"
         android:layout_width="100dp"
         android:layout_height="125dp"
         app:srcCompat="@color/colorPrimary"
         android:contentDescription="@string/cardVal"
         android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/cardFive" />
+        android:layout_below="@id/card5" />
 
     <ImageView
-        android:id="@+id/cardNine"
+        android:id="@+id/card9"
         android:layout_width="100dp"
         android:layout_height="125dp"
         app:srcCompat="@color/colorPrimary"
@@ -133,8 +133,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        android:layout_below="@id/cardSix"
-        android:layout_toEndOf="@id/cardEight"/>
+        android:layout_below="@id/card6"
+        android:layout_toEndOf="@id/card8"/>
 
     <Button
         android:id="@+id/btnContinue"
