@@ -443,6 +443,19 @@ def Reproduce(ModelA, ModelB,ratio=0.5):
 
 
 def TFLite(model,path = None):
+    '''
+    !!!On Windows use https://colab.research.google.com/drive/1IUIn9ffk5ICKujqPyuGaHL2irQ9Wmtpm#scrollTo=QSLFKa8GfDMr&forceEdit=true&offline=true&sandboxMode=true!!!\n(actually doesn't work either...)\n
+    Converts a keras model to a TFLite model and saves it.
+    Parameters:
+        model (tf.keras.models.Sequential()):
+            The model to be converted to a TFLite
+        
+        path (str):
+            the string of where the TFLite should be saved (the tmporary .h5 file will be saved there as well)
+    
+    Returns:
+        None
+    '''
     if(path == None):
         path = ''
     elif(path[-1:]!='/'):
@@ -462,6 +475,7 @@ def TFLite(model,path = None):
     tflite_model = converter.convert()
     open("converted_model.tflite", "wb").write(tflite_model)
     remove(keras_file)
+
 
 # =============================================================================
 # Main
