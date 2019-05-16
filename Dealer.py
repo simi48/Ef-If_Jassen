@@ -346,7 +346,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
 #    processes = 10
     
     ########################################################################################################
-    processes = 2
+#    processes = 2
     ########################################################################################################
     
             #amount of required RNNs
@@ -444,8 +444,10 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             
             #maybe lend a helping hand to one of them...
             if(generation!=generations-1 and generation%2==0):
-                
-                rnn.TrainModelBasics(model_list[np.random.randint(len(model_list))][3],100000,True)
+                try:
+                    rnn.TrainModelBasics(model_list[np.random.randint(len(model_list))][3],100000,True)
+                except:
+                    print('yeah, it stopped working... but it works when only calling the function from say the prompt? idk, ill look at it tmrw or sth. (also, if this msg shows after 18.05.2019 hit me up, I prolly forgot or screwed up sth else.')
     
     
     
