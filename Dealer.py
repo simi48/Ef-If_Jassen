@@ -74,30 +74,66 @@ def SingleGame(ModelArray, trump = None, queue = None):
                 '''Gonna revise this, seems fishy...'''
                 
                 
-                if(not js.LegalMove(local, suggested_move, called,trump = GlobalCards[36], player = 1)): #player 1 meaning that cards with value 1 are available for play (as is the case in local pov)
-                    for i in range(36):
-                        if(js.LegalMove(local, i, called, trump = GlobalCards[36], player = 1)):
-                            suggested_move = i
-                    #just to make sure it doesnt play the "playstyle"
-                    if(tmp==suggested_move):
-                        intermediate = local.index(1)
-                        if(js.LegalMove(local,suggested_move, None, trump = GlobalCards[36], player = 1)):
-                            pass #yes I know it aint pretty, but im tired, its 01:19 27:04:2019
-#                            print("Won't win but not incorrect (more of a test fuck off)\nalso, if this happens randomly, let me know it worked (ST) thx.\n\n")
-                        elif(intermediate != 36):
-                            suggested_move = intermediate
-                            tmp = suggested_move
+# =============================================================================
+#                 if(not js.LegalMove(local, suggested_move, called,trump = GlobalCards[36], player = 1)): #player 1 meaning that cards with value 1 are available for play (as is the case in local pov)
+#                     for i in range(36):
+#                         if(js.LegalMove(local, i, called, trump = GlobalCards[36], player = 1)):
+#                             suggested_move = i
+#                     #just to make sure it doesnt play the "playstyle"
+#                     if(tmp==suggested_move):
+#                         intermediate = local.index(1)
+#                         if(js.LegalMove(local,suggested_move, None, trump = GlobalCards[36], player = 1)):
+#                             pass #yes I know it aint pretty, but im tired, its 01:19 27:04:2019
+# #                            print("Won't win but not incorrect (more of a test fuck off)\nalso, if this happens randomly, let me know it worked (ST) thx.\n\n")
+#                         elif(intermediate != 36):
+#                             suggested_move = intermediate
+#                             tmp = suggested_move
+# =============================================================================
+                ###############################################################
+#               Gonna rewrite this bit
+#               Step by step...
+                ###############################################################
                 
-                '''
-                yes, very fishy...
+                
+                if(not js.LegalMove(local, suggested_move, called,trump = GlobalCards[36], player = 1)): #player 1 meaning that cards with value 1 are available for play (as is the case in local pov)
+                                    #does player hold card?
+                    if(local[suggested_move]!=1):#malus for not holding a card.
+                        points[activeplayer] -= 100000
+                                    #what card should be played...
+                    if(called==None):
+                        try:
+                            suggested_move = local.index(1)
+                        except:
+                            print('Holy fucking shit we fucked up pls lets never get his message (SingleRound in Dealer.py , around line 107 as of writing this), if this shows up we\'re so fucking screwed')
+                            quit('fuck this shit i\'m out') #not sure if this function exitst but fuck it, lets hope we never find out.
+                            
+                                    #find card with appropriate color
+                    else:
+                        i = called*9
+                        while(i<(called+1)*9):
+                            if(local[i]==1):
+                                suggested_move = i
+                                break
+                            i += 1
+                                    #if no card with correct colour was found:
+                    if(tmp==suggested_move):
+                        try:
+                            suggested_move = tmp =local.index(1) #tmp is equal because no wrong color was played.
+                        except:
+                            print('Holy fucking shit we fucked up pls lets never get his message (SingleRound in Dealer.py , around line 107 as of writing this), if this shows up we\'re so fucking screwed')
+                            quit('fuck this shit i\'m out') #not sure if this function exitst but fuck it, lets hope we never find out.
+                        
+                
+                
+                '''yes, very fishy...
                 also, I wanna add different mali(?) for different fauxpass.
                 also, fuck off ill write how I understand it so screw spellingz
                 (ill do it later, gotta do smth first rn brb (letting it train so this might get pushed, hence the message(also, not sure if its training correctly as I mentioned this part might be fishy)))
                 '''
                 
-                #malus
+                #malus for color
                 if(tmp != suggested_move):
-                    points[activeplayer] -= 10000
+                    points[activeplayer] -= 1000
 #                    print("nay")
 #                else:
 #                    print("Praise the sun")

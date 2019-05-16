@@ -62,3 +62,4 @@
 -429695 	 => avg:	 -17187 	 Thu May 16 12:28:34 2019
 -379697 	 => avg:	 -15187 	 Thu May 16 13:47:36 2019
 -439780 	 => avg:	 -17591 	 Thu May 16 17:04:41 2019
+yeah, erm... new point system so... yay?
