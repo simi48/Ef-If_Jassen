@@ -33,13 +33,12 @@ public class ValidationActivity extends AppCompatActivity {
 
         for (int i = 0; i < 9; i++){
             //get all nine ImageViews of ValidationActivity
-            String cardID1 = "card" + (i + 1);
-            String cardID2 = "card " + (i + 1);
-            int resID = getResources().getIdentifier(cardID1, "id", getPackageName());
+            String cardID = "card" + (i + 1);
+            int resID = getResources().getIdentifier(cardID, "id", getPackageName());
             imgViews[i] = (ImageView) findViewById(resID);
 
             //get all nine recognised imgViews
-            recCards[i] = getIntent().getStringExtra(cardID2);
+            recCards[i] = getIntent().getStringExtra(cardID);
         }
 
         normCards = js.getNormArray(recCards);
