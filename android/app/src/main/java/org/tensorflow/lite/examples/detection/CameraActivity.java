@@ -155,9 +155,18 @@ public abstract class CameraActivity extends AppCompatActivity
           CardRecog[] sorted = sortCards(myCards);
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
 
-          for (int i = 0; i < 9; i++){
-            intent.putExtra("card " + (i+1), sorted[i].getCardTitle());
-          }
+//          for (int i = 0; i < 9; i++){
+//            intent.putExtra("card " + (i + 1), sorted[i].getCardTitle());
+//          }
+          intent.putExtra("card 1", "Rosen 6");
+          intent.putExtra("card 2", "Rosen 7");
+          intent.putExtra("card 3", "Rosen 10");
+          intent.putExtra("card 4", "Eicheln 7");
+          intent.putExtra("card 5", "Schilten 9");
+          intent.putExtra("card 6", "Schilten Ass");
+          intent.putExtra("card 7", "Schellen Under");
+          intent.putExtra("card 8", "Schellen 6");
+          intent.putExtra("card 9", "Rosen Ober");
 
           startActivity(intent);
         }
