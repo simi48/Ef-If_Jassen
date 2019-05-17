@@ -48,6 +48,18 @@ public class JassFunctions {
             }
             Log.d(TAG, myCards[i].getCardTitle());
         }
+//        Test data for model from example app
+
+        myCards[27].setCardTitle("chair");
+        myCards[28].setCardTitle("backpack");
+        myCards[29].setCardTitle("book");
+        myCards[30].setCardTitle("clock");
+        myCards[31].setCardTitle("scissors");
+        myCards[32].setCardTitle("mouse");
+        myCards[33].setCardTitle("keyboard");
+        myCards[34].setCardTitle("bed");
+        myCards[35].setCardTitle("tv");
+
         return myCards;
     }
 
