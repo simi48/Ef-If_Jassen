@@ -103,12 +103,10 @@ public abstract class CameraActivity extends AppCompatActivity
   //
   //
   private JassFunctions js = new JassFunctions();
-  public boolean canClick = false;
+  public boolean canClick = true;
   public Button continueBtn;
   public int count = 0;
   public CardRecog[] myCards = js.fillCardNames();
-  public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0"};
-  public int MemoryInt = 0;
   //
   //
   //
@@ -158,17 +156,17 @@ public abstract class CameraActivity extends AppCompatActivity
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
 
 //          for (int i = 0; i < 9; i++){
-//            intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
+//            intent.putExtra("card " + (i + 1), sorted[i].getCardTitle());
 //          }
-          intent.putExtra("card1", "Rosen 6");
-          intent.putExtra("card2", "Rosen 7");
-          intent.putExtra("card3", "Rosen 10");
-          intent.putExtra("card4", "Eicheln 7");
-          intent.putExtra("card5", "Schilten 9");
-          intent.putExtra("card6", "Schilten Ass");
-          intent.putExtra("card7", "Schellen Under");
-          intent.putExtra("card8", "Schellen 6");
-          intent.putExtra("card9", "Rosen Ober");
+          intent.putExtra("card 1", "Rosen 6");
+          intent.putExtra("card 2", "Rosen 7");
+          intent.putExtra("card 3", "Rosen 10");
+          intent.putExtra("card 4", "Eicheln 7");
+          intent.putExtra("card 5", "Schilten 9");
+          intent.putExtra("card 6", "Schilten Ass");
+          intent.putExtra("card 7", "Schellen Under");
+          intent.putExtra("card 8", "Schellen 6");
+          intent.putExtra("card 9", "Rosen Ober");
 
           startActivity(intent);
         }
