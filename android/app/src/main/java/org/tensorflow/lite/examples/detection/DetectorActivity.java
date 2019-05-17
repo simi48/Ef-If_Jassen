@@ -250,7 +250,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                   if(DetectorActivity.super.myCards[i].getConfidence() > 0){
                     DetectorActivity.super.count++;
                   }
-                  if(DetectorActivity.super.count > 9){
+                  if(DetectorActivity.super.count == 9){
                     DetectorActivity.super.canClick = true;
                     DetectorActivity.super.continueBtn.setTextColor(Color.WHITE);
                   }
