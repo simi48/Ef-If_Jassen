@@ -432,10 +432,13 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
                 model_list[table][3] = bestmodel
                 
             #TFLite. fuck this thing.
-            try:
-                rnn.TFLite(bestmodel)
-            except:
-                print("fucking TFLite ain't working. Cabbage.")
+            #it even fucking wrecks the code when you've encapsulated it in a (or rather two) failsafe...
+# =============================================================================
+#             try:
+#                 rnn.TFLite(bestmodel)
+#             except:
+#                 print("fucking TFLite ain't working. Cabbage.")
+# =============================================================================
                 
                 
             #if git is installed, push changes to GitHub
