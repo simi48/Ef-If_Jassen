@@ -14,7 +14,6 @@ import android.widget.ImageView;
 public class MainMenuActivity extends AppCompatActivity {
 
     private static final String TAG = "MainMenuActivity";
-    private boolean BackBtnAllowed = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,16 +37,5 @@ public class MainMenuActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-    //method which can be used to disable BackButton
-    @Override
-    public void onBackPressed(){
-        if(!BackBtnAllowed){
-            //literally do nothing
-        }
-        else{
-            super.onBackPressed();
-        }
     }
 }

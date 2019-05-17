@@ -102,7 +102,6 @@ public abstract class CameraActivity extends AppCompatActivity
   //
   //
   //
-  private boolean BackBtnAllowed = false;
   private JassFunctions js = new JassFunctions();
   public boolean canClick = false;
   public Button continueBtn;
@@ -246,17 +245,6 @@ public abstract class CameraActivity extends AppCompatActivity
   //
   //
   //
-  //method which can be used to disable BackButton
-  @Override
-  public void onBackPressed(){
-    if(!BackBtnAllowed){
-      //literally do nothing
-    }
-    else{
-      super.onBackPressed();
-    }
-  }
-
   private CardRecog[] sortCards(CardRecog[] sorted){ //The purpose of this method is to sort the Card array through putting those cards with a higher confidence first
 
     CardRecog[] unsorted = sorted;

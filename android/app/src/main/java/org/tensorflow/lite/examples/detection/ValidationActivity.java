@@ -14,7 +14,6 @@ import org.tensorflow.lite.examples.detection.env.JassFunctions;
 public class ValidationActivity extends AppCompatActivity {
 
     private static final String TAG = "ValidationActivity";
-    private boolean BackBtnAllowed = false;
     private String[] recCards = new String[9];
     private ImageView[] imgViews = new ImageView[9];
     private int[] normCards = new int[37];
@@ -78,16 +77,5 @@ public class ValidationActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
-
-    //method which can be used to disable BackButton
-    @Override
-    public void onBackPressed(){
-        if(!BackBtnAllowed){
-            //literally do nothing
-        }
-        else{
-            super.onBackPressed();
-        }
     }
 }
