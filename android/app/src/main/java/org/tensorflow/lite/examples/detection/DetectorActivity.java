@@ -45,6 +45,7 @@ import org.tensorflow.lite.examples.detection.tflite.Classifier;
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel;
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker;
 
+
 //
 //
 //
@@ -64,9 +65,9 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final Logger LOGGER = new Logger();
 
   // Configuration values for the prepackaged SSD model.
-  private static final int TF_OD_API_INPUT_SIZE = 300;
+  private static final int TF_OD_API_INPUT_SIZE = 416;
   private static final boolean TF_OD_API_IS_QUANTIZED = false; // maybe also true, dunno yet
-  private static final String TF_OD_API_MODEL_FILE = "tiny-yolo-obj.lite";
+  private static final String TF_OD_API_MODEL_FILE = "tiny-yolo-obj.pb";
   private static final String TF_OD_API_LABELS_FILE = "labelmap2.txt";
   private static final DetectorMode MODE = DetectorMode.TF_OD_API;
   // Minimum detection confidence to track a detection.
