@@ -43,13 +43,15 @@ import org.tensorflow.lite.examples.detection.tflite.ClassifierYolo;
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel;
 import org.tensorflow.lite.examples.detection.tflite.TensorFlowYoloDetector;
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker;
+import org.tensorflow.lite.examples.detection.tracking.MultiBoxTrackerYolo;
 
 
+
 //
 //
 //
 //
-import org.tensorflow.lite.examples.detection.env.CardRecog;
+
 //
 //
 //
@@ -89,7 +91,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private Integer sensorOrientation;
 
   //needs to be changed to just Classifier if it's not a Yolo model
-  private ClassifierYolo detector;
+  private ClassifierYolo detectorYolo;
+  private Classifier detectorTF;
 
   private long lastProcessingTimeMs;
   private Bitmap rgbFrameBitmap = null;
@@ -103,7 +106,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private Matrix frameToCropTransform;
   private Matrix cropToFrameTransform;
 
-  private MultiBoxTracker tracker;
+  private MultiBoxTrackerYolo tracker;
 
   private byte[] luminanceCopy;
 
@@ -120,12 +123,12 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     borderedText = new BorderedText(textSizePx);
     borderedText.setTypeface(Typeface.MONOSPACE);
 
-    tracker = new MultiBoxTracker(this);
+    tracker = new MultiBoxTrackerYolo(this);
 
     int cropSize = TF_OD_API_INPUT_SIZE;
 
     if (MODE == DetectorMode.YOLO) {
-      detector =
+      detectorYolo =
               TensorFlowYoloDetector.create(
                       getAssets(),
                       YOLO_MODEL_FILE,
@@ -136,7 +139,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
       cropSize = YOLO_INPUT_SIZE;
     } else {
       try {
-        detector =
+        detectorTF =
                 TFLiteObjectDetectionAPIModel.create(
                         getAssets(),
                         TF_OD_API_MODEL_FILE,
@@ -230,7 +233,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
           public void run() {
             LOGGER.i("Running detection on image " + currTimestamp);
             final long startTime = SystemClock.uptimeMillis();
-            final List<ClassifierYolo.Recognition> results = detector.recognizeImage(croppedBitmap);
+            final List<ClassifierYolo.Recognition> results = detectorYolo.recognizeImage(croppedBitmap);
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
 
             cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
@@ -250,10 +253,10 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 break;
             }
 
-            final List<Classifier.Recognition> mappedRecognitions =
-                new LinkedList<Classifier.Recognition>();
+            final List<ClassifierYolo.Recognition> mappedRecognitions =
+                new LinkedList<ClassifierYolo.Recognition>();
 
-            for (final Classifier.Recognition result : results) {
+            for (final ClassifierYolo.Recognition result : results) {
               final RectF location = result.getLocation();
               if (location != null && result.getConfidence() >= minimumConfidence) {
                 canvas.drawRect(location, paint);
@@ -342,11 +345,11 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
   @Override
   protected void setUseNNAPI(final boolean isChecked) {
-    runInBackground(() -> detector.setUseNNAPI(isChecked));
+    runInBackground(() -> detectorYolo.setUseNNAPI(isChecked));
   }
 
   @Override
   protected void setNumThreads(final int numThreads) {
-    runInBackground(() -> detector.setNumThreads(numThreads));
+    runInBackground(() -> detectorYolo.setNumThreads(numThreads));
   }
 }
