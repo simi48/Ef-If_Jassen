@@ -35,7 +35,7 @@ public class TensorFlowYoloDetector implements ClassifierYolo {
     // Only return this many results with at least this confidence.
     private static final int MAX_RESULTS = 5;
 
-    private static final int NUM_CLASSES = 20;
+    private static final int NUM_CLASSES = 36;
 
     private static final int NUM_BOXES_PER_BLOCK = 5;
 
