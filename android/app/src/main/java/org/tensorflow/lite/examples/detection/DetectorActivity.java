@@ -39,6 +39,7 @@ import org.tensorflow.lite.examples.detection.env.BorderedText;
 import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
 import org.tensorflow.lite.examples.detection.tflite.Classifier;
+import org.tensorflow.lite.examples.detection.tflite.ClassifierYolo;
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel;
 import org.tensorflow.lite.examples.detection.tflite.TensorFlowYoloDetector;
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker;
@@ -87,7 +88,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   OverlayView trackingOverlay;
   private Integer sensorOrientation;
 
-  private Classifier detector;
+  //needs to be changed to just Classifier if it's not a Yolo model
+  private ClassifierYolo detector;
 
   private long lastProcessingTimeMs;
   private Bitmap rgbFrameBitmap = null;
@@ -228,7 +230,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
           public void run() {
             LOGGER.i("Running detection on image " + currTimestamp);
             final long startTime = SystemClock.uptimeMillis();
-            final List<Classifier.Recognition> results = detector.recognizeImage(croppedBitmap);
+            final List<ClassifierYolo.Recognition> results = detector.recognizeImage(croppedBitmap);
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
 
             cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);

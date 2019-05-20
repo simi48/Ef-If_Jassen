@@ -106,4 +106,8 @@ public interface ClassifierYolo {
 
   void close();
 
+  void setNumThreads(int num_threads);
+
+  void setUseNNAPI(boolean isChecked);
+
 }

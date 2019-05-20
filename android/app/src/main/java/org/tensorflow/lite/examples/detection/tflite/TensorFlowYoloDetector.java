@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
+import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.examples.detection.env.Logger;
 import org.tensorflow.lite.examples.detection.env.SplitTimer;
 
@@ -38,6 +39,8 @@ public class TensorFlowYoloDetector implements ClassifierYolo {
 
     private static final int NUM_BOXES_PER_BLOCK = 5;
 
+
+    private Interpreter yolo;
     // TODO(andrewharp): allow loading anchors and classes
     // from files.
     private static final double[] ANCHORS = {
@@ -273,5 +276,14 @@ public class TensorFlowYoloDetector implements ClassifierYolo {
     @Override
     public void close() {
         inferenceInterface.close();
+    }
+
+    public void setNumThreads(int num_threads) {
+        if (yolo != null) yolo.setNumThreads(num_threads);
+    }
+
+    @Override
+    public void setUseNNAPI(boolean isChecked) {
+        if (yolo != null) yolo.setUseNNAPI(isChecked);
     }
 }
