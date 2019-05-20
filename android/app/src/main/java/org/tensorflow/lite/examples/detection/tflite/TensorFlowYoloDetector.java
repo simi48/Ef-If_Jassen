@@ -103,7 +103,7 @@ public class TensorFlowYoloDetector implements ClassifierYolo {
     private TensorFlowInferenceInterface inferenceInterface;
 
     /** Initializes a native TensorFlow session for classifying images. */
-    public static Classifier create(
+    public static ClassifierYolo create(
             final AssetManager assetManager,
             final String modelFilename,
             final int inputSize,
