@@ -40,6 +40,7 @@ import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
 import org.tensorflow.lite.examples.detection.tflite.Classifier;
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel;
+import org.tensorflow.lite.examples.detection.tflite.TensorFlowYoloDetector;
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker;
 
 
