@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-package org.tensorflow.demo;
+package org.tensorflow.lite.examples.detection.tflite;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -28,7 +28,7 @@ import org.tensorflow.demo.env.Logger;
 import org.tensorflow.demo.env.SplitTimer;
 
 /** An object detector that uses TF and a YOLO model to detect objects. */
-public class TensorFlowYoloDetector implements Classifier {
+public class TensorFlowYoloDetector implements ClassifierYolo {
     private static final Logger LOGGER = new Logger();
 
     // Only return this many results with at least this confidence.
