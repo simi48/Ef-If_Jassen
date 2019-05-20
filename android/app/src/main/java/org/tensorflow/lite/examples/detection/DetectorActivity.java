@@ -67,9 +67,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   // Configuration values for the prepackaged SSD model.
   private static final int TF_OD_API_INPUT_SIZE = 300;
   private static final boolean TF_OD_API_IS_QUANTIZED = false; // maybe also true, dunno yet
-  private static final String TF_OD_API_MODEL_FILE = "tiny-yolo-obj.pb";
-  private static final String TF_OD_API_LABELS_FILE = "labelmap2.txt";
-  private static final DetectorMode MODE = DetectorMode.YOLO;
+  private static final String TF_OD_API_MODEL_FILE = "detect.tflite";
+  private static final String TF_OD_API_LABELS_FILE = "labelmap.txt";
 
   // Configuration values for tiny-yolo-obj.pb
   private static final String YOLO_MODEL_FILE = "tiny-yolo-voc.pb";
@@ -78,6 +77,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final String YOLO_OUTPUT_NAMES = "output";
   private static final int YOLO_BLOCK_SIZE = 32;
   private static final float MINIMUM_CONFIDENCE_YOLO = 0.25f;
+
+  private static final DetectorMode MODE = DetectorMode.YOLO;
 
   // Minimum detection confidence to track a detection.
   private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
