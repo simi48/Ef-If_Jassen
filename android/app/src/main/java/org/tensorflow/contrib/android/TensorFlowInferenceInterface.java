@@ -47,7 +47,7 @@ import org.tensorflow.types.UInt8;
  * example usage.
  */
 public class TensorFlowInferenceInterface {
-  private static final String TAG = "TensorFlowInferenceInterface";
+  private static final String TAG = "TFInferenceInterface";
   private static final String ASSET_FILE_PREFIX = "file:///android_asset/";
 
   /*
