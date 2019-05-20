@@ -77,7 +77,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final String YOLO_INPUT_NAME = "input";
   private static final String YOLO_OUTPUT_NAMES = "output";
   private static final int YOLO_BLOCK_SIZE = 32;
-  private static final float MINIMUM_CONFIDENCE_YOLO = 0.25f
+  private static final float MINIMUM_CONFIDENCE_YOLO = 0.25f;
 
   // Minimum detection confidence to track a detection.
   private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
