@@ -26,12 +26,9 @@ import android.graphics.Paint.Style;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.media.ImageReader.OnImageAvailableListener;
-import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Size;
 import android.util.TypedValue;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -42,14 +39,19 @@ import org.tensorflow.lite.examples.detection.env.BorderedText;
 import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
 import org.tensorflow.lite.examples.detection.tflite.Classifier;
+import org.tensorflow.lite.examples.detection.tflite.ClassifierYolo;
 import org.tensorflow.lite.examples.detection.tflite.TFLiteObjectDetectionAPIModel;
+import org.tensorflow.lite.examples.detection.tflite.TensorFlowYoloDetector;
 import org.tensorflow.lite.examples.detection.tracking.MultiBoxTracker;
+import org.tensorflow.lite.examples.detection.tracking.MultiBoxTrackerYolo;
+
+
 
 //
 //
 //
 //
-import org.tensorflow.lite.examples.detection.env.CardRecog;
+
 //
 //
 //
@@ -66,9 +68,19 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   // Configuration values for the prepackaged SSD model.
   private static final int TF_OD_API_INPUT_SIZE = 300;
   private static final boolean TF_OD_API_IS_QUANTIZED = false; // maybe also true, dunno yet
-  private static final String TF_OD_API_MODEL_FILE = "tiny-yolo-obj.lite";
-  private static final String TF_OD_API_LABELS_FILE = "labelmap2.txt";
-  private static final DetectorMode MODE = DetectorMode.TF_OD_API;
+  private static final String TF_OD_API_MODEL_FILE = "detect.tflite";
+  private static final String TF_OD_API_LABELS_FILE = "labelmap.txt";
+
+  // Configuration values for tiny-yolo-obj.pb
+  private static final String YOLO_MODEL_FILE = "tiny-yolo-voc.pb";
+  private static final int YOLO_INPUT_SIZE = 416;
+  private static final String YOLO_INPUT_NAME = "input";
+  private static final String YOLO_OUTPUT_NAMES = "output";
+  private static final int YOLO_BLOCK_SIZE = 32;
+  private static final float MINIMUM_CONFIDENCE_YOLO = 0.25f;
+
+  private static final DetectorMode MODE = DetectorMode.YOLO;
+
   // Minimum detection confidence to track a detection.
   private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
   private static final boolean MAINTAIN_ASPECT = false;
@@ -78,7 +90,9 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   OverlayView trackingOverlay;
   private Integer sensorOrientation;
 
-  private Classifier detector;
+  //needs to be changed to just Classifier if it's not a Yolo model
+  private ClassifierYolo detectorYolo;
+  private Classifier detectorTF;
 
   private long lastProcessingTimeMs;
   private Bitmap rgbFrameBitmap = null;
@@ -92,7 +106,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private Matrix frameToCropTransform;
   private Matrix cropToFrameTransform;
 
-  private MultiBoxTracker tracker;
+  private MultiBoxTrackerYolo tracker;
 
   private byte[] luminanceCopy;
 
@@ -104,32 +118,44 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   @Override
   public void onPreviewSizeChosen(final Size size, final int rotation) {
     final float textSizePx =
-        TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DIP, getResources().getDisplayMetrics());
+            TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, TEXT_SIZE_DIP, getResources().getDisplayMetrics());
     borderedText = new BorderedText(textSizePx);
     borderedText.setTypeface(Typeface.MONOSPACE);
 
-    tracker = new MultiBoxTracker(this);
+    tracker = new MultiBoxTrackerYolo(this);
 
     int cropSize = TF_OD_API_INPUT_SIZE;
 
-    try {
-      detector =
-          TFLiteObjectDetectionAPIModel.create(
-              getAssets(),
-              TF_OD_API_MODEL_FILE,
-              TF_OD_API_LABELS_FILE,
-              TF_OD_API_INPUT_SIZE,
-              TF_OD_API_IS_QUANTIZED);
-      cropSize = TF_OD_API_INPUT_SIZE;
-    } catch (final IOException e) {
-      e.printStackTrace();
-      LOGGER.e("Exception initializing classifier!", e);
-      Toast toast =
-          Toast.makeText(
-              getApplicationContext(), "Classifier could not be initialized", Toast.LENGTH_SHORT);
-      toast.show();
-      finish();
+    if (MODE == DetectorMode.YOLO) {
+      detectorYolo =
+              TensorFlowYoloDetector.create(
+                      getAssets(),
+                      YOLO_MODEL_FILE,
+                      YOLO_INPUT_SIZE,
+                      YOLO_INPUT_NAME,
+                      YOLO_OUTPUT_NAMES,
+                      YOLO_BLOCK_SIZE);
+      cropSize = YOLO_INPUT_SIZE;
+    } else {
+      try {
+        detectorTF =
+                TFLiteObjectDetectionAPIModel.create(
+                        getAssets(),
+                        TF_OD_API_MODEL_FILE,
+                        TF_OD_API_LABELS_FILE,
+                        TF_OD_API_INPUT_SIZE,
+                        TF_OD_API_IS_QUANTIZED);
+        cropSize = TF_OD_API_INPUT_SIZE;
+      } catch (final IOException e) {
+        e.printStackTrace();
+        LOGGER.e("Exception initializing classifier!", e);
+        Toast toast =
+                Toast.makeText(
+                        getApplicationContext(), "Classifier could not be initialized", Toast.LENGTH_SHORT);
+        toast.show();
+        finish();
+      }
     }
 
     previewWidth = size.getWidth();
@@ -207,7 +233,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
           public void run() {
             LOGGER.i("Running detection on image " + currTimestamp);
             final long startTime = SystemClock.uptimeMillis();
-            final List<Classifier.Recognition> results = detector.recognizeImage(croppedBitmap);
+            final List<ClassifierYolo.Recognition> results = detectorYolo.recognizeImage(croppedBitmap);
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
 
             cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
@@ -222,12 +248,15 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
               case TF_OD_API:
                 minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
                 break;
+              case YOLO:
+                minimumConfidence = MINIMUM_CONFIDENCE_YOLO;
+                break;
             }
 
-            final List<Classifier.Recognition> mappedRecognitions =
-                new LinkedList<Classifier.Recognition>();
+            final List<ClassifierYolo.Recognition> mappedRecognitions =
+                new LinkedList<ClassifierYolo.Recognition>();
 
-            for (final Classifier.Recognition result : results) {
+            for (final ClassifierYolo.Recognition result : results) {
               final RectF location = result.getLocation();
               if (location != null && result.getConfidence() >= minimumConfidence) {
                 canvas.drawRect(location, paint);
@@ -311,16 +340,16 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   // Which detection model to use: by default uses Tensorflow Object Detection API frozen
   // checkpoints.
   private enum DetectorMode {
-    TF_OD_API;
+    TF_OD_API, YOLO;
   }
 
   @Override
   protected void setUseNNAPI(final boolean isChecked) {
-    runInBackground(() -> detector.setUseNNAPI(isChecked));
+    runInBackground(() -> detectorYolo.setUseNNAPI(isChecked));
   }
 
   @Override
   protected void setNumThreads(final int numThreads) {
-    runInBackground(() -> detector.setNumThreads(numThreads));
+    runInBackground(() -> detectorYolo.setNumThreads(numThreads));
   }
 }
