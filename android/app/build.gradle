@@ -20,6 +20,7 @@ android {
     aaptOptions {
         noCompress "tflite"
         noCompress "lite"
+        noCompress "pb"
     }
     compileOptions {
         sourceCompatibility = '1.8'
