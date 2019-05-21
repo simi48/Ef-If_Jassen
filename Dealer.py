@@ -430,11 +430,7 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
             bestmodel = model_list[int(best[0]/4)][best[0]%4] #check this pls
             
             #save it usefully, also, lets test this a bit...
-            rnn.pb_conversion(bestmodel)
-            tmpname = ctime()
-            rnn.pb_conversion(bestmodel,name=tmpname)
-            tmpname = tmpname + ' _txt'
-            rnn.pb_conversion(bestmodel,name=tmpname,text=True)
+            rnn.pb_conversion(bestmodel,timestamp = ctime())
             
             for table in range(processes):
                 model_list[table][3] = bestmodel
