@@ -525,6 +525,19 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
 def pb_conversion(model, name='JassRNN', path='FrozenGraph'):
     '''
     Converts a Keras model to a tensorflow frozengraph and saves it to the harddisk (as a .pb file)
+    
+    Parameters:
+        model (tf.keras.model.Sequential):
+            A Keras model, from which the underlying 'Session' will be used to freeze the tensorflow graph.
+        
+        name (str):
+            The name of the Frozengraph file, defaults to 'JassRNN'
+        
+        path (str):
+            Determines the path to which the .pb file is saved.
+    
+    Returns:
+        None
     '''
 #    tmp = model.get_weights()
 #    TrainModelBasics(model,1,False)
@@ -532,7 +545,7 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph'):
     model.predict(PrepareInput(range(37)))
 #    print('gothere')
     frozen_graph = freeze_session(tf.keras.backend.get_session())
-    tf.train.write_graph(frozen_graph, path, name+".pb", as_text=False)
+    tf.train.write_graph(frozen_graph, path, name+".pb", as_text=True)
 #    
 #def pb_conversion_(model):
 #    sess = tf.keras.backend.get_session()
@@ -562,7 +575,7 @@ if __name__ == '__main__':
 #    print((old[2] == new[2]).any())
 #    TFLite(model)
 #    pb_conversion(model,'asdfdsaf')
-    pb_conversion(model)
+    pb_conversion(model,'tests')
 #    pb_conv(model)
 #    pb_conversion_(model)
     
