@@ -335,7 +335,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                   if(DetectorActivity.super.myCards[i].getConfidence() > 0){
                     boolean canAdd = false;
                     //make sure the same card doesn't count twice
-                    for(int pos = 0; pos < 9; pos++){
+                    for(int pos = 0; pos < 36; pos++){
                       if(DetectorActivity.super.Memory[pos].equals(DetectorActivity.super.myCards[i].getCardTitle())){
                         canAdd = false;
                         break;

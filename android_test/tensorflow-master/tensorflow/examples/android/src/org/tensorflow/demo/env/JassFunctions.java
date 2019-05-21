@@ -46,7 +46,7 @@ public class JassFunctions {
                 myCards[i].setCardTitle(cardType + "Ass");
                 myCards[i].setConfidence(0);
             }
-            Log.d(TAG, myCards[i].getCardTitle());
+//            Log.d(TAG, myCards[i].getCardTitle());
         }
 
         return myCards;
