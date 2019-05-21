@@ -19,26 +19,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000"
-    tools:context="org.tensorflow.demo.CameraActivity" />
+    tools:context="org.tensorflow.demo.CameraActivity" >
 
-<Button
-android:id="@+id/btnContinueScan"
-android:layout_width="360dp"
-android:layout_height="wrap_content"
-android:layout_below="@+id/toolbar"
+    <Button
+        android:id="@+id/btnContinueScan"
+        android:layout_width="360dp"
+        android:layout_height="wrap_content"
 
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="600dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="@string/continueBtnText"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"></Button>
 
-android:layout_centerHorizontal="true"
-android:layout_marginStart="20dp"
-android:layout_marginTop="450dp"
-android:layout_marginEnd="20dp"
-android:background="@drawable/buttonshape"
-android:shadowColor="#000000"
-android:shadowDx="0"
-android:shadowDy="0"
-android:shadowRadius="5"
-android:text="@string/continueBtnText"
-android:textAlignment="center"
-android:textAllCaps="false"
-android:textColor="#FFFFFF"
-android:textSize="30sp"></Button>
+</FrameLayout>
+

@@ -115,49 +115,85 @@ public abstract class CameraActivity extends Activity
     } else {
       requestPermission();
     }
+
+    //
+    //
+    //
+    //
+    continueBtn = (Button) findViewById(R.id.btnContinueScan);
+
+    continueBtn.setTextColor(Color.RED);
+
+    continueBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if(canClick){
+          LOGGER.d("Loading Validation" + this);
+
+          CardRecog[] sorted = sortCards(myCards);
+          Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
+
+          for (int i = 0; i < 9; i++){
+            intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
+          }
+//          intent.putExtra("card1", "Rosen 6");
+//          intent.putExtra("card2", "Rosen 7");
+//          intent.putExtra("card3", "Rosen 10");
+//          intent.putExtra("card4", "Eicheln 7");
+//          intent.putExtra("card5", "Schilten 9");
+//          intent.putExtra("card6", "Schilten Ass");
+//          intent.putExtra("card7", "Schellen Under");
+//          intent.putExtra("card8", "Schellen 6");
+//          intent.putExtra("card9", "Rosen Ober");
+
+          startActivity(intent);
+        }
+
+        if(!canClick){
+          int tmp = 9 - count;
+          Toast.makeText(CameraActivity.this, "You have to scan at least " + tmp + " more cards to continue!", Toast.LENGTH_LONG).show();
+        }
+      }
+    });
+
+    //
+    //
+    //
+    //
+
+
   }
 
   //
   //
   //
   //
-  continueBtn = (Button) findViewById(R.id.btnContinueScan);
-//    TextView myText = (TextView) findViewById(R.id.mainCaptionScan);
+  //method which can be used to disable BackButton
+  @Override
+  public void onBackPressed(){
+    if(!BackBtnAllowed){
+      //literally do nothing
+    }
+    else{
+      super.onBackPressed();
+    }
+  }
 
-    continueBtn.setTextColor(Color.RED);
+  private CardRecog[] sortCards(CardRecog[] sorted){ //The purpose of this method is to sort the Card array through putting those cards with a higher confidence first
 
-    continueBtn.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-      if(canClick){
-        LOGGER.d("Loading Validation" + this);
+    CardRecog[] unsorted = sorted;
 
-        CardRecog[] sorted = sortCards(myCards);
-        Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
-
-//          for (int i = 0; i < 9; i++){
-//            intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
-//          }
-        intent.putExtra("card1", "Rosen 6");
-        intent.putExtra("card2", "Rosen 7");
-        intent.putExtra("card3", "Rosen 10");
-        intent.putExtra("card4", "Eicheln 7");
-        intent.putExtra("card5", "Schilten 9");
-        intent.putExtra("card6", "Schilten Ass");
-        intent.putExtra("card7", "Schellen Under");
-        intent.putExtra("card8", "Schellen 6");
-        intent.putExtra("card9", "Rosen Ober");
-
-        startActivity(intent);
-      }
-
-      if(!canClick){
-        int tmp = 9 - count;
-        Toast.makeText(CameraActivity.this, "You have to scan at least " + tmp + " more cards to continue!", Toast.LENGTH_LONG).show();
+    for (int a = 0; a < sorted.length -2; a++){
+      for (int b = 0; b < sorted.length -2; b++){
+        if (sorted[b + 1].getConfidence() > sorted[b].getConfidence()){
+          sorted[b] = sorted[b + 1];
+          sorted[b + 1] = unsorted[b];
+          unsorted = sorted;
+        }
       }
     }
-  });
-
+    return sorted;
+  }
   //
   //
   //

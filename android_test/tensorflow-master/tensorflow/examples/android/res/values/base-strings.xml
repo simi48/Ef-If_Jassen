@@ -21,4 +21,14 @@
     <string name="activity_name_detection">TF Detect</string>
     <string name="activity_name_stylize">TF Stylize</string>
     <string name="activity_name_speech">TF Speech</string>
+    <string name="playButtonText">PLAY</string>
+    <string name="settingsButtonText">SETTINGS</string>
+    <string name="bckImg">Background Image</string>
+    <string name="mainTitle">Deep Jass</string>
+    <string name="mainCaption">by Marc, Michael, Ramon &amp; Simon</string>
+    <string name="valTitle"> Card Validation </string>
+    <string name="valCaption"> Are these your cards? </string>
+    <string name="continueBtnText"> Continue </string>
+    <string name="rescanText">Scan Again </string>
+    <string name="cardVal"> Card </string>
 </resources>

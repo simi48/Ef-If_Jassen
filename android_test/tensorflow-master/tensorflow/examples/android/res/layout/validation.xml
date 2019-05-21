@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rltvValLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_back_stockfree"
+    >
+
+
+    <TextView
+        android:id="@+id/valTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="42dp"
+        android:text="@string/valTitle"
+        android:textColor="#FFFFFF"
+        android:textSize="50sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/valCaption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/valTitle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="@string/valCaption"
+        android:textColor="#FFFFFF"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/card1"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:layout_below="@id/valCaption"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        android:layout_toStartOf="@id/card2"
+        android:contentDescription="@string/cardVal"
+        android:src="@drawable/border" />
+
+    <ImageView
+        android:id="@+id/card2"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:src="@drawable/border"
+        android:contentDescription="@string/cardVal"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/valCaption"/>
+
+    <ImageView
+        android:id="@+id/card3"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:src="@drawable/border"
+        android:contentDescription="@string/cardVal"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@id/valCaption"
+        android:layout_toEndOf="@id/card2"/>
+
+    <ImageView
+        android:id="@+id/card4"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:src="@drawable/border"
+        android:contentDescription="@string/cardVal"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@id/card1"
+        android:layout_toStartOf="@id/card5"
+         />
+
+    <ImageView
+        android:id="@+id/card5"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:src="@drawable/border"
+        android:contentDescription="@string/cardVal"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/card2"/>
+
+    <ImageView
+        android:id="@+id/card6"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:src="@drawable/border"
+        android:contentDescription="@string/cardVal"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@id/card3"
+        android:layout_toEndOf="@id/card5"/>
+
+    <ImageView
+        android:id="@+id/card7"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:src="@drawable/border"
+        android:contentDescription="@string/cardVal"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@id/card4"
+        android:layout_toStartOf="@id/card8"/>
+
+    <ImageView
+        android:id="@+id/card8"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:src="@drawable/border"
+        android:contentDescription="@string/cardVal"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/card5" />
+
+    <ImageView
+        android:id="@+id/card9"
+        android:layout_width="100dp"
+        android:layout_height="125dp"
+        android:src="@drawable/border"
+        android:contentDescription="@string/cardVal"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_below="@id/card6"
+        android:layout_toEndOf="@id/card8"/>
+
+    <Button
+        android:id="@+id/btnContinue"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="27dp"
+
+        android:layout_toEndOf="@id/btnScanAgain"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="@string/continueBtnText"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"></Button>
+
+    <Button
+        android:id="@+id/btnScanAgain"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="20dp"
+
+        android:layout_marginBottom="27dp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="@string/rescanText"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"></Button>
+
+
+</RelativeLayout>
