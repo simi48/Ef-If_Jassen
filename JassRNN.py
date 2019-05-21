@@ -526,9 +526,10 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph'):
     '''
     Converts a Keras model to a tensorflow frozengraph and saves it to the harddisk (as a .pb file)
     '''
-    tmp = model.get_weights()
-    TrainModelBasics(model,1,False)
-    model.set_weights(tmp)
+#    tmp = model.get_weights()
+#    TrainModelBasics(model,1,False)
+#    model.set_weights(tmp)
+    model.predict(PrepareInput(range(37)))
 #    print('gothere')
     frozen_graph = freeze_session(tf.keras.backend.get_session())
     tf.train.write_graph(frozen_graph, path, name+".pb", as_text=False)
@@ -560,7 +561,7 @@ if __name__ == '__main__':
 #    
 #    print((old[2] == new[2]).any())
 #    TFLite(model)
-#    
+#    pb_conversion(model,'asdfdsaf')
     pb_conversion(model)
 #    pb_conv(model)
 #    pb_conversion_(model)
@@ -579,3 +580,60 @@ if __name__ == '__main__':
 #         TrainModelBasics(Model, 100000)
 #         SaveWeights(Model, "Basic")
 # =============================================================================
+    
+    
+    
+
+
+
+
+#What the fuck is this??? Help!?
+
+#runfile('D:/GitHub/Ef-If_Jassen/JassRNN.py', wdir='D:/GitHub/Ef-If_Jassen')
+#Reloaded modules: Jassen
+#Generating Data
+#Adjusting Network
+#100%|██████████| 1/1 [00:02<00:00,  2.29s/it]
+#INFO:tensorflow:Froze 280 variables.
+#INFO:tensorflow:Converted 280 variables to const ops.
+#
+#runfile('D:/GitHub/Ef-If_Jassen/JassRNN.py', wdir='D:/GitHub/Ef-If_Jassen')
+#Reloaded modules: Jassen
+#Generating Data
+#Adjusting Network
+#100%|██████████| 1/1 [00:02<00:00,  2.04s/it]
+#INFO:tensorflow:Froze 315 variables.
+#INFO:tensorflow:Converted 315 variables to const ops.
+#
+#runfile('D:/GitHub/Ef-If_Jassen/JassRNN.py', wdir='D:/GitHub/Ef-If_Jassen')
+#Reloaded modules: Jassen
+#Generating Data
+#Adjusting Network
+#100%|██████████| 1/1 [00:02<00:00,  2.17s/it]
+#INFO:tensorflow:Froze 350 variables.
+#INFO:tensorflow:Converted 350 variables to const ops.
+#
+#runfile('D:/GitHub/Ef-If_Jassen/JassRNN.py', wdir='D:/GitHub/Ef-If_Jassen')
+#Reloaded modules: Jassen
+#Generating Data
+#Adjusting Network
+#100%|██████████| 1/1 [00:02<00:00,  2.33s/it]
+#INFO:tensorflow:Froze 385 variables.
+#INFO:tensorflow:Converted 385 variables to const ops.
+#
+#runfile('D:/GitHub/Ef-If_Jassen/JassRNN.py', wdir='D:/GitHub/Ef-If_Jassen')
+#Reloaded modules: Jassen
+#Generating Data
+#Adjusting Network
+#100%|██████████| 1/1 [00:02<00:00,  2.47s/it]
+#INFO:tensorflow:Froze 420 variables.
+#INFO:tensorflow:Converted 420 variables to const ops.
+#
+#runfile('D:/GitHub/Ef-If_Jassen/JassRNN.py', wdir='D:/GitHub/Ef-If_Jassen')
+#Reloaded modules: Jassen
+#Generating Data
+#Adjusting Network
+#100%|██████████| 1/1 [00:02<00:00,  2.62s/it]
+#INFO:tensorflow:Froze 455 variables.
+#INFO:tensorflow:Converted 455 variables to const ops.
+
