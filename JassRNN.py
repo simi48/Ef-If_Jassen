@@ -522,7 +522,7 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
         frozen_graph = tf.graph_util.convert_variables_to_constants(session, input_graph_def, output_names, freeze_var_names)
         return frozen_graph
 
-def pb_conversion(model, name='JassRNN', path='FrozenGraph'):
+def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False):
     '''
     Converts a Keras model to a tensorflow frozengraph and saves it to the harddisk (as a .pb file)
     
@@ -535,6 +535,9 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph'):
         
         path (str):
             Determines the path to which the .pb file is saved.
+        
+        text (boolean):
+            Determines whether the .pb file should be written as text or as binary. Defaults to False -> binary.
     
     Returns:
         None
@@ -545,7 +548,7 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph'):
     model.predict(PrepareInput(range(37)))
 #    print('gothere')
     frozen_graph = freeze_session(tf.keras.backend.get_session())
-    tf.train.write_graph(frozen_graph, path, name+".pb", as_text=False)
+    tf.train.write_graph(frozen_graph, path, name+".pb", as_text=text)
 #    
 #def pb_conversion_(model):
 #    sess = tf.keras.backend.get_session()

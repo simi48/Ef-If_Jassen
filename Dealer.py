@@ -428,6 +428,12 @@ def MPTrain(model_list, generations = 100, epochs = 25000, batch = 10, mutations
                 print(best[1],"\t => avg:\t",int(best[1]/(processes*3+1)),"\t",ctime(),file=f) #include avg in out (note that avg. is over two rounds)
             print(best[1])
             bestmodel = model_list[int(best[0]/4)][best[0]%4] #check this pls
+            
+            #save it usefully, also, lets test this a bit...
+            rnn.pb_conversion(bestmodel)
+            rnn.pb_conversion(bestmodel,name=ctime())
+            rnn.pb_conversion(bestmodel,name=ctime(),text=True)
+            
             for table in range(processes):
                 model_list[table][3] = bestmodel
                 
