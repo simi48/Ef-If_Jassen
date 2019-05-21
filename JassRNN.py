@@ -462,21 +462,76 @@ def TFLite(model,path = None):
     tflite_model = converter.convert()
     open("converted_model.tflite", "wb").write(tflite_model)
     remove(keras_file)
+    
+    
+#fancy copypaste
+def freeze_session(session, keep_var_names=True, output_names=None, clear_devices=True):
+    """
+    Freezes the state of a session into a pruned computation graph.
+
+    Creates a new computation graph where variable nodes are replaced by
+    constants taking their current value in the session. The new graph will be
+    pruned so subgraphs that are not necessary to compute the requested
+    outputs are removed.
+    @param session The TensorFlow session to be frozen.
+    @param keep_var_names A list of variable names that should not be frozen,
+                          or None to freeze all the variables in the graph.
+    @param output_names Names of the relevant graph outputs.
+    @param clear_devices Remove the device directives from the graph for better portability.
+    @return The frozen graph definition.
+    """
+#    from tensorflow.python.framework.graph_util import convert_variables_to_constants
+    graph = session.graph
+    with graph.as_default():
+        freeze_var_names = list(set(v.op.name for v in tf.global_variables()).difference(keep_var_names or []))
+        output_names = output_names or []
+        output_names += [v.op.name for v in tf.global_variables()]
+        # Graph -> GraphDef ProtoBuf
+        input_graph_def = graph.as_graph_def()
+        if clear_devices:
+            for node in input_graph_def.node:
+                node.device = ""
+        frozen_graph = tf.graph_util.convert_variables_to_constants(session, input_graph_def,
+                                                                                     output_names, freeze_var_names)
+        return frozen_graph
+
+def pb_conversion(model):
+    frozen_graph = freeze_session(tf.keras.backend.get_session())
+    tf.train.write_graph(frozen_graph, "model", "tf_model.pb", as_text=False)
+    
+def pb_conversion_(model):
+    sess = tf.keras.backend.get_session()
+    constant_graph = tf.graph_util.convert_variables_to_constants(
+            sess,
+            sess.graph.as_graph_def(),
+            ["output"])
+    tf.train.write_graph(constant_graph, "",
+                         "xxxXXXFancyModelXXXxxx.pb", as_text=False)
+
+
+def pb_conv(model):
+    train = TrainArray(1)
+    print(train)
+    print(len(train))
+    model.fit(PrepareInput(train[0]), train[1], batch_size=1, verbose = 0, use_multiprocessing=False) #*NOTE it works with `use_multiprocessing=True` but I have no idea what it does or whether it helps at all
+    tf.train.write_graph(tf.keras.backend.get_session().graph,'','xxxXXXFancyModelXXXxxx.pb',as_text = False)
 
 # =============================================================================
 # Main
 # =============================================================================
 if __name__ == '__main__':
     model = GetModel()
-    old = model.get_weights()
+#    old = model.get_weights()
     LoadWeights(model,'testsmall_0-0')
-    new = model.get_weights()
-    SaveRNN(model,'test')
-    LoadRNN(model,'test')
-    
-    print((old[2] == new[2]).any())
-    TFLite(model)
-    
+#    new = model.get_weights()
+#    SaveRNN(model,'test')
+#    LoadRNN(model,'test')
+#    
+#    print((old[2] == new[2]).any())
+#    TFLite(model)
+#    
+    pb_conv(model)
+    pb_conversion_(model)
     
 # =============================================================================
 #     
