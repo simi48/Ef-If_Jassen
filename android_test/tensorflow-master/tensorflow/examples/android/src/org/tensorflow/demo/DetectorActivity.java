@@ -320,6 +320,47 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
                 cropToFrameTransform.mapRect(location);
                 result.setLocation(location);
                 mappedRecognitions.add(result);
+
+                //
+                //
+                //
+                //
+
+                for (int i = 0; i < 36; i++){ //write Confidence of each recognised card into the card array
+                  if(DetectorActivity.super.myCards[i].getCardTitle().equals(result.getTitle())){
+                    if(DetectorActivity.super.myCards[i].getConfidence() < result.getConfidence()){
+                      DetectorActivity.super.myCards[i].setConfidence(result.getConfidence());
+                    }
+                  }
+                  if(DetectorActivity.super.myCards[i].getConfidence() > 0){
+                    boolean canAdd = false;
+                    //make sure the same card doesn't count twice
+                    for(int pos = 0; pos < 9; pos++){
+                      if(DetectorActivity.super.Memory[pos].equals(DetectorActivity.super.myCards[i].getCardTitle())){
+                        canAdd = false;
+                        break;
+                      }
+                      else{
+                        canAdd = true;
+                      }
+                    }
+                    if(canAdd) {
+                      DetectorActivity.super.count++;
+                      DetectorActivity.super.Memory[DetectorActivity.super.MemoryInt] = DetectorActivity.super.myCards[i].getCardTitle();
+                      DetectorActivity.super.MemoryInt++;
+                    }
+                  }
+                  if(DetectorActivity.super.count == 9){
+                    DetectorActivity.super.canClick = true;
+                    DetectorActivity.super.continueBtn.setTextColor(Color.WHITE);
+                  }
+                }
+
+
+                //
+                //
+                //
+                //
               }
             }
 
