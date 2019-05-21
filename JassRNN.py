@@ -545,7 +545,7 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph'):
     model.predict(PrepareInput(range(37)))
 #    print('gothere')
     frozen_graph = freeze_session(tf.keras.backend.get_session())
-    tf.train.write_graph(frozen_graph, path, name+".pb", as_text=True)
+    tf.train.write_graph(frozen_graph, path, name+".pb", as_text=False)
 #    
 #def pb_conversion_(model):
 #    sess = tf.keras.backend.get_session()
@@ -575,7 +575,7 @@ if __name__ == '__main__':
 #    print((old[2] == new[2]).any())
 #    TFLite(model)
 #    pb_conversion(model,'asdfdsaf')
-    pb_conversion(model,'tests')
+    pb_conversion(model)
 #    pb_conv(model)
 #    pb_conversion_(model)
     
