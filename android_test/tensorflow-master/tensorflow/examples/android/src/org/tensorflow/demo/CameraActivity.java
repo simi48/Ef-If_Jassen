@@ -134,6 +134,7 @@ public abstract class CameraActivity extends Activity
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
 
           for (int i = 0; i < 9; i++){
+            LOGGER.d("Putting in Cards" + sorted[i].getCardTitle());
             intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
           }
 //          intent.putExtra("card1", "Rosen 6");
