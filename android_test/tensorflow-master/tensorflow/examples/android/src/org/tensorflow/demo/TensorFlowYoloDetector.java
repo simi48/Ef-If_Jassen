@@ -34,7 +34,7 @@ public class TensorFlowYoloDetector implements Classifier {
   // Only return this many results with at least this confidence.
   private static final int MAX_RESULTS = 5;
 
-  private static final int NUM_CLASSES = 20;
+  private static final int NUM_CLASSES = 36;
 
   private static final int NUM_BOXES_PER_BLOCK = 5;
 
@@ -49,26 +49,42 @@ public class TensorFlowYoloDetector implements Classifier {
   };
 
   private static final String[] LABELS = {
-    "aeroplane",
-    "bicycle",
-    "bird",
-    "boat",
-    "bottle",
-    "bus",
-    "car",
-    "cat",
-    "chair",
-    "cow",
-    "diningtable",
-    "dog",
-    "horse",
-    "motorbike",
-    "person",
-    "pottedplant",
-    "sheep",
-    "sofa",
-    "train",
-    "tvmonitor"
+          "Rosen 6",
+          "Rosen 7",
+          "Rosen 8",
+          "Rosen 9",
+          "Rosen 10",
+          "Rosen Under",
+          "Rosen Ober",
+          "Rosen Koenig",
+          "Rosen Ass",
+          "Eichel 6",
+          "Eichel 7",
+          "Eichel 8",
+          "Eichel 9",
+          "Eichel 10",
+          "Eichel Under",
+          "Eichel Ober",
+          "Eichel Koenig",
+          "Eichel Ass",
+          "Schellen 6",
+          "Schellen 7",
+          "Schellen 8",
+          "Schellen 9",
+          "Schellen 10",
+          "Schellen Under",
+          "Schellen Ober",
+          "Schellen Koenig",
+          "Schellen Ass",
+          "Schilten 6",
+          "Schilten 7",
+          "Schilten 8",
+          "Schilten 9",
+          "Schilten 10",
+          "Schilten Under",
+          "Schilten Ober",
+          "Schilten Koenig",
+          "Schilten Ass"
   };
 
   // Config values.
