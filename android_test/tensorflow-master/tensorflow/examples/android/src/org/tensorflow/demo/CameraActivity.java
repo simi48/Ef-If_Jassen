@@ -45,6 +45,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Comparator;
+
 import org.tensorflow.demo.env.ImageUtils;
 import org.tensorflow.demo.env.Logger;
 import org.tensorflow.demo.R; // Explicit import needed for internal Google builds.
@@ -95,6 +98,7 @@ public abstract class CameraActivity extends Activity
   public Button continueBtn;
   public int count = 0;
   public CardRecog[] myCards = js.fillCardNames();
+  public ArrayList<CardRecog> toBeSorted = new ArrayList<CardRecog>();
   public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0"};
   public int MemoryInt = 0;
   //
@@ -130,12 +134,18 @@ public abstract class CameraActivity extends Activity
         if(canClick){
           LOGGER.d("Loading Validation" + this);
 
-          CardRecog[] sorted = sortCards(myCards, myCards);
+          //CardRecog[] sorted = sortCards(myCards, myCards);
+          for(int i = 0; i < 36; i++){
+            toBeSorted.add(myCards[i]);
+            LOGGER.d("Putting in Cards" + toBeSorted.get(i).getConfidence());
+            LOGGER.d("Putting in Cards" + toBeSorted.get(i).getCardTitle());
+          }
+
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
 
-          for (int i = 0; i < 36; i++){
-            LOGGER.d("Putting in Cards" + myCards[i].getConfidence());
-            LOGGER.d("Putting in Cards" + myCards[i].getCardTitle());
+          for (int i = 0; i < 9; i++){
+//            LOGGER.d("Putting in Cards" + myCards[i].getConfidence());
+//            LOGGER.d("Putting in Cards" + myCards[i].getCardTitle());
 //            intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
           }
 //          intent.putExtra("card1", "Rosen 6");
@@ -194,22 +204,35 @@ public abstract class CameraActivity extends Activity
 
 
 
-    for (int a = 0; a < 4; a++){
-      for (int b = 0; b < 4; b++){
+    for (int a = 0; a < sorted.length -1; a++){
+      for (int b = 0; b < sorted.length -1; b++){
         if (sorted[b + 1].getConfidence() > sorted[b].getConfidence()){
+          LOGGER.d("sorting " + b + sorted[b].getCardTitle());
+          LOGGER.d("sorting " + b + sorted[(b + 1)].getCardTitle());
+          LOGGER.d("unsorting " + b + unsorted[b].getCardTitle());
+          LOGGER.d("unsorting " + b + unsorted[(b + 1)].getCardTitle());
 
-          sorted[b] = sorted[b + 1];
+
+          sorted[b].setCardTitle(unsorted[b + 1].getCardTitle());
           LOGGER.d("sorting " + b + sorted[b].getCardTitle());
-          LOGGER.d("sorting " + b + sorted[(b + 1)].getCardTitle());
           LOGGER.d("unsorting " + b + unsorted[b].getCardTitle());
-          LOGGER.d("unsorting " + b + unsorted[(b + 1)].getCardTitle());
-          sorted[b + 1] = unsorted[b];
-          unsorted[b] = sorted[b];
-          unsorted[b + 1] = sorted[b + 1];
-          LOGGER.d("sorting " + b + sorted[b].getCardTitle());
-          LOGGER.d("sorting " + b + sorted[(b + 1)].getCardTitle());
-          LOGGER.d("unsorting " + b + unsorted[b].getCardTitle());
-          LOGGER.d("unsorting " + b + unsorted[(b + 1)].getCardTitle());
+          sorted[b].setConfidence(unsorted[b + 1].getConfidence());
+          sorted[b + 1].setCardTitle(unsorted[b].getCardTitle());
+          sorted[b + 1].setConfidence(unsorted[b].getConfidence());
+//          LOGGER.d("sorting " + b + sorted[b].getCardTitle());
+//          LOGGER.d("sorting " + b + sorted[(b + 1)].getCardTitle());
+//          LOGGER.d("unsorting " + b + unsorted[b].getCardTitle());
+//          LOGGER.d("unsorting " + b + unsorted[(b + 1)].getCardTitle());
+
+          unsorted[b].setCardTitle(sorted[b].getCardTitle());
+          unsorted[b].setConfidence(sorted[b].getConfidence());
+          unsorted[b + 1].setCardTitle(sorted[b + 1].getCardTitle());
+          unsorted[b + 1].setConfidence(sorted[b + 1].getConfidence());
+
+//          LOGGER.d("sorting " + b + sorted[b].getCardTitle());
+//          LOGGER.d("sorting " + b + sorted[(b + 1)].getCardTitle());
+//          LOGGER.d("unsorting " + b + unsorted[b].getCardTitle());
+//          LOGGER.d("unsorting " + b + unsorted[(b + 1)].getCardTitle());
         }
       }
     }
