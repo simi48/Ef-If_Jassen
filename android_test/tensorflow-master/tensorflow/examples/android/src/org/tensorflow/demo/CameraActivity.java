@@ -95,7 +95,7 @@ public abstract class CameraActivity extends Activity
   public Button continueBtn;
   public int count = 0;
   public CardRecog[] myCards = js.fillCardNames();
-  public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0"};
+  public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0"};
   public int MemoryInt = 0;
   //
   //
@@ -130,12 +130,13 @@ public abstract class CameraActivity extends Activity
         if(canClick){
           LOGGER.d("Loading Validation" + this);
 
-          CardRecog[] sorted = sortCards(myCards);
+          CardRecog[] sorted = sortCards(myCards, myCards);
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
 
-          for (int i = 0; i < 9; i++){
-            LOGGER.d("Putting in Cards" + sorted[i].getCardTitle());
-            intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
+          for (int i = 0; i < 36; i++){
+            LOGGER.d("Putting in Cards" + myCards[i].getConfidence());
+            LOGGER.d("Putting in Cards" + myCards[i].getCardTitle());
+//            intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
           }
 //          intent.putExtra("card1", "Rosen 6");
 //          intent.putExtra("card2", "Rosen 7");
@@ -180,16 +181,35 @@ public abstract class CameraActivity extends Activity
     }
   }
 
-  private CardRecog[] sortCards(CardRecog[] sorted){ //The purpose of this method is to sort the Card array through putting those cards with a higher confidence first
+  private CardRecog[] sortCards(CardRecog[] sorted, CardRecog[] unsorted){ //The purpose of this method is to sort the Card array through putting those cards with a higher confidence first
 
-    CardRecog[] unsorted = sorted;
 
-    for (int a = 0; a < sorted.length -2; a++){
-      for (int b = 0; b < sorted.length -2; b++){
+//    for(int i = 0; i < 36; i++){
+//      LOGGER.d("sorting " + i + " " + sorted[i].getCardTitle());
+//      LOGGER.d("unsorting " + i + " " + unsorted[i].getCardTitle());
+//      LOGGER.d("confidence " + i + " " + sorted[i].getConfidence());
+//      LOGGER.d("unconfidence " + i + " " + unsorted[i].getConfidence());
+//
+//    }
+
+
+
+    for (int a = 0; a < 4; a++){
+      for (int b = 0; b < 4; b++){
         if (sorted[b + 1].getConfidence() > sorted[b].getConfidence()){
+
           sorted[b] = sorted[b + 1];
+          LOGGER.d("sorting " + b + sorted[b].getCardTitle());
+          LOGGER.d("sorting " + b + sorted[(b + 1)].getCardTitle());
+          LOGGER.d("unsorting " + b + unsorted[b].getCardTitle());
+          LOGGER.d("unsorting " + b + unsorted[(b + 1)].getCardTitle());
           sorted[b + 1] = unsorted[b];
-          unsorted = sorted;
+          unsorted[b] = sorted[b];
+          unsorted[b + 1] = sorted[b + 1];
+          LOGGER.d("sorting " + b + sorted[b].getCardTitle());
+          LOGGER.d("sorting " + b + sorted[(b + 1)].getCardTitle());
+          LOGGER.d("unsorting " + b + unsorted[b].getCardTitle());
+          LOGGER.d("unsorting " + b + unsorted[(b + 1)].getCardTitle());
         }
       }
     }
