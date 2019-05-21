@@ -98,6 +98,7 @@ public abstract class CameraActivity extends Activity
   public Button continueBtn;
   public int count = 0;
   public CardRecog[] myCards = js.fillCardNames();
+  public CardRecog[] myCardsUnsorted = js.fillCardNames();
   public ArrayList<CardRecog> toBeSorted = new ArrayList<CardRecog>();
   public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0"};
   public int MemoryInt = 0;
@@ -134,29 +135,30 @@ public abstract class CameraActivity extends Activity
         if(canClick){
           LOGGER.d("Loading Validation" + this);
 
-          //CardRecog[] sorted = sortCards(myCards, myCards);
+          myCardsUnsorted = myCards;
+          CardRecog[] sorted = sortCards(myCards, myCardsUnsorted);
           for(int i = 0; i < 36; i++){
             toBeSorted.add(myCards[i]);
-            LOGGER.d("Putting in Cards" + toBeSorted.get(i).getConfidence());
-            LOGGER.d("Putting in Cards" + toBeSorted.get(i).getCardTitle());
+//            LOGGER.d("Putting in Cards" + toBeSorted.get(i).getConfidence());
+//            LOGGER.d("Putting in Cards" + toBeSorted.get(i).getCardTitle());
           }
 
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
 
-          for (int i = 0; i < 9; i++){
+//          for (int i = 0; i < 9; i++){
 //            LOGGER.d("Putting in Cards" + myCards[i].getConfidence());
 //            LOGGER.d("Putting in Cards" + myCards[i].getCardTitle());
 //            intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
-          }
-//          intent.putExtra("card1", "Rosen 6");
-//          intent.putExtra("card2", "Rosen 7");
-//          intent.putExtra("card3", "Rosen 10");
-//          intent.putExtra("card4", "Eicheln 7");
-//          intent.putExtra("card5", "Schilten 9");
-//          intent.putExtra("card6", "Schilten Ass");
-//          intent.putExtra("card7", "Schellen Under");
-//          intent.putExtra("card8", "Schellen 6");
-//          intent.putExtra("card9", "Rosen Ober");
+//          }
+          intent.putExtra("card1", "Rosen 6");
+          intent.putExtra("card2", "Rosen 7");
+          intent.putExtra("card3", "Rosen 10");
+          intent.putExtra("card4", "Eicheln 7");
+          intent.putExtra("card5", "Schilten 9");
+          intent.putExtra("card6", "Schilten Ass");
+          intent.putExtra("card7", "Schellen Under");
+          intent.putExtra("card8", "Schellen 6");
+          intent.putExtra("card9", "Rosen Ober");
 
           startActivity(intent);
         }
