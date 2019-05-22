@@ -83,6 +83,32 @@ public class JassFunctions {
         }
         return ret;
     }
+    
+    
+    public int ChooseTrump(int[] myCards){
+        
+        //checking for wrong card arrays
+        if(myCards.length < 36 || myCards.length > 37){
+            Log.d(TAG, "Only standard card arrays of length 36 or 37 are accepted. Please use the correct format.");
+            return NULL;
+        }
+        
+        ArrayList<int> colInput = new ArrayList<>;
+        ArrayList<int> colOutput = new ArrayList<>;
+        ArrayList<int> points = new ArrayList<>;
+        int roses = 0;
+        int acorn = 0;
+        int bell = 0;
+        int shield = 0;
+        int ace = 0;
+        int checkAce = 8;
+        int ret = NULL;
+        
+        
+        
+        
+    
+    }
 
     public int[] CountPoints(int[] cards){
         int[] ret = new int[ArgMax(cards)];
