@@ -3,6 +3,8 @@ package org.tensorflow.demo.env;
 
 import android.util.Log;
 
+import java.util.ArrayList;
+
 public class JassFunctions {
 
     private static final String TAG = "JassFunctions";
@@ -73,8 +75,8 @@ public class JassFunctions {
     //some sweet array functions
     public int ArgMax(int[] array) {
         int ret = 0;
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] > array[ret]) {
+        for(int i = 0; i < array.length; i++){
+            if(array[i] > array[ret]){
                 ret = i;
             }
         }
@@ -107,27 +109,30 @@ public class JassFunctions {
         //checking for wrong card arrays
         if (myCards.length < 36 || myCards.length > 37) {
             Log.d(TAG, "Only standard card arrays of length 36 or 37 are accepted. Please use the correct format.");
-            return NULL;
+            return null;
         }
-
-        ArrayList<int> colInput = new ArrayList<>;
-        ArrayList<int> colOutput = new ArrayList<>;
-        ArrayList<int> points = new ArrayList<>;
+        
+        ArrayList<Integer> colInput = new ArrayList<>();
+        ArrayList<Integer> colOutput = new ArrayList<>();
+        ArrayList<Integer> points = new ArrayList<>();
         int roses = 0;
         int acorn = 0;
         int bell = 0;
         int shield = 0;
         int ace = 0;
         int checkAce = 8;
-        int ret = NULL;
-
-
+        int ret = 0;
+        
+        
+        
+        return ret;
+    
     }
 
     public int[] CountPoints(int[] cards) {
         int[] ret = new int[ArgMax(cards)];
         //check for length inconsistencies, not gonna fix em though
-        if (cards.length != 37) {
+        if(cards.length != 37){
             //            Log.d(TAG, myCards[i].getCardTitle());
             Log.d(TAG, "CountPoints(cards) -> cards.length!=37 cards.length:" + cards.length);
         }
@@ -191,11 +196,7 @@ public class JassFunctions {
                     break;
                 default:
                     break;
-
-
             }
-
-
         }
 
         switch (trump) {
@@ -235,7 +236,7 @@ public class JassFunctions {
         if (playercards.length != 37) {
             Log.d(TAG, "pls use card length 37");
         }
-        if (playedcard < 0 || playedcard > 35) {
+        if(playedcard < 0 || playedcard > 35){
             Log.d(TAG, "PlayedCard was out of bounds");
             ret = false;
         }
