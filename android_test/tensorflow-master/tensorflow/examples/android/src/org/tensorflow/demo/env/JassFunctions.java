@@ -103,10 +103,17 @@ public class JassFunctions {
         return index;
     }
 
-    public int[] ArrayListToArray(ArrayList<Integer> arrayList){
-
-        
+    //somenumpyishthing
+    public int Evaluate(float[][][] matrix){
+        int max = 0;
+        for (int i = 0; i<matrix[0][0].length;i++){
+            if(matrix[0][0][i]>matrix[0][0][max]){
+                max = i;
+            }
+        }
+        return max;
     }
+
 
 
     //If the AI gets to choose a playstyle this function is all you need
@@ -117,7 +124,7 @@ public class JassFunctions {
             Log.d(TAG, "Only standard card arrays of length 36 or 37 are accepted. Please use the correct format.");
             return null;
         }
-        
+
         ArrayList<Integer> colInput = new ArrayList<>();
         ArrayList<Integer> colOutput = new ArrayList<>();
         ArrayList<Integer> points = new ArrayList<>();
