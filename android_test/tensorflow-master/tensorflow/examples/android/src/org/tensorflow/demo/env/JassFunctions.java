@@ -86,7 +86,7 @@ public class JassFunctions {
         return ret;
     }
     
-    
+    //If the AI gets to choose a playstyle this function is all you need
     public Integer ChooseTrump(int[] myCards){
         
         //checking for wrong card arrays
@@ -104,12 +104,20 @@ public class JassFunctions {
         int shield = 0;
         int ace = 0;
         int checkAce = 8;
-        int ret = 0;
+        Integer ret = null;
         
-        
-        
+        for(int i = 0; i < 36; i++){
+            if(myCards[i] == 1){
+                colInput.add(i);
+            }
+            if(i == checkAce && myCards[i] == 1){
+                ace++;
+                checkAce += 9;
+            }
+        }
+
+
         return ret;
-    
     }
 
     public int[] CountPoints(int[] cards){
