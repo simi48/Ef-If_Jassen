@@ -7,6 +7,7 @@ File:           Jassen.py
 Purpose:        Assortment of Functions required for playing cards
 
 Functions:
+    - ChooseTrump
     - CountPoints
     - LegalMove
     - Colour
@@ -413,7 +414,7 @@ def RoundWinner(playedCards, trump = 0, callingPlayer = None):
             #General
             Ret = trumpCards[0]
             for i in range(len(trumpCards)):
-                if(playedCards[trumpCards[i]] > Ret):
+                if(playedCards[trumpCards[i]] > playedCards[Ret]):
                     Ret = trumpCards[i]
             #Nell
             for i in range(len(trumpCards)):
