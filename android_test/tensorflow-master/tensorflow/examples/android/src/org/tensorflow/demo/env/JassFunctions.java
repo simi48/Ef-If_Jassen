@@ -98,21 +98,104 @@ public class JassFunctions {
             }
         }
         //yes, saving a variable that's already there, how ingenious
-        trump = cards[36];
+        int trump = cards[36];
         //fucking arrays #WannaHashtag.pop()ElementsPlsThx
 
-        for(int i=0;0<cards.length;i++){
-            //banner
+        for(int i=0;0<cards.length-1;i++){
+            //Banner
             if(i%9==4){
+                ret[cards[i]] += 10;
+            }
+
+            //König
+            if(i%9==4){
+                ret[cards[i]] += 4;
+            }
+
+            //Ober
+            if(i%9==6){
+                ret[cards[i]] += 3;
+            }
+
+            //As/6
+            if(trump==1){
+                if(i%9==0){
+                    ret[cards[i]] += 11;
+                }
+            }
+            else{
+                if(i%9==8){
+                    ret[cards[i]] += 11;
+                }
+            }
+
+            //8 und under
+            //8 first:
+            switch(trump){
+                case 0:
+                    if(i%9==2){
+                        ret[cards[i]] += 8;
+                    }
+                    //and under
+                    if(i%9==5){
+                        ret[cards[i]] +=2;
+            }
+                    break;
+                case 1:
+                    if(i%9==2){
+                        ret[cards[i]] += 8;
+                    }
+                    //and under
+                    if(i%9==5) {
+                        ret[cards[i]] += 2;
+                    }
+                    break;
+                default:
+                    break;
+
 
             }
+
+
         }
 
-
-
-
+        switch(trump){
+            case 3:
+                ret[cards[14]]+=20; //Buur
+                ret[cards[12]]+=14; //Nell
+                //under
+                ret[cards[5]]+=2;
+                ret[cards[23]]+=2;
+                ret[cards[32]]+=2;
+                break;
+            case 4:
+                ret[cards[23]]+=20; //Buur
+                ret[cards[21]]+=14; //Nell
+        //Under
+                ret[cards[14]]+=2;
+                ret[cards[5]]+=2;
+                ret[cards[32]]+=2;
+                break;
+            case 5:
+                ret[cards[32]]+=20;// #Buur
+                ret[cards[30]]+=14;// #Nell
+//        #Under
+                ret[cards[14]]+=2;
+                ret[cards[23]]+=2;
+                ret[cards[5]]+=2;
+                break;
+            default:
+                break;
+        }
         return ret;
     }
 
 
+    public boolean LegalMove(int[] playercards, int playedcard, int called){
+        ret = true;
+
+        return ret;
+    }
 }
+
+
