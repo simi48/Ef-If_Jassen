@@ -407,6 +407,19 @@ public class JassFunctions {
 
         return winner;
     }
+    public int FancyMove(int[] playercards,int suggestedmove){
+        if(LegalMove(playercards,suggestedmove,)){
+            Log.d(TAG,"haha didnt get this far yet");
+        }
+
+        return suggestedmove;
+    }
+
+    ////Marc gönnt sich krassi funktione :)
+    public int[] ArrayListToArray(ArrayList<Integer> arrayList){
+
+
+    }
 }
 
 
