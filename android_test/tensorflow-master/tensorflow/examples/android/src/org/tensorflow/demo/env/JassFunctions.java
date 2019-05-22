@@ -103,8 +103,14 @@ public class JassFunctions {
         return index;
     }
 
+    public int[] ArrayListToArray(ArrayList<Integer> arrayList){
 
-    public int ChooseTrump(int[] myCards) {
+        
+    }
+
+
+    //If the AI gets to choose a playstyle this function is all you need
+    public Integer ChooseTrump(int[] myCards){
 
         //checking for wrong card arrays
         if (myCards.length < 36 || myCards.length > 37) {
@@ -115,6 +121,7 @@ public class JassFunctions {
         ArrayList<Integer> colInput = new ArrayList<>();
         ArrayList<Integer> colOutput = new ArrayList<>();
         ArrayList<Integer> points = new ArrayList<>();
+        int[] colours;
         int roses = 0;
         int acorn = 0;
         int bell = 0;
@@ -132,6 +139,8 @@ public class JassFunctions {
                 checkAce += 9;
             }
         }
+
+        colours = ArrayListToArray(colInput);
 
 
         return ret;
