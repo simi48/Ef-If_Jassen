@@ -74,5 +74,45 @@ public class JassFunctions {
         return normArray;
     }
 
+    public int ArgMax(int[] array){
+        int ret = 0;
+        for(i = 0; i < array.length; i++){
+            if(array[i] > array[ret]){
+                ret = i;
+            }
+        }
+        return ret;
+    }
+
+    public int[] CountPoints(int[] cards){
+        int[] ret = new int[ArgMax(cards)];
+        //check for length inconsistencies, not gonna fix em though
+        if(cards.length!=37){
+            //            Log.d(TAG, myCards[i].getCardTitle());
+            Log.d(TAG,"CountPoints(cards) -> cards.length!=37 cards.length:"+ cards.length);
+        }
+        //Check for negative numbers
+        for(i=0;i<cards.length;i++){
+            if(cards[i] < 0){
+                Log.d(TAG,"Players CANNOT be negative!");
+            }
+        }
+        //yes, saving a variable that's already there, how ingenious
+        trump = cards[36];
+        //fucking arrays #WannaHashtag.pop()ElementsPlsThx
+
+        for(int i=0;0<cards.length;i++){
+            //banner
+            if(i%9==4){
+
+            }
+        }
+
+
+
+
+        return ret;
+    }
+
 
 }
