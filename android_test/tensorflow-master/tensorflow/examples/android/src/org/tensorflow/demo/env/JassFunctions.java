@@ -118,7 +118,7 @@ public class JassFunctions {
             Log.d(TAG,"CountPoints(cards) -> cards.length!=37 cards.length:"+ cards.length);
         }
         //Check for negative numbers
-        for(i=0;i<cards.length;i++){
+        for(int i=0;i<cards.length;i++){
             if(cards[i] < 0){
                 Log.d(TAG,"Players CANNOT be negative!");
             }
@@ -218,10 +218,53 @@ public class JassFunctions {
 
 
     public boolean LegalMove(int[] playercards, int playedcard, int called){
-        ret = true;
-
+        boolean ret = true;
+        if(playercards.length != 37){
+            Log.d(TAG, "pls use card length 37");
+        }
+        if(playedcard<0 || playedcard>35){
+            Log.d(TAG, "PlayedCard was out of bounds");
+            ret = false;
+        }
+        int playedcolour = Colour(playedcard);
+        //check for whether player has card
+        if(playercards[playedcard] != 1){
+            ret = false;
+        }
+        //if player has card, is it correct colour?
+        else{
+            if(playedcolour != called && playedcolour != playercards[36]){
+                //check if player really couldn't play called:
+                for(int i = called*9;i<(called+1)*9;i++){
+                    if(playercards[i]==1){
+                        ret = false;
+                    }
+                }
+            }
+        }
         return ret;
     }
+
+
+    public int Colour(int card){
+        int colour;
+        if(card<9){
+            colour = 0;
+        }else if(card<18){
+            colour = 1;
+        }else if(card<27){
+            colour = 2;
+        }else if(card<36){
+            colour = 3
+        }else{
+            Log.d(TAG,"Card it out of range");
+            colour = card;
+        }
+        return colour;
+    }
+
+
+
 }
 
 
