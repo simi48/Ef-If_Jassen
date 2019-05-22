@@ -546,13 +546,14 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, times
 #    TrainModelBasics(model,1,False)
 #    model.set_weights(tmp)
     model.predict(PrepareInput(range(37)))
+    model.reset_states()
 #    print('gothere')
     frozen_graph = freeze_session(tf.keras.backend.get_session())
     tf.train.write_graph(frozen_graph, path, name+".pb", as_text=text)
     if(timestamp!=None):
-        tf.train.write_graph(frozen_graph, path, name +' ' + timestamp,as_text = text)
+        tf.train.write_graph(frozen_graph, path, name +' ' + timestamp +'.pb',as_text = text)
         if(not text):
-            tf.train.write_graph(frozen_graph, path, name +' ' + timestamp,as_text = True)
+            tf.train.write_graph(frozen_graph, path, name +' ' + timestamp + ' _txt.pb',as_text = True)
 
     
 #    
@@ -585,6 +586,8 @@ if __name__ == '__main__':
 #    TFLite(model)
 #    pb_conversion(model,'asdfdsaf')
     pb_conversion(model)
+    pb_conversion(model,name='testing',timestamp='aldjkf')
+    print(model.predict(PrepareInput(range(37))))
 #    pb_conv(model)
 #    pb_conversion_(model)
     
