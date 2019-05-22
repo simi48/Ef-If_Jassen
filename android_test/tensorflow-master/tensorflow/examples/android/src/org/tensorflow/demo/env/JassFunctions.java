@@ -74,5 +74,154 @@ public class JassFunctions {
         return normArray;
     }
 
+    public int ArgMax(int[] array){
+        int ret = 0;
+        for(i = 0; i < array.length; i++){
+            if(array[i] > array[ret]){
+                ret = i;
+            }
+        }
+        return ret;
+    }
+    
+    
+    public int ChooseTrump(int[] myCards){
+        
+        //checking for wrong card arrays
+        if(myCards.length < 36 || myCards.length > 37){
+            Log.d(TAG, "Only standard card arrays of length 36 or 37 are accepted. Please use the correct format.");
+            return NULL;
+        }
+        
+        ArrayList<int> colInput = new ArrayList<>;
+        ArrayList<int> colOutput = new ArrayList<>;
+        ArrayList<int> points = new ArrayList<>;
+        int roses = 0;
+        int acorn = 0;
+        int bell = 0;
+        int shield = 0;
+        int ace = 0;
+        int checkAce = 8;
+        int ret = NULL;
+        
+        
+        
+        
+    
+    }
 
+    public int[] CountPoints(int[] cards){
+        int[] ret = new int[ArgMax(cards)];
+        //check for length inconsistencies, not gonna fix em though
+        if(cards.length!=37){
+            //            Log.d(TAG, myCards[i].getCardTitle());
+            Log.d(TAG,"CountPoints(cards) -> cards.length!=37 cards.length:"+ cards.length);
+        }
+        //Check for negative numbers
+        for(i=0;i<cards.length;i++){
+            if(cards[i] < 0){
+                Log.d(TAG,"Players CANNOT be negative!");
+            }
+        }
+        //yes, saving a variable that's already there, how ingenious
+        int trump = cards[36];
+        //fucking arrays #WannaHashtag.pop()ElementsPlsThx
+
+        for(int i=0;0<cards.length-1;i++){
+            //Banner
+            if(i%9==4){
+                ret[cards[i]] += 10;
+            }
+
+            //König
+            if(i%9==4){
+                ret[cards[i]] += 4;
+            }
+
+            //Ober
+            if(i%9==6){
+                ret[cards[i]] += 3;
+            }
+
+            //As/6
+            if(trump==1){
+                if(i%9==0){
+                    ret[cards[i]] += 11;
+                }
+            }
+            else{
+                if(i%9==8){
+                    ret[cards[i]] += 11;
+                }
+            }
+
+            //8 und under
+            //8 first:
+            switch(trump){
+                case 0:
+                    if(i%9==2){
+                        ret[cards[i]] += 8;
+                    }
+                    //and under
+                    if(i%9==5){
+                        ret[cards[i]] +=2;
+            }
+                    break;
+                case 1:
+                    if(i%9==2){
+                        ret[cards[i]] += 8;
+                    }
+                    //and under
+                    if(i%9==5) {
+                        ret[cards[i]] += 2;
+                    }
+                    break;
+                default:
+                    break;
+
+
+            }
+
+
+        }
+
+        switch(trump){
+            case 3:
+                ret[cards[14]]+=20; //Buur
+                ret[cards[12]]+=14; //Nell
+                //under
+                ret[cards[5]]+=2;
+                ret[cards[23]]+=2;
+                ret[cards[32]]+=2;
+                break;
+            case 4:
+                ret[cards[23]]+=20; //Buur
+                ret[cards[21]]+=14; //Nell
+        //Under
+                ret[cards[14]]+=2;
+                ret[cards[5]]+=2;
+                ret[cards[32]]+=2;
+                break;
+            case 5:
+                ret[cards[32]]+=20;// #Buur
+                ret[cards[30]]+=14;// #Nell
+//        #Under
+                ret[cards[14]]+=2;
+                ret[cards[23]]+=2;
+                ret[cards[5]]+=2;
+                break;
+            default:
+                break;
+        }
+        return ret;
+    }
+
+
+    public boolean LegalMove(int[] playercards, int playedcard, int called){
+        ret = true;
+
+        return ret;
+    }
 }
+
+
