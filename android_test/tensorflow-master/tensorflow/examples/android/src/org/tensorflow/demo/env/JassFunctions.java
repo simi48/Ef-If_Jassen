@@ -420,10 +420,16 @@ public class JassFunctions {
         return suggestedmove;
     }
 
-    ////Marc gönnt sich krassi funktione :)
+    //Marc gönnt sich krassi Funktione :)
     public int[] ArrayListToArray(ArrayList<Integer> arrayList){
 
+        int[] array = new int[arrayList.size()];
 
+        for (Integer i : arrayList) {
+            array[i] = arrayList.get(i);
+        }
+
+        return array;
     }
 }
 
