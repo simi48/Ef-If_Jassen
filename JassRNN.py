@@ -17,7 +17,7 @@ import Jassen as js
 import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
 from tqdm import tqdm  #using anaconda/pip: pip install tqdm
 from os import remove
-
+from time import time
 
 
 #Important: Makes sure that not all ge GPU memory is hogged. (noteworthy when Multiprocessing multiple RNNs)
@@ -522,7 +522,7 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
         frozen_graph = tf.graph_util.convert_variables_to_constants(session, input_graph_def, output_names, freeze_var_names)
         return frozen_graph
 
-def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, timestamp = None):
+def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, timestamp = False):
     '''
     Converts a Keras model to a tensorflow frozengraph and saves it to the harddisk (as a .pb file)
     
@@ -550,10 +550,22 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, times
 #    print('gothere')
     frozen_graph = freeze_session(tf.keras.backend.get_session())
     tf.train.write_graph(frozen_graph, path, name+".pb", as_text=text)
-    if(timestamp!=None):
-        tf.train.write_graph(frozen_graph, path, name +' ' + timestamp +'.pb',as_text = text)
-        if(not text):
-            tf.train.write_graph(frozen_graph, path, name +' ' + timestamp + ' _txt.pb',as_text = True)
+    
+    #testing sum tflite
+#    graph_def_file = path+'/'+name+".pb"
+#    input_arrays = ["input"]
+#    output_arrays = ["output"]
+    
+#    converter = tf.lite.TFLiteConverter.from_frozen_graph(
+#            graph_def_file, input_arrays, output_arrays)
+#    tflite_model = converter.convert()
+#    open("converted_model.tflite", "wb").write(tflite_model)
+    
+    
+    if(timestamp):
+        tf.train.write_graph(frozen_graph, path, name +' ' + str(time()) +'.pb',as_text = text)
+        
+        
 
     
 #    
@@ -577,7 +589,7 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, times
 if __name__ == '__main__':
     model = GetModel()
 #    old = model.get_weights()
-    LoadWeights(model,'testsmall_0-0')
+    LoadWeights(model,'best')
 #    new = model.get_weights()
 #    SaveRNN(model,'test')
 #    LoadRNN(model,'test')
@@ -585,8 +597,10 @@ if __name__ == '__main__':
 #    print((old[2] == new[2]).any())
 #    TFLite(model)
 #    pb_conversion(model,'asdfdsaf')
-    pb_conversion(model)
-    pb_conversion(model,name='testing',timestamp='aldjkf')
+#    pb_conversion(model)
+#    print(model.predict(PrepareInput(range(37))))
+    print(time())
+    pb_conversion(model,name='RNN',timestamp=True,text = False)
     print(model.predict(PrepareInput(range(37))))
 #    pb_conv(model)
 #    pb_conversion_(model)
