@@ -168,6 +168,9 @@ public class JassFunctions {
         int shield = 0;
         int ace = 0;
         int checkAce = 8;
+        int checkBuur = 5;
+        int checkNell = 3;
+        int check;
         Integer ret = null;
         
         for(int i = 0; i < 36; i++){
@@ -180,9 +183,77 @@ public class JassFunctions {
             }
         }
 
-        colours = ArrayListToArray(colInput);
+        colours = Colours(ArrayListToArray(colInput));
 
+        checkAce = 8;
+        //count the amount of cards the player possesses of each colour
+        for(int i = 0; i < colours.length; i++){
+            check = colours[i];
+            switch (check){
+                case 0:
+                    roses++;
+                    break;
+                case 1:
+                    acorn++;
+                    break;
+                case 2:
+                    bell++;
+                    break;
+                case 3:
+                    shield++;
+                    break;
+                default:
+                    Log.d(TAG, check + " isn't a colour");
+                    break;
+            }
+        }
+        colOutput.add(roses);
+        colOutput.add(acorn);
+        colOutput.add(bell);
+        colOutput.add(shield);
 
+        //check for special card combinations
+        for(int i = 0; i < 4; i++){
+            if(myCards[checkBuur] == 1 && myCards[checkNell] == 1 && myCards[checkAce] == 1){
+                ret = i + 2;
+                break;
+            }
+            else if(myCards[checkNell] == 1 && myCards[checkAce] == 1 && (colOutput.get(i) - 2) > 2){
+                ret = i + 2;
+                break;
+            }
+            else if(myCards[checkBuur] == 1 && myCards[checkNell] == 1 && ace > 1){
+                if(myCards[checkAce] == 1 && (colOutput.get(i) - 3) > 0){
+                    ret = i + 2;
+                    break;
+                }
+                else if(myCards[checkAce] == 0 && (colOutput.get(i) - 2) > 0){
+                    ret = i + 2;
+                    break;
+                }
+            }
+            else if(myCards[checkBuur] == 1 && (colOutput.get(i) - 1) > 2){
+                ret = i + 2;
+                break;
+            }
+            else if((colOutput.get(i)) > 4){
+                ret = i + 2;
+                break;
+            }
+            checkBuur += 9;
+            checkNell += 9;
+            checkAce += 9;
+        }
+
+        //in case the player has no such special combinations, select the play style with which the player could potentially score the most points
+        if(ret == null){
+            int[] tmp;
+            for(int i = 0; i < 6; i++){
+                tmp = CountPoints(myCards);
+                points.add(tmp[0]);
+            }
+            ret = ArgMax(ArrayListToArray(points));
+        }
         return ret;
     }
 
