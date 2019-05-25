@@ -86,5 +86,6 @@ if __name__ == "__main__":
 #   FLAGS, unparsed = parser.parse_known_args()
 # app.run(main=main, argv=[sys.argv[0]] + unparsed)
 # =============================================================================
-    import_to_tensorboard("C:/Users/Matter/AppData/Local/Temp/RNN.pb", "/tmp/tensorflow_logdir")
 #    import_to_tensorboard("C:/Users/Matter/AppData/Local/Temp/RNN.pb", "/tmp/tensorflow_logdir")
+#    import_to_tensorboard("C:/Users/Matter/AppData/Local/Temp/RNN.pb", "/tmp/tensorflow_logdir")
+    import_to_tensorboard("D:/Github/Ef-If_Jassen/FrozenGraph/RNN.pb", "/tmp/tensorflow_logdir")

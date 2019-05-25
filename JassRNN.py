@@ -549,8 +549,9 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, times
     model.reset_states()
 #    print('gothere')
     frozen_graph = freeze_session(tf.keras.backend.get_session())
-    tf.train.write_graph(frozen_graph, path, name+".pb", as_text=text)
-    
+    tf.train.write_graph(frozen_graph, path, name+".pb", as_text=False)
+    tf.train.write_graph(frozen_graph, path, name+"_as_txt.pb", as_text=True)
+
     #testing sum tflite
 #    graph_def_file = path+'/'+name+".pb"
 #    input_arrays = ["input"]
@@ -563,7 +564,8 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, times
     
     
     if(timestamp):
-        tf.train.write_graph(frozen_graph, path, name +' ' + str(time()) +'.pb',as_text = text)
+        tf.train.write_graph(frozen_graph, path, name +' ' + str(time()) +'.pb',as_text = False)
+        tf.train.write_graph(frozen_graph, path, name +' ' + str(time()) +'_as_txt.pb',as_text = True)
         
         
 
@@ -600,7 +602,7 @@ if __name__ == '__main__':
 #    pb_conversion(model)
 #    print(model.predict(PrepareInput(range(37))))
     print(time())
-    pb_conversion(model,name='RNN',timestamp=True,text = False)
+    pb_conversion(model,name='RNN',timestamp=True)
     print(model.predict(PrepareInput(range(37))))
 #    pb_conv(model)
 #    pb_conversion_(model)
