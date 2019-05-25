@@ -82,7 +82,7 @@ apply from: "download-models.gradle"
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 25
 
     if (nativeBuildSystem == 'cmake') {
         defaultConfig {
