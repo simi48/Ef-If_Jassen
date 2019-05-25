@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+
 import org.tensorflow.demo.env.JassFunctions;
 
 public class ValidationActivity extends Activity {
@@ -18,6 +19,7 @@ public class ValidationActivity extends Activity {
     private ImageView[] imgViews = new ImageView[9];
     private int[] normCards = new int[37];
     private JassFunctions js = new JassFunctions();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +65,8 @@ public class ValidationActivity extends Activity {
             public void onClick(View view) {
                 Log.d(TAG, "onClick: Clicked continueBtn");
 
-
-                Intent intent = new Intent(ValidationActivity.this, DetectorActivityGame.class);
-
-                intent.putExtra("myCards", normCards);
+                Intent intent = new Intent(ValidationActivity.this, StartingPlayerActivity.class);
+                intent.putExtra("myCardsNorm", normCards);
 
                 startActivity(intent);
             }

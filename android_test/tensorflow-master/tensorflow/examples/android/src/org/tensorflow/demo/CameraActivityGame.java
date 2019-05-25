@@ -42,8 +42,6 @@ import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -99,8 +97,8 @@ public abstract class CameraActivityGame extends Activity
   private JassFunctions js = new JassFunctions();
   public boolean canClick = false;
   public Button continueBtn;
-  private ListView startingPlayerView;
   public int startingPlayer;
+  public int[] myCardsNorm;
   public int count = 0;
   public CardRecog[] myCards = js.fillCardNames();
   public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0"};
@@ -117,35 +115,6 @@ public abstract class CameraActivityGame extends Activity
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     setContentView(R.layout.activity_camera_game);
 
-    //
-    //
-    //
-    //
-//    startingPlayerView = (ListView) findViewById(R.id.startingPlayerList);
-//    ArrayList<String> startingPlayerAL = new ArrayList<>();
-//    startingPlayerAL.add("Neural Network");
-//    startingPlayerAL.add("Player 1");
-//    startingPlayerAL.add("Player 2");
-//    startingPlayerAL.add("Player 3");
-//
-//    TextView startingPlayerText = (TextView) findViewById(R.id.selectStartingPlayer);
-//
-//    ArrayAdapter startingPlayerAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, startingPlayerAL);
-//    startingPlayerView.setAdapter(startingPlayerAdapter);
-//
-//    startingPlayerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//      @Override
-//      public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//        startingPlayer = i;
-////        startingPlayerView = null;
-////        startingPlayerText.setText("");
-//      }
-//    });
-    //
-    //
-    //
-    //
-
 
     if (hasPermission()) {
       setFragment();
@@ -157,6 +126,11 @@ public abstract class CameraActivityGame extends Activity
     //
     //
     //
+
+
+    //get passed Data
+    startingPlayer = getIntent().getIntExtra("startingPlayer", 0);
+    myCardsNorm = getIntent().getIntArrayExtra("myCardsNorm");
 
     int rnd = startingPlayer;
     String recCard =  "";
