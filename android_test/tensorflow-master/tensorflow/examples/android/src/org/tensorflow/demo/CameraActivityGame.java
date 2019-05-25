@@ -43,6 +43,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.tensorflow.demo.env.CardRecog;
@@ -582,4 +583,13 @@ public abstract class CameraActivityGame extends Activity
   protected abstract void onPreviewSizeChosen(final Size size, final int rotation);
   protected abstract int getLayoutId();
   protected abstract Size getDesiredPreviewFrameSize();
+
+  int rnd = 1;
+  String recCard;
+
+  TextView roundView = (TextView) findViewById(R.id.roundView);
+  TextView recommendedView = (TextView) findViewById(R.id.recommendedView);
+
+  roundView.setText("Runde" + Integer.parseInt(rnd));
+  recommendedView.setText("Empfohlener Zug" + recCard);
 }

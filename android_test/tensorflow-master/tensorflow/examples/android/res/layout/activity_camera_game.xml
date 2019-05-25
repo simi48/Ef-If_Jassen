@@ -26,29 +26,25 @@
        android:layout_width="match_parent"
        android:layout_height="match_parent">
 
-       <Button
-           android:id="@+id/btnContinueScan"
-           android:layout_width="320dp"
-           android:layout_height="60dp"
-
-           android:layout_below="@+id/divider"
+       <TextView
+           android:id="@+id/roundView"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentStart="true"
            android:layout_alignParentBottom="true"
-           android:layout_centerHorizontal="true"
-           android:layout_marginStart="20dp"
-           android:layout_marginTop="92dp"
-           android:layout_marginEnd="20dp"
-           android:layout_marginBottom="92dp"
-           android:background="@drawable/buttonshape"
-           android:shadowColor="#000000"
-           android:shadowDx="0"
-           android:shadowDy="0"
-           android:shadowRadius="5"
-           android:text="@string/continueBtnText"
-           android:textAlignment="center"
-           android:textAllCaps="false"
-           android:textColor="#FFFFFF"
-           android:textSize="30sp"></Button>
+           android:layout_marginStart="44dp"
+           android:layout_marginBottom="88dp"
+           android:text="Runde: " />
 
+       <TextView
+           android:id="@+id/recommendedView"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentStart="true"
+           android:layout_alignParentBottom="true"
+           android:layout_marginStart="44dp"
+           android:layout_marginBottom="50dp"
+           android:text="Empfohlener Zug: " />
    </RelativeLayout>
 
 

@@ -29,6 +29,7 @@ import android.media.ImageReader.OnImageAvailableListener;
 import android.os.SystemClock;
 import android.util.Size;
 import android.util.TypedValue;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.tensorflow.demo.OverlayView.DrawCallback;
@@ -371,6 +372,7 @@ public class DetectorActivityGame extends CameraActivityGame implements OnImageA
           }
         });
   }
+
 
   @Override
   protected int getLayoutId() {
