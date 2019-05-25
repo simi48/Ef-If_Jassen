@@ -556,7 +556,9 @@ if __name__ == '__main__':
             rnn.LoadWeights(array[r+c],("testsmall"+"_"+str(r)+"-"+str(c)))
 #    print("loaded models")
 #    print(BestPlayer(array))
-    
+    best = BestPlayer(array)
+    rnn.SaveWeights(array[best[0]], 'best')
+    print('you can stop now')
     MPTrain(array,name = 'testsmall')
     Players = []
 # =============================================================================

@@ -17,7 +17,7 @@ import Jassen as js
 import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
 from tqdm import tqdm  #using anaconda/pip: pip install tqdm
 from os import remove
-
+from time import ctime
 
 
 #Important: Makes sure that not all ge GPU memory is hogged. (noteworthy when Multiprocessing multiple RNNs)
@@ -577,7 +577,7 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, times
 if __name__ == '__main__':
     model = GetModel()
 #    old = model.get_weights()
-    LoadWeights(model,'testsmall_0-0')
+    LoadWeights(model,'best')
 #    new = model.get_weights()
 #    SaveRNN(model,'test')
 #    LoadRNN(model,'test')
@@ -585,8 +585,9 @@ if __name__ == '__main__':
 #    print((old[2] == new[2]).any())
 #    TFLite(model)
 #    pb_conversion(model,'asdfdsaf')
-    pb_conversion(model)
-    pb_conversion(model,name='testing',timestamp='aldjkf')
+#    pb_conversion(model)
+    print(model.predict(PrepareInput(range(37))))
+    pb_conversion(model,name='RNN',timestamp=ctime())
     print(model.predict(PrepareInput(range(37))))
 #    pb_conv(model)
 #    pb_conversion_(model)

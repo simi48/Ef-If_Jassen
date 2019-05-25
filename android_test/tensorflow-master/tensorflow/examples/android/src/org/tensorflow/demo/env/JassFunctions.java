@@ -5,6 +5,9 @@ import android.util.Log;
 
 import java.util.ArrayList;
 
+import static java.lang.Float.NEGATIVE_INFINITY;
+import static java.lang.Integer.MIN_VALUE;
+
 public class JassFunctions {
 
     private static final String TAG = "JassFunctions";
@@ -74,13 +77,13 @@ public class JassFunctions {
 
     //some sweet array functions
     public int ArgMax(int[] array) {
-        int ret = 0;
+        int index = 0;
         for(int i = 0; i < array.length; i++){
-            if(array[i] > array[ret]){
-                ret = i;
+            if(array[i] > array[index]){
+                index = i;
             }
         }
-        return ret;
+        return index;
     }
 
     public int Count(int[] array, int hit) {
@@ -101,6 +104,36 @@ public class JassFunctions {
             }
         }
         return index;
+    }
+
+    public int[] ArgMaxOrder(int[] array){
+        int[] ordered = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            int max = ArgMax(array);
+            ordered[i] = max;
+            array[max] = MIN_VALUE;
+        }
+        return ordered;
+    }
+
+    public int ArgMaxF(float[] array){
+        int index = 0;
+        for(int i = 0; i < array.length; i++){
+            if(array[i] > array[index]){
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    public int[] ArgMaxOrderF(float[] array){
+        int[] ordered = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            int max = ArgMaxF(array);
+            ordered[i] = max;
+            array[max] = -NEGATIVE_INFINITY;
+        }
+        return ordered;
     }
 
     //somenumpyishthing
@@ -412,12 +445,42 @@ public class JassFunctions {
 
         return winner;
     }
-    public int FancyMove(int[] playercards,int suggestedmove){
-        if(LegalMove(playercards,suggestedmove,)){
-            Log.d(TAG,"haha didnt get this far yet");
-        }
+    public int[] FancyMove(int[] playercards, float[] suggestedmoves){
+        //array is as long as player currently holds cards.
+        int[] bestmoves = new int[Count(playercards,1)];
+        //what the rnn wanted most
+        int[] wanted = ArgMaxOrderF((suggestedmoves));
+        int iterator = 0;
+        int called = -1;
+        //called color:
 
-        return suggestedmove;
+        //double check this
+        for (int i = 4; i > 1; i--) {
+            if(Count(playercards,i)==1){
+                called = Colour(Index(playercards,i));
+            }
+        }
+        //double check this ^
+
+//if colour was given:
+        if(called != -1){
+            for (int index:wanted) {
+                if(LegalMove(playercards,index,called)){
+                    bestmoves[iterator] = index;
+                    iterator++;
+                }
+            }
+        }
+        //if rnn is first player to go:
+        else{
+            for(int index:wanted){
+                if(LegalMove(playercards, index,Colour(index))){
+                    bestmoves[iterator] = index;
+                    iterator++;
+                }
+            }
+        }
+        return bestmoves;
     }
 
     //Marc gönnt sich krassi Funktione :)
