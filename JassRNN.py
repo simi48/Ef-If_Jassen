@@ -600,7 +600,7 @@ if __name__ == '__main__':
 #    pb_conversion(model)
 #    print(model.predict(PrepareInput(range(37))))
     print(time())
-    pb_conversion(model,name='tmp',timestamp=True,text = False)
+    pb_conversion(model,name='RNN',timestamp=True,text = False)
     print(model.predict(PrepareInput(range(37))))
 #    pb_conv(model)
 #    pb_conversion_(model)
