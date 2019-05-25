@@ -32,4 +32,5 @@
     <string name="rescanText">Scan Again </string>
     <string name="cardVal"> Card </string>
     <string name="startingPlayer"> Select the Starting Player </string>
+    <string name="nextButtonText"> Next </string>
 </resources>

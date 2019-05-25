@@ -96,7 +96,7 @@ public abstract class CameraActivityGame extends Activity
   private boolean BackBtnAllowed = false;
   private JassFunctions js = new JassFunctions();
   public boolean canClick = false;
-  public Button continueBtn;
+  public Button nextBtn;
   public int startingPlayer;
   public int[] myCardsNorm;
   public int count = 0;
@@ -132,7 +132,9 @@ public abstract class CameraActivityGame extends Activity
     startingPlayer = getIntent().getIntExtra("startingPlayer", 0);
     myCardsNorm = getIntent().getIntArrayExtra("myCardsNorm");
 
-    int rnd = startingPlayer;
+    nextBtn = (Button) findViewById(R.id.btnNext);
+
+    int rnd = 0;
     String recCard =  "";
 
     TextView roundView = (TextView) findViewById(R.id.roundView);
@@ -140,6 +142,14 @@ public abstract class CameraActivityGame extends Activity
 
     roundView.setText("Runde: " + rnd);
     recommendedView.setText("Empfohlener Zug: " + recCard);
+
+    for(int stage = 0; stage < 4; stage++){
+      for(int turn = 0; turn < 9; turn++){
+        for(int player = 0; player < 4; player++){
+          //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
+        }
+      }
+    }
 
     //
     //

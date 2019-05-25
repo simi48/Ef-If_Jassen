@@ -352,7 +352,7 @@ public class DetectorActivityGame extends CameraActivityGame implements OnImageA
                   }
                   if(DetectorActivityGame.super.count == 9){
                     DetectorActivityGame.super.canClick = true;
-//                    DetectorActivityGame.super.continueBtn.setTextColor(Color.WHITE);
+//                    DetectorActivityGame.super.nextBtn.setTextColor(Color.WHITE);
                   }
                 }
 
