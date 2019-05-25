@@ -64,6 +64,9 @@ public class ValidationActivity extends Activity {
                 Log.d(TAG, "onClick: Clicked continueBtn");
 
                 Intent intent = new Intent(ValidationActivity.this, DetectorActivityGame.class);
+
+                intent.putExtra("myCards", normCards);
+
                 startActivity(intent);
             }
         });
