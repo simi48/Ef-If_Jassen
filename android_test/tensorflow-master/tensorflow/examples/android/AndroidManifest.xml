@@ -60,6 +60,11 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name=".DetectorActivityGame"
+            android:screenOrientation="portrait">
+        </activity>
+
         <!--<activity android:name="org.tensorflow.demo.StylizeActivity"-->
                   <!--android:screenOrientation="portrait"-->
                   <!--android:label="@string/activity_name_stylize">-->

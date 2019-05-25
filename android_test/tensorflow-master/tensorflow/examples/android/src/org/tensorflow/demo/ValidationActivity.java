@@ -63,7 +63,7 @@ public class ValidationActivity extends Activity {
             public void onClick(View view) {
                 Log.d(TAG, "onClick: Clicked continueBtn");
 
-                Intent intent = new Intent(ValidationActivity.this, GameActivity .class);
+                Intent intent = new Intent(ValidationActivity.this, DetectorActivityGame.class);
                 startActivity(intent);
             }
         });
