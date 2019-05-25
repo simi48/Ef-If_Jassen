@@ -135,7 +135,6 @@ public abstract class CameraActivity extends Activity
           
           CardRecog[] sorted = sortCards(myCards);
           for(int i = 0; i < 36; i++){
-            toBeSorted.add(myCards[i]);
 //            LOGGER.d("Putting in Cards" + toBeSorted.get(i).getConfidence());
 //            LOGGER.d("Putting in Cards" + toBeSorted.get(i).getCardTitle());
           }
@@ -192,7 +191,7 @@ public abstract class CameraActivity extends Activity
 
   private CardRecog[] sortCards(CardRecog[] sorted){ //The purpose of this method is to sort the Card array through putting those cards with a higher confidence first
 
-    cardRecog[] tmp;
+    CardRecog tmp;
 //    for(int i = 0; i < 36; i++){
 //      LOGGER.d("sorting " + i + " " + sorted[i].getCardTitle());
 //      LOGGER.d("unsorting " + i + " " + unsorted[i].getCardTitle());
