@@ -88,4 +88,4 @@ if __name__ == "__main__":
 # =============================================================================
 #    import_to_tensorboard("C:/Users/Matter/AppData/Local/Temp/RNN.pb", "/tmp/tensorflow_logdir")
 #    import_to_tensorboard("C:/Users/Matter/AppData/Local/Temp/RNN.pb", "/tmp/tensorflow_logdir")
-    import_to_tensorboard("D:/Github/Ef-If_Jassen/FrozenGraph/RNN.pb", "/tmp/tensorflow_logdir")
+    import_to_tensorboard("D:/Github/Ef-If_Jassen/FrozenGraph/JassRNN.pb", "/tmp/tensorflow_logdir")

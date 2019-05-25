@@ -205,9 +205,9 @@ def GetModel():
         Tensorflow_Model
     '''
     Model = tf.keras.models.Sequential()
-    Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37), name='input'))
+#    Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37), name='input'))
     #Model.add(tf.keras.layers.Dense(36, name='Dense1'))
-    Model.add(tf.keras.layers.CuDNNLSTM(50, name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.CuDNNLSTM(50,batch_input_shape=(1,1,37), name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
     Model.add(tf.keras.layers.Dense(30, name='Interpret'))
     Model.add(tf.keras.layers.Dropout(0.5))
     Model.add(tf.keras.layers.Dense(36, name='output'))
@@ -217,6 +217,34 @@ def GetModel():
     tf.global_variables_initializer()      #absolutly necessary! but still not working...?
     return Model
 
+
+def GetModelBasic():
+    '''
+    Used for acquiring the RNN Model (using LSTM Cells) with input size (1,1,37) and output size (1/1/36), without an optimizer or other learning oriented aspects.
+    
+    Returns:
+        Uncompiled TensorFlow_Model
+    '''
+    Model = tf.keras.models.Sequential()
+#    Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37),name='input'))
+    Model.add(tf.keras.layers.CuDNNLSTM(50,batch_input_shape=(1,1,37), name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.Dense(30, name='Interpret'))
+    Model.add(tf.keras.layers.Dense(36, name='output'))
+    return Model
+
+# =============================================================================
+# 
+# def GetModelExperimental():
+#     '''
+#    Just a though, never mind prolly.
+#    '''
+#     Model = tf.keras.models.Sequential()
+# #    Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37),name='input'))
+#     Model.add(tf.lite.nn.TFLiteLSTMCell(50,batch_input_shape=(1,1,37), name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+#     Model.add(tf.keras.layers.Dense(30, name='Interpret'))
+#     Model.add(tf.keras.layers.Dense(36, name='output'))
+#     return Model
+# =============================================================================
 
 
 
@@ -456,38 +484,44 @@ def TFLite(model,path = None):
     Returns:
         None
     '''
-    try:
-        if(path == None):
-            path = ''
-        elif(path[-1:]!='/'):
-            path = path + '/'
-        keras_file = "tmp_keras_model.h5"
-        tf.keras.models.save_model(model, keras_file)
-        # Convert to TensorFlow Lite model.
-        if(tf.__version__=='1.12.0'):
-            converter = tf.contrib.lite.TFLiteConverter.from_keras_model_file(keras_file)
-        elif(tf.__version>'1.12.0'):
-            converter = tf.lite.TFLiteConverter.from_keras_model_file(keras_file)
-            
-        else:
-            print("Pleas update your Tensorflow version or write your own function/edit this one to convert to TFLite. (JassRNN.py/TFLite(model)  ; line ≈445)")
-            remove(keras_file)
-            return None
-        tflite_model = converter.convert()
-        open("converted_model.tflite", "wb").write(tflite_model)
-#    remove(keras_file)
-    except:
-        print('didnt work huh...\nTFLite conversion, but we already knew it wouldn\'t, work so what gives')
-
+    
+    if(path == None):
+        path = ''
+    elif(path[-1:]!='/'):
+        path = path + '/'
+    keras_file = "tmp_keras_model.h5"
+    tf.keras.models.save_model(model, keras_file)
+    # Convert to TensorFlow Lite model.
+    if(tf.__version__=='1.12.0'):
+        converter = tf.contrib.lite.TFLiteConverter.from_keras_model_file(keras_file,allow_custom_ops=True)
+    elif(tf.__version__>'1.12.0'):
+#           print('test')
+        converter = tf.lite.TFLiteConverter.from_keras_model_file(keras_file)
+#           print('ought to be here')
+        
     else:
         print("Pleas update your Tensorflow version or write your own function/edit this one to convert to TFLite. (JassRNN.py/TFLite(model)  ; line ≈445)")
         remove(keras_file)
         return None
+#    converter.target_ops = [tf.lite.OpsSet.TFLITE_BUILTINS, tf.lite.OpsSet.SELECT_TF_OPS]
     tflite_model = converter.convert()
     open("converted_model.tflite", "wb").write(tflite_model)
-    remove(keras_file)
+#    remove(keras_file)
+#        print('didnt work huh...\nTFLite conversion, but we already knew it wouldn\'t, work so what gives')
     
     
+
+
+def TFLiteSess(model,path=None):
+    if(path == None):
+        path = ''
+    elif(path[-1:]!='/'):
+        path = path + '/'
+    converter = tf.lite.TFLiteConverter.from_session(tf.keras.backend.get_session(),x,y)
+    tflite_model = converter.convert()
+    open("converted_model.tflite", "wb").write(tflite_model)
+    #not working
+
 #fancy copypaste
 def freeze_session(session, keep_var_names=None, output_names=None, clear_devices=True):
     """
@@ -552,22 +586,28 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, times
     tf.train.write_graph(frozen_graph, path, name+".pb", as_text=False)
     tf.train.write_graph(frozen_graph, path, name+"_as_txt.pb", as_text=True)
 
-    #testing sum tflite
-#    graph_def_file = path+'/'+name+".pb"
-#    input_arrays = ["input"]
-#    output_arrays = ["output"]
     
-#    converter = tf.lite.TFLiteConverter.from_frozen_graph(
-#            graph_def_file, input_arrays, output_arrays)
-#    tflite_model = converter.convert()
-#    open("converted_model.tflite", "wb").write(tflite_model)
     
     
     if(timestamp):
         tf.train.write_graph(frozen_graph, path, name +' ' + str(time()) +'.pb',as_text = False)
         tf.train.write_graph(frozen_graph, path, name +' ' + str(time()) +'_as_txt.pb',as_text = True)
         
-        
+    
+    TFLite(model)
+# =============================================================================
+#     print('hellayesfuckmethiswouldbelititwontbethoughcuzwellnevergetthisfarbutamancandreamright')
+#         #    testing sum tflite
+#     graph_def_file = path+'/'+name+".pb"
+#     input_arrays = ["LSTM1"]
+#     output_arrays = ["Interpret"]
+#     print('0')
+#     converter = tf.lite.TFLiteConverter.from_frozen_graph(graph_def_file, input_arrays, output_arrays)
+#     print('1')
+#     tflite_model = converter.convert()
+#     print('2')
+#     open("converted_model.tflite", "wb").write(tflite_model)
+# =============================================================================
 
     
 #    
@@ -589,9 +629,7 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, times
 # Main
 # =============================================================================
 if __name__ == '__main__':
-    model = GetModel()
 #    old = model.get_weights()
-    LoadWeights(model,'best')
 #    new = model.get_weights()
 #    SaveRNN(model,'test')
 #    LoadRNN(model,'test')
@@ -602,8 +640,18 @@ if __name__ == '__main__':
 #    pb_conversion(model)
 #    print(model.predict(PrepareInput(range(37))))
     print(time())
-    pb_conversion(model,name='RNN',timestamp=True)
-    print(model.predict(PrepareInput(range(37))))
+    #
+#    model = GetModelBasic()
+    model = GetModelExperimental()
+    LoadWeights(model,'best')
+    print(model.summary())
+    SaveRNN(model,'250519')
+    q = LoadRNN(model,'250519')
+    print(q.summary())
+#    print('n1')
+#    TFLiteSess(q)
+    pb_conversion(model,name='JassRNN',timestamp=True)
+#    print(model.predict(PrepareInput(range(37))))
 #    pb_conv(model)
 #    pb_conversion_(model)
     
