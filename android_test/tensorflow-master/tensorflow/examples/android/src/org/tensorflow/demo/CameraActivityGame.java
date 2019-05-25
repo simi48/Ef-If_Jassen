@@ -42,7 +42,10 @@ import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +55,7 @@ import org.tensorflow.demo.env.JassFunctions;
 import org.tensorflow.demo.env.Logger;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 //
 //
@@ -95,6 +99,8 @@ public abstract class CameraActivityGame extends Activity
   private JassFunctions js = new JassFunctions();
   public boolean canClick = false;
   public Button continueBtn;
+  private ListView startingPlayerView;
+  public int startingPlayer;
   public int count = 0;
   public CardRecog[] myCards = js.fillCardNames();
   public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0"};
@@ -109,8 +115,37 @@ public abstract class CameraActivityGame extends Activity
     LOGGER.d("onCreate " + this);
     super.onCreate(null);
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    setContentView(R.layout.activity_camera_game);
 
-    setContentView(R.layout.activity_camera);
+    //
+    //
+    //
+    //
+//    startingPlayerView = (ListView) findViewById(R.id.startingPlayerList);
+//    ArrayList<String> startingPlayerAL = new ArrayList<>();
+//    startingPlayerAL.add("Neural Network");
+//    startingPlayerAL.add("Player 1");
+//    startingPlayerAL.add("Player 2");
+//    startingPlayerAL.add("Player 3");
+//
+//    TextView startingPlayerText = (TextView) findViewById(R.id.selectStartingPlayer);
+//
+//    ArrayAdapter startingPlayerAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, startingPlayerAL);
+//    startingPlayerView.setAdapter(startingPlayerAdapter);
+//
+//    startingPlayerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//      @Override
+//      public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//        startingPlayer = i;
+////        startingPlayerView = null;
+////        startingPlayerText.setText("");
+//      }
+//    });
+    //
+    //
+    //
+    //
+
 
     if (hasPermission()) {
       setFragment();
@@ -123,14 +158,14 @@ public abstract class CameraActivityGame extends Activity
     //
     //
 
-    int rnd = 1;
-    String recCard;
+    int rnd = startingPlayer;
+    String recCard =  "";
 
     TextView roundView = (TextView) findViewById(R.id.roundView);
     TextView recommendedView = (TextView) findViewById(R.id.recommendedView);
 
-    roundView.setText("Runde" + Integer.parseInt(rnd));
-    recommendedView.setText("Empfohlener Zug" + recCard);
+    roundView.setText("Runde: " + rnd);
+    recommendedView.setText("Empfohlener Zug: " + recCard);
 
     //
     //

@@ -19,7 +19,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000"
-    tools:context="org.tensorflow.demo.CameraActivity" >
+    tools:context="org.tensorflow.demo.CameraActivityGame" >
 
 
    <RelativeLayout
@@ -34,7 +34,8 @@
            android:layout_alignParentBottom="true"
            android:layout_marginStart="44dp"
            android:layout_marginBottom="88dp"
-           android:text="Runde: " />
+           android:textColor="#FFFFFF"
+           android:text="" />
 
        <TextView
            android:id="@+id/recommendedView"
@@ -44,7 +45,8 @@
            android:layout_alignParentBottom="true"
            android:layout_marginStart="44dp"
            android:layout_marginBottom="50dp"
-           android:text="Empfohlener Zug: " />
+           android:textColor="#FFFFFF"
+           android:text="" />
    </RelativeLayout>
 
 

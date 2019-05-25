@@ -22,7 +22,7 @@ public class JassFunctions {
             myCard = new CardRecog();
             myCards[i] = myCard;
             if (i == 9) {
-                cardType = "Eicheln ";
+                cardType = "Eichel ";
             }
             if (i == 18) {
                 cardType = "Schellen ";
