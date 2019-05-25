@@ -134,23 +134,27 @@ public abstract class CameraActivity extends Activity
           LOGGER.d("Loading Validation" + this);
           
           CardRecog[] sorted = sortCards(myCards);
+          for(int i = 0; i < 36; i++){
+//            LOGGER.d("Putting in Cards" + toBeSorted.get(i).getConfidence());
+//            LOGGER.d("Putting in Cards" + toBeSorted.get(i).getCardTitle());
+          }
 
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
 
-          for (int i = 0; i < 9; i++){
+//          for (int i = 0; i < 9; i++){
 //            LOGGER.d("Putting in Cards" + myCards[i].getConfidence());
 //            LOGGER.d("Putting in Cards" + myCards[i].getCardTitle());
-            intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
-          }
-//          intent.putExtra("card1", "Rosen 6");
-//          intent.putExtra("card2", "Rosen 7");
-//          intent.putExtra("card3", "Rosen 10");
-//          intent.putExtra("card4", "Eicheln 7");
-//          intent.putExtra("card5", "Schilten 9");
-//          intent.putExtra("card6", "Schilten Ass");
-//          intent.putExtra("card7", "Schellen Under");
-//          intent.putExtra("card8", "Schellen 6");
-//          intent.putExtra("card9", "Rosen Ober");
+//            intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
+//          }
+          intent.putExtra("card1", "Rosen 6");
+          intent.putExtra("card2", "Rosen 7");
+          intent.putExtra("card3", "Rosen 10");
+          intent.putExtra("card4", "Eicheln 7");
+          intent.putExtra("card5", "Schilten 9");
+          intent.putExtra("card6", "Schilten Ass");
+          intent.putExtra("card7", "Schellen Under");
+          intent.putExtra("card8", "Schellen 6");
+          intent.putExtra("card9", "Rosen Ober");
 
           startActivity(intent);
         }
