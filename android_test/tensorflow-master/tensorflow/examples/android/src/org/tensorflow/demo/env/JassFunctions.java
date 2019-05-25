@@ -131,7 +131,7 @@ public class JassFunctions {
         for (int i = 0; i < array.length; i++) {
             int max = ArgMaxF(array);
             ordered[i] = max;
-            array[max] = -NEGATIVE_INFINITY;
+            array[max] = NEGATIVE_INFINITY;
         }
         return ordered;
     }
