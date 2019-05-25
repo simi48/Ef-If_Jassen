@@ -17,7 +17,7 @@ import Jassen as js
 import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython (Spyder). To use MP, run file through Anaconda: navigate to folder and type: `python JassRNN.py`
 from tqdm import tqdm  #using anaconda/pip: pip install tqdm
 from os import remove
-from time import ctime
+from time import time
 
 
 #Important: Makes sure that not all ge GPU memory is hogged. (noteworthy when Multiprocessing multiple RNNs)
@@ -550,8 +550,20 @@ def pb_conversion(model, name='JassRNN', path='FrozenGraph', text = False, times
 #    print('gothere')
     frozen_graph = freeze_session(tf.keras.backend.get_session())
     tf.train.write_graph(frozen_graph, path, name+".pb", as_text=text)
+    
+    #testing sum tflite
+#    graph_def_file = path+'/'+name+".pb"
+#    input_arrays = ["input"]
+#    output_arrays = ["output"]
+    
+#    converter = tf.lite.TFLiteConverter.from_frozen_graph(
+#            graph_def_file, input_arrays, output_arrays)
+#    tflite_model = converter.convert()
+#    open("converted_model.tflite", "wb").write(tflite_model)
+    
+    
     if(timestamp):
-        tf.train.write_graph(frozen_graph, path, name +' ' + ctime() +'.pb',as_text = text)
+        tf.train.write_graph(frozen_graph, path, name +' ' + str(time()) +'.pb',as_text = text)
         
         
 
@@ -587,8 +599,8 @@ if __name__ == '__main__':
 #    pb_conversion(model,'asdfdsaf')
 #    pb_conversion(model)
 #    print(model.predict(PrepareInput(range(37))))
-    print(ctime())
-    pb_conversion(model,name='RNN',timestamp=True)
+    print(time())
+    pb_conversion(model,name='tmp',timestamp=True,text = False)
     print(model.predict(PrepareInput(range(37))))
 #    pb_conv(model)
 #    pb_conversion_(model)
