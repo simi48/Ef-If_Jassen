@@ -122,44 +122,15 @@ public abstract class CameraActivityGame extends Activity
     //
     //
     //
-    continueBtn = (Button) findViewById(R.id.btnContinueScan);
 
-    continueBtn.setTextColor(Color.RED);
+    int rnd = 1;
+    String recCard;
 
-    continueBtn.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if(canClick){
-          LOGGER.d("Loading Validation" + this);
-          
-          CardRecog[] sorted = sortCards(myCards);
+    TextView roundView = (TextView) findViewById(R.id.roundView);
+    TextView recommendedView = (TextView) findViewById(R.id.recommendedView);
 
-          Intent intent = new Intent(CameraActivityGame.this, ValidationActivity.class);
-
-          for (int i = 0; i < 9; i++){
-//            LOGGER.d("Putting in Cards" + myCards[i].getConfidence());
-//            LOGGER.d("Putting in Cards" + myCards[i].getCardTitle());
-            intent.putExtra("card" + (i + 1), sorted[i].getCardTitle());
-          }
-//          intent.putExtra("card1", "Rosen 6");
-//          intent.putExtra("card2", "Rosen 7");
-//          intent.putExtra("card3", "Rosen 10");
-//          intent.putExtra("card4", "Eicheln 7");
-//          intent.putExtra("card5", "Schilten 9");
-//          intent.putExtra("card6", "Schilten Ass");
-//          intent.putExtra("card7", "Schellen Under");
-//          intent.putExtra("card8", "Schellen 6");
-//          intent.putExtra("card9", "Rosen Ober");
-
-          startActivity(intent);
-        }
-
-        if(!canClick){
-          int tmp = 9 - count;
-          Toast.makeText(CameraActivityGame.this, "You have to scan at least " + tmp + " more cards to continue!", Toast.LENGTH_LONG).show();
-        }
-      }
-    });
+    roundView.setText("Runde" + Integer.parseInt(rnd));
+    recommendedView.setText("Empfohlener Zug" + recCard);
 
     //
     //
@@ -583,13 +554,4 @@ public abstract class CameraActivityGame extends Activity
   protected abstract void onPreviewSizeChosen(final Size size, final int rotation);
   protected abstract int getLayoutId();
   protected abstract Size getDesiredPreviewFrameSize();
-
-  int rnd = 1;
-  String recCard;
-
-  TextView roundView = (TextView) findViewById(R.id.roundView);
-  TextView recommendedView = (TextView) findViewById(R.id.recommendedView);
-
-  roundView.setText("Runde" + Integer.parseInt(rnd));
-  recommendedView.setText("Empfohlener Zug" + recCard);
 }
