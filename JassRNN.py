@@ -227,7 +227,7 @@ def GetModelBasic():
     '''
     Model = tf.keras.models.Sequential()
 #    Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37),name='input'))
-    Model.add(tf.keras.layers.CuDNNLSTM(50,batch_input_shape=(1,1,37), name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.LSTM(50,batch_input_shape=(1,1,37), name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
     Model.add(tf.keras.layers.Dense(30, name='Interpret'))
     Model.add(tf.keras.layers.Dense(36, name='output'))
     return Model
@@ -523,7 +523,7 @@ def TFLiteSess(model,path=None):
     #not working
 
 #fancy copypaste
-def freeze_session(session, keep_var_names=None, output_names=None, clear_devices=True):
+def freeze_session(session, keep_var_names='LSTM1', output_names=None, clear_devices=True):
     """
     This Code is from StackOverflow (https://stackoverflow.com/questions/45466020/how-to-export-keras-h5-to-tensorflow-pb) as posted by jdehesa, posted on Aug 2 2017 at 16:33, last edited May 18 2019 at 12:34
     personal queries: Is it Stateful?, will rewrite if not
@@ -642,10 +642,10 @@ if __name__ == '__main__':
     print(time())
     #
 #    model = GetModelBasic()
-    model = GetModelExperimental()
+    model = GetModelBasic()
     LoadWeights(model,'best')
     print(model.summary())
-    SaveRNN(model,'250519')
+    SaveRNN(model,'JassRNN')
     q = LoadRNN(model,'250519')
     print(q.summary())
 #    print('n1')
