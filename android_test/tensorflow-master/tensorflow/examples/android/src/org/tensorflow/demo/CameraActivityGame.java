@@ -104,7 +104,6 @@ public abstract class CameraActivityGame extends Activity
   public int recognizedCardInt;
   private int[] Points = {0,0,0,0};
   private int Stage = 0;
-  private Integer called;
   public int[] myCardsNorm;
   private int[] playedCards = new int[4];
   public int count = 0;
@@ -115,6 +114,7 @@ public abstract class CameraActivityGame extends Activity
   public TextView recommendedView;
   public int activePlayer;
   public int round;
+  public String[] cardMemory;
   //
   //
   //
@@ -166,10 +166,6 @@ public abstract class CameraActivityGame extends Activity
       }
 
       for(int turn = 0; turn < 9; turn++){
-
-        //reset called colour and playedCards
-        called = null;
-
         for(int rnd = 0; rnd < 4; rnd++){
           round = rnd;
           //Please Lord
@@ -203,11 +199,6 @@ public abstract class CameraActivityGame extends Activity
                 else{
                   recommendedView.setText("My Observation: " + js.CTT(recognizedCardInt));
                   playedCards[round] = recognizedCardInt;
-                }
-
-                //set called colour
-                if(round == 0){
-                  called = js.Colour(playedCards[round]);
                 }
 
                 //update myCardsNorm
