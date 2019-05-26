@@ -102,9 +102,9 @@ public abstract class CameraActivityGame extends Activity
   public int recCard;
   public int recognizedCard;
   private int[] points = {0,0,0,0};
-  private int called;
+  private Integer called;
   public int[] myCardsNorm;
-  private Integer[] playedCards = {null, null, null, null};
+  private Integer[] playedCards;
   public int count = 0;
   public CardRecog[] myCards = js.fillCardNames();
   public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0"};
@@ -158,6 +158,10 @@ public abstract class CameraActivityGame extends Activity
 
       for(int turn = 0; turn < 9; turn++){
 
+        //reset called colour and playedCards
+        called = null;
+        for(int i = 0; i < 4; i++){ playedCards[i] = null; }
+
         for(int round = 0; round < 4; round++){
           roundView.setText("Round: " + round);
 
@@ -171,12 +175,12 @@ public abstract class CameraActivityGame extends Activity
             playedCards[round] = recCard;
           }
           else{
-            playedCards[round] =
+            playedCards[round] = recognizedCard;
           }
 
-          //select Trump if some other player starts
-          if(startingPlayer != 0 && turn == 0 && round == 0 && stage == 0){
-            myCardsNorm[36] = playedCards[0];
+          //set called colour
+          if(round == 0){
+            called = playedCards[round];
           }
         }
       }
@@ -192,7 +196,7 @@ public abstract class CameraActivityGame extends Activity
 
         }
         else{
-
+          Toast.makeText(CameraActivityGame.this, "You have to wait until the AI succeeded in recognizing a card!", Toast.LENGTH_LONG).show();
         }
       }
     });

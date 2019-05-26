@@ -155,7 +155,7 @@ public abstract class CameraActivity extends Activity
           startActivity(intent);
         }
 
-        if(!canClick){
+        else{
           int tmp = 9 - count;
           Toast.makeText(CameraActivity.this, "You have to scan at least " + tmp + " more cards to continue!", Toast.LENGTH_LONG).show();
         }
