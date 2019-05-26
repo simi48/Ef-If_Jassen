@@ -227,7 +227,7 @@ def GetModelBasic():
     '''
     Model = tf.keras.models.Sequential()
 #    Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37),name='input'))
-    Model.add(tf.keras.layers.LSTM(50,batch_input_shape=(1,1,37), name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.LSTM(50,batch_input_shape=(1,1,37), name='LSTM1', return_sequences=True, stateful=True,activation = 'linear')) #Stateful = remember what happended last time
     Model.add(tf.keras.layers.Dense(30, name='Interpret'))
     Model.add(tf.keras.layers.Dense(36, name='output'))
     return Model
@@ -646,11 +646,14 @@ if __name__ == '__main__':
     LoadWeights(model,'best')
     print(model.summary())
     SaveRNN(model,'JassRNN')
-    q = LoadRNN(model,'250519')
+    
+    q = LoadRNN(model,'JassRNN')
     print(q.summary())
+    model.pop()
+    print(model.summary())
 #    print('n1')
 #    TFLiteSess(q)
-    pb_conversion(model,name='JassRNN',timestamp=True)
+    pb_conversion(model,name='fuckery',timestamp=True)
 #    print(model.predict(PrepareInput(range(37))))
 #    pb_conv(model)
 #    pb_conversion_(model)

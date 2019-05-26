@@ -1,0 +1,6 @@
+<?xml version ="1.0" encoding ="utf-8"?><!--  Learn More about how to use App Actions: https://developer.android.com/guide/actions/index.html -->
+<dependency>
+    <groupId>org.deeplearning4j</groupId>
+    <artifactId>deeplearning4j-modelimport</artifactId>
+    <version>1.0.0-beta</version> // This version should match that of your other DL4J project dependencies.
+</dependency>
