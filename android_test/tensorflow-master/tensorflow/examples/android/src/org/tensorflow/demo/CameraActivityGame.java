@@ -145,6 +145,9 @@ public abstract class CameraActivityGame extends Activity
     roundView.setText("Round: 0");
     recommendedView.setText("Recommended Move: " + recCard);
 
+    // input array for RNN
+    int[][][] local_pov = new int[1][1][37];
+
     for(int stage = 0; stage < 4; stage++){
       //select Trump
       if(startingPlayer == 0){
