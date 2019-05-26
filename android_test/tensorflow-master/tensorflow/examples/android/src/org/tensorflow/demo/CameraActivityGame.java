@@ -102,7 +102,6 @@ public abstract class CameraActivityGame extends Activity
   public float[] suggestedMoves = {0, 0.5f, 0.8f, 0.9f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2f, 0.3f, 0.4f, 0.95f, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   public String[] recognizedCard = new String[1];
   public int recognizedCardInt;
-  private int[] Points = {0,0,0,0};
   private int Stage = 0;
   public int[] myCardsNorm;
   private int[] playedCards = new int[4];
@@ -218,7 +217,13 @@ public abstract class CameraActivityGame extends Activity
                 }
 
                 //update myCardsNorm
-                myCardsNorm[playedCards[round]] = activePlayer + 4;
+                if(activePlayer == 0){
+                  myCardsNorm[playedCards[round]] = activePlayer + 4;
+                }
+                else{
+                  myCardsNorm[playedCards[round]] = activePlayer + 1;
+                }
+
 
               }
               else{
@@ -229,6 +234,12 @@ public abstract class CameraActivityGame extends Activity
           });
 
         }
+        //update points for each player;
+        //player 0 = AI
+        //player 1 - 3 = Human, clockwise
+
+        //get the winner of the round and thus define new starting player
+        startingPlayer = js.RoundWinner(playedCards, myCardsNorm[36], startingPlayer);
 
         //update myCardsNorm again because from this moment on, the cards were played in the last round ma Hillaries
         for(int i = 0; i < 36; i++){
@@ -236,20 +247,10 @@ public abstract class CameraActivityGame extends Activity
             myCardsNorm[i] += 4;
           }
         }
-        //update points for each player;
-        //player 0 = AI
-        //player 1 - 3 = Human, clockwise
-
-        //get the winner of the round and thus define new starting player
-        int[] tmp = js.CountPoints(myCardsNorm);
-        startingPlayer = js.ArgMax(tmp);
-        for(int i = 0; i < 4; i++){
-          Points[i] += tmp[i];
-        }
 
       }
-      winner = js.ArgMax(Points);
-      recommendedView.setText("Player " + winner + " won (" + Points[winner] + ")");
+      winner = js.ArgMax(js.CountPoints(myCardsNorm));
+      recommendedView.setText("Player " + winner + " won (" + js.ArgMax(js.CountPoints(myCardsNorm)) + ")");
     }
 
     //
