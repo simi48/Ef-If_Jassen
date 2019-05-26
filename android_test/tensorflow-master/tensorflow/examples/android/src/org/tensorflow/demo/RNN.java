@@ -56,36 +56,36 @@ public class RNN {
 
     //but here comes the sweet sweet tensorflow epicness we all wanted!
     private static final String INPUT_NAME = "LSTM1";
-    private static final int inputs = 1,1,37;
     private static final String OUTPUT_NAME = "output";
     private static final AssetManager assetManager = new AssetManager();
     private static final String MODEL_FILE = "file:///android_asset/JassRNN.pb";
+    private static final int[] INPUT_SHAPE =  {1,1,37};
 
     private static final int INPUT_SIZE = 37;
 
-    int numClasses = (int) c.inferenceInterface.graph().operation(outputName).output(0).shape().size(1);
+    //int numClasses = (int) c.inferenceInterface.graph().operation(OUTPUT_NAME).output(0).shape().size(1); //dont know the point of this...
+
+
+    private float[] outputs = new float[1][1][36];
+
 
 
     private TensorFlowInferenceInterface tensorFlowInferenceInterface = new TensorFlowInferenceInterface(assetManager , MODEL_FILE);
-    tensorFlowInferenceInterface.feed( INPUT_NAME , inputs , 1, 28, 28);
-    tensorFlowInferenceInterface.run( new String[]{ OUTPUT_NAME } );
-    float[] outputs = new float[ 6];
-    tensorFlowInferenceInterface.fetch( OUTPUT_NAME , outputs ) ;
+    //tensorFlowInferenceInterface.feed( INPUT_NAME , inputs , 1, 28, 28);
+    //tensorFlowInferenceInterface.run( new String[]{ OUTPUT_NAME } );
+    //float[] outputs = new float[ 6];
+    //tensorFlowInferenceInterface.fetch( OUTPUT_NAME , outputs ) ;
 
-    public int[] Predictions(float[][][] LocalPov) {
+    public float[] Predict(float[][][] LocalPov) {
         // Copy the input data into TensorFlow.
-        TensorFlowInferenceInterface.feed(INPUT_NAME, inputs, new int[]{1*1*37});
+        TensorFlowInferenceInterface.feed(INPUT_NAME, LocalPov, INPUT_SHAPE);
 
         // Run the inference call.
-        TensorFlowInferenceInterface.run(outputNames);
+        TensorFlowInferenceInterface.run(OUTPUT_NAME);
 
         // Copy the output Tensor back into the output array.
-        TensorFlowInferenceInterface.fetch(outputName, outputs);
+        TensorFlowInferenceInterface.fetch(OUTPUT_NAME, outputs);
 
-        // Find the best classifications.
-        for (int i = 0; i < outputs.length; ++i) {
-        <snip>
-        }
-        return recognitions;
+        return outputs;
     }
 }
