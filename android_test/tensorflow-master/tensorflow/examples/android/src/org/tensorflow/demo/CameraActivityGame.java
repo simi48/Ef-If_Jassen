@@ -226,7 +226,7 @@ public abstract class CameraActivityGame extends Activity
           Intent intent = new Intent(CameraActivityGame.this, CameraActivity.class);
           startActivity(intent);
         }
-
+        myCards = js.fillCardNames();
       }
     });
 
@@ -243,7 +243,6 @@ public abstract class CameraActivityGame extends Activity
         myCardsNorm[i] += 4;
       }
     }
-
     turn++;
   }
 
