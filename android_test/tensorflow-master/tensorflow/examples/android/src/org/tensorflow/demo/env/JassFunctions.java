@@ -258,7 +258,7 @@ public class JassFunctions {
     }
 
     public int[] CountPoints(int[] cards) {
-        int[] ret = new int[ArgMax(cards)];
+        int[] ret = new int[cards[ArgMax(cards)]];
         //check for length inconsistencies, not gonna fix em though
         if(cards.length != 37){
             //            Log.d(TAG, myCards[i].getCardTitle());

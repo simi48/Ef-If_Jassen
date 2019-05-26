@@ -249,8 +249,11 @@ public abstract class CameraActivityGame extends Activity
         }
 
       }
+      for(int i = 0; i < 36; i++){
+        myCardsNorm[i] -= 5;
+      }
       winner = js.ArgMax(js.CountPoints(myCardsNorm));
-      recommendedView.setText("Player " + winner + " won (" + js.ArgMax(js.CountPoints(myCardsNorm)) + ")");
+      recommendedView.setText("P " + winner + " won (" + js.ArgMax(js.CountPoints(myCardsNorm)) + " Points)");
     }
 
     //
