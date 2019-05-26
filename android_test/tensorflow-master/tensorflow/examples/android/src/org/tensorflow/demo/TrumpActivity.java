@@ -22,7 +22,7 @@ public class TrumpActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.select_startingplayer);
+        setContentView(R.layout.select_trump);
 
         trumpView = (ListView) findViewById(R.id.trumpList);
         ArrayList<String> trumpAL = new ArrayList<>();
