@@ -82,13 +82,13 @@ apply from: "download-models.gradle"
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 28
 
     if (nativeBuildSystem == 'cmake') {
         defaultConfig {
             applicationId = 'org.tensorflow.demo'
             minSdkVersion 21
-            targetSdkVersion 23
+            targetSdkVersion 28
             ndk {
                 abiFilters "${cpuType}"
             }
@@ -141,7 +141,7 @@ android {
         release.setRoot('build-types/release')
     }
     defaultConfig {
-        targetSdkVersion 23
+        targetSdkVersion 28
         minSdkVersion 21
     }
 }
@@ -195,4 +195,8 @@ dependencies {
     if (nativeBuildSystem == 'cmake' || nativeBuildSystem == 'none') {
         implementation 'org.tensorflow:tensorflow-android:+'
     }
+    implementation files('libs/jblas-1.2.4.jar')
+    implementation 'org.jblas:jblas:1.2.4'
+
 }
+
