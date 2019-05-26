@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/main_back_stockfree" >
+
+    <TextView
+        android:id="@+id/selectTrump"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"
+        android:text="@string/Trump"
+        android:textColor="#FFF"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/trumpList"
+        android:layout_width="match_parent"
+        android:layout_height="195sp"
+        android:layout_centerVertical="true"
+        android:background="#6EF08B"
+        />
+
+</RelativeLayout>

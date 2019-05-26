@@ -33,4 +33,5 @@
     <string name="cardVal"> Card </string>
     <string name="startingPlayer"> Select the Starting Player </string>
     <string name="nextButtonText"> Next </string>
+    <string name="Trump"> Select Trump (or Hillary) </string>
 </resources>
