@@ -175,15 +175,21 @@ public abstract class CameraActivityGame extends Activity
           //check for already recognized cards
           int wanted = 0;
           for(int i = 0; i < 36; i++){
-            for(int b = 0; b < cardMemory.size(); b++){
-              if(sorted[i].getCardTitle() == cardMemory.get(b)){
-                break;
-              }
-              else{
-                cardMemory.add(sorted[i].getCardTitle());
-                wanted = i;
-                i = 36;
-                break;
+            if(cardMemory.size() == 0){
+              wanted = i;
+              break;
+            }
+            else{
+              for(int b = 0; b < cardMemory.size(); b++){
+                if(sorted[i].getCardTitle() == cardMemory.get(b)){
+                  break;
+                }
+                else{
+                  LOGGER.d("mahomies hi");
+                  wanted = i;
+                  i = 36;
+                  break;
+                }
               }
             }
           }
@@ -191,6 +197,7 @@ public abstract class CameraActivityGame extends Activity
           recognizedCard[0] = sorted[wanted].getCardTitle();
           int[] recognizedCardNorm = js.getNormArray(recognizedCard);
           recognizedCardInt = js.Index(recognizedCardNorm, 1);
+          LOGGER.d("mahomies1 " + recognizedCardInt);
 
           if(round < 4 && turn < 9){
             AdvanceRound();
@@ -241,7 +248,7 @@ public abstract class CameraActivityGame extends Activity
   }
 
   public void AdvanceRound(){
-    roundView.setText("Round: " + (round + 1));
+    roundView.setText("Round: " + (turn + 1));
 
     activePlayer = (startingPlayer + round)%4;
 
@@ -250,13 +257,6 @@ public abstract class CameraActivityGame extends Activity
       //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
       //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
 
-//      int[] tmp = new int[37];
-//      tmp[36] = myCardsNorm[36];
-//      for(int i = 0; i < 36; i++){
-//        if(myCardsNorm[i] == 1){
-//          tmp[i] = 1;
-//        }
-//      }
       recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
       playedCards[round] = js.FancyMove(myCardsNorm, suggestedMoves)[0];
     }
@@ -269,9 +269,11 @@ public abstract class CameraActivityGame extends Activity
     //update myCardsNorm
     if(activePlayer == 0){
       myCardsNorm[playedCards[round]] = activePlayer + 4;
+      cardMemory.add(js.CTT(playedCards[round]));
     }
     else{
       myCardsNorm[playedCards[round]] = activePlayer + 1;
+      cardMemory.add(js.CTT(playedCards[round]));
     }
     round++;
   }

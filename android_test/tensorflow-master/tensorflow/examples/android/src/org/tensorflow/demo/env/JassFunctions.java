@@ -518,7 +518,7 @@ public class JassFunctions {
     }
     public int[] FancyMove(int[] playercards, float[] suggestedmoves){
         //array is as long as player currently holds cards.
-        int[] bestmoves = new int[Count(playercards,1)];
+        int[] bestmoves = new int[36];
         //what the rnn wanted most
         int[] wanted = ArgMaxOrderF((suggestedmoves));
         int iterator = 0;
@@ -568,8 +568,8 @@ public class JassFunctions {
 
     public String CTT(int c_nb) {
         String c_name = "";
-        c_nb %= 9;
         int colour = Colour(c_nb);
+        c_nb %= 9;
 
         switch(colour) {
             case 0:
