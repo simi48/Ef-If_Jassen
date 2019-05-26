@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Trace;
+import android.util.Log;
 import android.util.Size;
 import android.view.KeyEvent;
 import android.view.Surface;
@@ -98,7 +99,11 @@ public abstract class CameraActivityGame extends Activity
   public boolean canClick = false;
   public Button nextBtn;
   public int startingPlayer;
+  public String recCard = "Waiting for AI's turn";
+  private int[] points = {0,0,0,0};
+  private int called;
   public int[] myCardsNorm;
+  private Integer[] playedCards = {null, null, null, null};
   public int count = 0;
   public CardRecog[] myCards = js.fillCardNames();
   public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0"};
@@ -132,24 +137,39 @@ public abstract class CameraActivityGame extends Activity
     startingPlayer = getIntent().getIntExtra("startingPlayer", 0);
     myCardsNorm = getIntent().getIntArrayExtra("myCardsNorm");
 
+    //initialize Buttons and Textviews
     nextBtn = (Button) findViewById(R.id.btnNext);
-
-    int rnd = 1;
-    String recCard =  "";
-
     TextView roundView = (TextView) findViewById(R.id.roundView);
     TextView recommendedView = (TextView) findViewById(R.id.recommendedView);
 
-    roundView.setText("Runde: " + rnd);
+    roundView.setText("Runde: 0");
     recommendedView.setText("Empfohlener Zug: " + recCard);
 
     for(int stage = 0; stage < 4; stage++){
+      //select Trump
+      if(startingPlayer == 0){
+        myCardsNorm[37] = js.ChooseTrump(myCardsNorm);
+      }
+
       for(int turn = 0; turn < 9; turn++){
-        for(int player = 0; player < 4; player++){
+        for(int round = 0; round < 4; round++){
           //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
         }
       }
     }
+
+    nextBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+
+        if(canClick){
+
+        }
+        else{
+
+        }
+      }
+    });
 
     //
     //
