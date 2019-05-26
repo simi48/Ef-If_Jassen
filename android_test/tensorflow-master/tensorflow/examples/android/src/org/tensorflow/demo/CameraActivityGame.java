@@ -142,8 +142,8 @@ public abstract class CameraActivityGame extends Activity
     TextView roundView = (TextView) findViewById(R.id.roundView);
     TextView recommendedView = (TextView) findViewById(R.id.recommendedView);
 
-    roundView.setText("Runde: 0");
-    recommendedView.setText("Empfohlener Zug: " + recCard);
+    roundView.setText("Round: 0");
+    recommendedView.setText("Recommended Move: " + recCard);
 
     for(int stage = 0; stage < 4; stage++){
       //select Trump
