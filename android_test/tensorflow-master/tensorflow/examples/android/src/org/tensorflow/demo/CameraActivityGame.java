@@ -142,8 +142,11 @@ public abstract class CameraActivityGame extends Activity
     TextView roundView = (TextView) findViewById(R.id.roundView);
     TextView recommendedView = (TextView) findViewById(R.id.recommendedView);
 
-    roundView.setText("Runde: 0");
-    recommendedView.setText("Empfohlener Zug: " + recCard);
+    roundView.setText("Round: 0");
+    recommendedView.setText("Recommended Move: " + recCard);
+
+    // input array for RNN
+    int[][][] local_pov = new int[1][1][37];
 
     int activePlayer;
     for(int stage = 0; stage < 4; stage++){
