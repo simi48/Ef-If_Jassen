@@ -688,13 +688,42 @@ if __name__ == '__main__':
     
     
     
+    units = 50
     
     
+    W = model.layers[0].get_weights()[0]
+    U = model.layers[0].get_weights()[1]
+    b = model.layers[0].get_weights()[2]
+    
+    W_i = W[:, :units]
+    W_f = W[:, units: units * 2]
+    W_c = W[:, units * 2: units * 3]
+    W_o = W[:, units * 3:]
+    
+    U_i = U[:, :units]
+    U_f = U[:, units: units * 2]
+    U_c = U[:, units * 2: units * 3]
+    U_o = U[:, units * 3:]
+    
+    b_i = b[:units]
+    b_f = b[units: units * 2]
+    b_c = b[units * 2: units * 3]
+    b_o = b[units * 3:]
     
     
-    
-    
-    
+    np.savetxt('weights/0_param0.txt',W_i)
+    np.savetxt('weights/0_param1.txt',U_i)
+    np.savetxt('weights/0_param2.txt',b_i)
+    np.savetxt('weights/0_param3.txt',W_c)
+    np.savetxt('weights/0_param4.txt',U_c)
+    np.savetxt('weights/0_param5.txt',b_c)
+    np.savetxt('weights/0_param6.txt',W_f)
+    np.savetxt('weights/0_param7.txt',U_f)
+    np.savetxt('weights/0_param8.txt',b_f)
+    np.savetxt('weights/0_param9.txt',W_o)
+    np.savetxt('weights/0_param10.txt',U_o)
+    np.savetxt('weights/0_param11.txt',b_o)
+
     
     
     

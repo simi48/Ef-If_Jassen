@@ -13,6 +13,8 @@ public class RNN {
     public RNN(){
         try{
             lstm = new SimpleLSTMPropagator("android_asset/weights/", 1);
+            interpret = new DenseLayer("android_asset/weights/",0);
+            output = new DenseLayer("android_asset/weights/",1);
         }
         catch(Exception e){
             System.out.println("Fuck this shit i'm out (also, cant be bothered to write a proper TAG thingy.");
