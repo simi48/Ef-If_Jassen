@@ -99,7 +99,8 @@ public abstract class CameraActivityGame extends Activity
   public boolean canClick = false;
   public Button nextBtn;
   public int startingPlayer;
-  public String recCard = "Waiting for AI's turn";
+  public int recCard;
+  public int recognizedCard;
   private int[] points = {0,0,0,0};
   private int called;
   public int[] myCardsNorm;
@@ -143,7 +144,7 @@ public abstract class CameraActivityGame extends Activity
     TextView recommendedView = (TextView) findViewById(R.id.recommendedView);
 
     roundView.setText("Round: 0");
-    recommendedView.setText("Recommended Move: " + recCard);
+    recommendedView.setText("Recommended Move: Waiting for AI's turn");
 
     // input array for RNN
     int[][][] local_pov = new int[1][1][37];
@@ -161,20 +162,21 @@ public abstract class CameraActivityGame extends Activity
           roundView.setText("Round: " + round);
 
           activePlayer = (startingPlayer + round)%4;
-          //select Trump if some other player starts
-          if(startingPlayer != 0 && turn == 0 && round == 0 && stage == 0){
-            myCardsNorm[36] = playedCards[0];
-          }
 
           //if it's the AI's turn
           if(activePlayer == 0){
             //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
-            recCard = "recCard"; //this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
-            recommendedView.setText("Recommended Move: " + recCard);
-            playedCards[round] = 12;
+            recCard = 12; //this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
+            recommendedView.setText("Recommended Move: "/* + js.CtT(recCard)*/);
+            playedCards[round] = recCard;
           }
           else{
+            playedCards[round] =
+          }
 
+          //select Trump if some other player starts
+          if(startingPlayer != 0 && turn == 0 && round == 0 && stage == 0){
+            myCardsNorm[36] = playedCards[0];
           }
         }
       }
