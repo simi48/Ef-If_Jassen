@@ -64,7 +64,7 @@ public class JassFunctions {
         }
 
         //convert recognised cards into norm array
-        for (int a = 0; a < 9; a++) {
+        for (int a = 0; a < recCards.length; a++) {
             for (int b = 0; b < 36; b++) {
                 if (cardsNamed[b].getCardTitle().equals(recCards[a])) {
                     normArray[b] = 1;
@@ -258,7 +258,7 @@ public class JassFunctions {
     }
 
     public int[] CountPoints(int[] cards) {
-        int[] ret = new int[cards[ArgMax(cards)]];
+        int[] ret = new int[(cards[ArgMax(cards)]) + 1];
         //check for length inconsistencies, not gonna fix em though
         if(cards.length != 37){
             //            Log.d(TAG, myCards[i].getCardTitle());

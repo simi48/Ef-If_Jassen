@@ -96,7 +96,7 @@ public abstract class CameraActivityGame extends Activity
   //
   private boolean BackBtnAllowed = false;
   private JassFunctions js = new JassFunctions();
-  public boolean canClick = true;
+  public boolean canClick = false;
   public Button nextBtn;
   public int startingPlayer;
   public float[] suggestedMoves = {0, 0.5f, 0.8f, 0.9f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2f, 0.3f, 0.4f, 0.95f, 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -112,8 +112,13 @@ public abstract class CameraActivityGame extends Activity
   public TextView roundView;
   public TextView recommendedView;
   public int activePlayer;
-  public int round;
+  public int round = 0;
+  public int turn = 0;
   public ArrayList<String> cardMemory = new ArrayList<>();
+  // input array for RNN
+  public int[][][] local_pov = new int[1][1][37];
+  public int winner;
+
   //
   //
   //
@@ -143,126 +148,126 @@ public abstract class CameraActivityGame extends Activity
     startingPlayer = getIntent().getIntExtra("startingPlayer", 0);
     myCardsNorm = getIntent().getIntArrayExtra("myCardsNorm");
 
-    //Stage = getIntent().getIntExtra("Stage", 0); //this could be implemented down the road but it's not a priority
-    //Points = getIntent().getIntArrayExtra("Points"); //this could be implemented down the road but it's not a priority
-
     //initialize Buttons and Textviews
     nextBtn = (Button) findViewById(R.id.btnNext);
+    nextBtn.setTextColor(Color.RED);
     roundView = (TextView) findViewById(R.id.roundView);
     recommendedView = (TextView) findViewById(R.id.recommendedView);
 
     roundView.setText("Round: 0");
     recommendedView.setText("Recommended Move: Press Next to start");
 
-    // input array for RNN
-    int[][][] local_pov = new int[1][1][37];
-
-    int winner;
-    for(int stage = Stage; stage < 1; stage++){
-      //select Trump if the AI starts, else the Trump will already be selected
-      if(startingPlayer == 0){
+    //if AI gets to choose Trump
+    if(startingPlayer == 0){
         myCardsNorm[36] = js.ChooseTrump(myCardsNorm);
       }
 
-      for(int turn = 0; turn < 9; turn++){
-        for(int rnd = 0; rnd < 4; rnd++){
-          round = rnd;
-          //Please Lord
-          nextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-              if(canClick){
-                canClick = false;
-                nextBtn.setTextColor(Color.RED);
-                count = 0;
+    nextBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if(canClick && turn < 10){
+          canClick = false;
+          nextBtn.setTextColor(Color.RED);
+          count = 0;
 
-                //get the recognized card from a human (or as I, the AI, like to call them: obsolete machines)
-                CardRecog[] sorted = js.sortCards(myCards);
-                //check for already recognized cards
-                int wanted = 0;
-                for(int i = 0; i < 36; i++){
-                  for(int b = 0; b < 36; b++){
-                    if(sorted[i].getCardTitle() == cardMemory.get(b)){
-                      break;
-                    }
-                    else{
-                      cardMemory.add(sorted[i].getCardTitle());
-                      wanted = i;
-                      i = 36;
-                      break;
-                    }
-                  }
-                }
-                recognizedCard[0] = sorted[wanted].getCardTitle();
-                int[] recognizedCardNorm = js.getNormArray(recognizedCard);
-                recognizedCardInt = js.Index(recognizedCardNorm, 1);
-
-
-                roundView.setText("Round: " + round);
-
-                activePlayer = (startingPlayer + round)%4;
-
-                //if it's the AI's turn
-                if(activePlayer == 0){
-                  //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
-                  //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
-
-                  recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
-                  playedCards[round] = js.FancyMove(myCardsNorm, suggestedMoves)[0];
-                }
-                //if it's the players turn
-                else{
-                  recommendedView.setText("My Observation: " + js.CTT(recognizedCardInt));
-                  playedCards[round] = recognizedCardInt;
-                }
-
-                //update myCardsNorm
-                if(activePlayer == 0){
-                  myCardsNorm[playedCards[round]] = activePlayer + 4;
-                }
-                else{
-                  myCardsNorm[playedCards[round]] = activePlayer + 1;
-                }
-
-
+          //get the recognized card from a human (or as I, the AI, like to call them: obsolete machines)
+          CardRecog[] sorted = js.sortCards(myCards);
+          //check for already recognized cards
+          int wanted = 0;
+          for(int i = 0; i < 36; i++){
+            for(int b = 0; b < cardMemory.size(); b++){
+              if(sorted[i].getCardTitle() == cardMemory.get(b)){
+                break;
               }
               else{
-                Toast.makeText(CameraActivityGame.this, "You have to wait until the AI has succeeded in recognizing a card!", Toast.LENGTH_LONG).show();
+                cardMemory.add(sorted[i].getCardTitle());
+                wanted = i;
+                i = 36;
+                break;
               }
-
             }
-          });
-
-        }
-        //update points for each player;
-        //player 0 = AI
-        //player 1 - 3 = Human, clockwise
-
-        //get the winner of the round and thus define new starting player
-        startingPlayer = js.RoundWinner(playedCards, myCardsNorm[36], startingPlayer);
-
-        //update myCardsNorm again because from this moment on, the cards were played in the last round ma Hillaries
-        for(int i = 0; i < 36; i++){
-          if(myCardsNorm[i] > 1 && myCardsNorm[i] < 5){
-            myCardsNorm[i] += 4;
           }
+          recognizedCard[0] = sorted[wanted].getCardTitle();
+          int[] recognizedCardNorm = js.getNormArray(recognizedCard);
+          recognizedCardInt = js.Index(recognizedCardNorm, 1);
+
+          if(round < 4 && turn < 9){
+            AdvanceRound();
+          }
+          if(round == 4 && turn < 9){
+            round = 0;
+            AdvanceTurn();
+            AdvanceRound();
+          }
+          if(turn == 9){
+            for(int i = 0; i < 36; i++){
+              myCardsNorm[i] -= 5;
+            }
+            winner = js.ArgMax(js.CountPoints(myCardsNorm));
+            recommendedView.setText("P " + winner + " won (" + js.ArgMax(js.CountPoints(myCardsNorm)) + " Points)");
+            nextBtn.setText("Play Again");
+            turn++;
+          }
+
+
+        }
+        else if(!canClick && turn < 10){
+          Toast.makeText(CameraActivityGame.this, "You have to wait until the AI has succeeded in recognizing a card!", Toast.LENGTH_LONG).show();
+        }
+        else if(turn == 10){
+          Intent intent = new Intent(CameraActivityGame.this, CameraActivity.class);
+          startActivity(intent);
         }
 
       }
-      for(int i = 0; i < 36; i++){
-        myCardsNorm[i] -= 5;
-      }
-      winner = js.ArgMax(js.CountPoints(myCardsNorm));
-      recommendedView.setText("P " + winner + " won (" + js.ArgMax(js.CountPoints(myCardsNorm)) + " Points)");
-    }
-
-    //
-    //
-    //
-    //
-
+    });
 
   }
+
+
+  public void AdvanceTurn(){
+    //get the winner of the round and thus define new starting player
+    startingPlayer = js.RoundWinner(playedCards, myCardsNorm[36], startingPlayer);
+
+    //update myCardsNorm again because from this moment on, the cards were played in the last round ma Hillaries
+    for(int i = 0; i < 36; i++){
+      if(myCardsNorm[i] > 1 && myCardsNorm[i] < 5){
+        myCardsNorm[i] += 4;
+      }
+    }
+
+    turn++;
+  }
+
+  public void AdvanceRound(){
+    roundView.setText("Round: " + round);
+
+    activePlayer = (startingPlayer + round)%4;
+
+    //if it's the AI's turn
+    if(activePlayer == 0){
+      //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
+      //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
+
+      recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
+      playedCards[round] = js.FancyMove(myCardsNorm, suggestedMoves)[0];
+    }
+    //if it's the players turn
+    else{
+      recommendedView.setText("My Observation: " + js.CTT(recognizedCardInt));
+      playedCards[round] = recognizedCardInt;
+    }
+
+    //update myCardsNorm
+    if(activePlayer == 0){
+      myCardsNorm[playedCards[round]] = activePlayer + 4;
+    }
+    else{
+      myCardsNorm[playedCards[round]] = activePlayer + 1;
+    }
+    round++;
+  }
+
 
   //
   //
