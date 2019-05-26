@@ -99,13 +99,14 @@ public abstract class CameraActivityGame extends Activity
   public boolean canClick = true;
   public Button nextBtn;
   public int startingPlayer;
-  public int recCard;
-  public int recognizedCard;
+  public float[] suggestedMoves = {0, 0.5f, 0.8f, 0.9f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2f, 0.3f, 0.4f, 0.95f, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  public String[] recognizedCard = new String[1];
+  public int recognizedCardInt;
   private int[] Points = {0,0,0,0};
   private int Stage = 0;
   private Integer called;
   public int[] myCardsNorm;
-  private Integer[] playedCards;
+  private int[] playedCards = new int[4];
   public int count = 0;
   public CardRecog[] myCards = js.fillCardNames();
   public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0"};
@@ -148,12 +149,13 @@ public abstract class CameraActivityGame extends Activity
     TextView recommendedView = (TextView) findViewById(R.id.recommendedView);
 
     roundView.setText("Round: 0");
-    recommendedView.setText("Recommended Move: Waiting for AI's turn");
+    recommendedView.setText("Recommended Move: Press Next to start");
 
     // input array for RNN
     int[][][] local_pov = new int[1][1][37];
 
     int activePlayer;
+    int winner;
     for(int stage = Stage; stage < 1; stage++){
       //select Trump if the AI starts, else the Trump will already be selected
       if(startingPlayer == 0){
@@ -164,7 +166,7 @@ public abstract class CameraActivityGame extends Activity
 
         //reset called colour and playedCards
         called = null;
-        for(int i = 0; i < 4; i++){ playedCards[i] = null; }
+//        for(int i = 0; i < 4; i++){ playedCards[i] = null; }
 
         for(int round = 0; round < 4; round++){
           roundView.setText("Round: " + round);
@@ -174,22 +176,44 @@ public abstract class CameraActivityGame extends Activity
           //if it's the AI's turn
           if(activePlayer == 0){
             //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
-            recCard = 12; //this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
-            recommendedView.setText("Recommended Move: " + js.CTT(recCard));
-            playedCards[round] = recCard;
+            //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
+
+            recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
+            playedCards[round] = js.FancyMove(myCardsNorm, suggestedMoves)[0];
           }
+          //if it's the players turn
           else{
-            playedCards[round] = recognizedCard;
+            recommendedView.setText("My Observation: " + js.CTT(recognizedCardInt));
+            playedCards[round] = recognizedCardInt;
           }
 
           //set called colour
           if(round == 0){
-            called = playedCards[round];
+            called = js.Colour(playedCards[round]);
+          }
+
+          //update myCardsNorm
+          myCardsNorm[playedCards[round]] = activePlayer + 4;
+        }
+
+        //update points for each player;
+        //player 0 = AI
+        //player 1 - 3 = Human, clockwise
+        for(int i = 0; i < 4; i++){
+          Points[(i + startingPlayer)%4] += js.CountPoints(playedCards)[i];
+        }
+        //get the winner of the round and thus define new starting player
+        startingPlayer = js.ArgMax(Points);
+
+        //update myCardsNorm again because from this moment on, the cards were played in the last round ma Hillaries
+        for(int i = 0; i < 36; i++){
+          if(myCardsNorm[i] > 1 && myCardsNorm[i] < 5){
+            myCardsNorm[i] += 4;
           }
         }
       }
-//      startingPlayer++; //this could be implemented down the road but it's not a priority
-//      startingPlayer %= 4; //this could be implemented down the road but it's not a priority
+      winner = js.ArgMax(Points);
+      recommendedView.setText("Player " + winner + " has won the game with his legendary amount of points (" + Points[winner] + ")");
     }
 
     nextBtn.setOnClickListener(new View.OnClickListener() {
@@ -199,9 +223,17 @@ public abstract class CameraActivityGame extends Activity
         if(canClick){
           canClick = false;
           nextBtn.setTextColor(Color.RED);
+
+          //get the recognized card from a human (or as I, the AI, like to call them: obsolete machines)
+          CardRecog[] sorted = js.sortCards(myCards);
+          recognizedCard[0] = sorted[0].getCardTitle();
+          int[] recognizedCardNorm = js.getNormArray(recognizedCard);
+          recognizedCardInt = js.Index(recognizedCardNorm, 1);
+
+
         }
         else{
-          Toast.makeText(CameraActivityGame.this, "You have to wait until the AI succeeded in recognizing a card!", Toast.LENGTH_LONG).show();
+          Toast.makeText(CameraActivityGame.this, "You have to wait until the AI has succeeded in recognizing a card!", Toast.LENGTH_LONG).show();
         }
       }
     });
@@ -229,31 +261,6 @@ public abstract class CameraActivityGame extends Activity
     }
   }
 
-  private CardRecog[] sortCards(CardRecog[] sorted){ //The purpose of this method is to sort the Card array through putting those cards with a higher confidence first
-
-    CardRecog tmp;
-//    for(int i = 0; i < 36; i++){
-//      LOGGER.d("sorting " + i + " " + sorted[i].getCardTitle());
-//      LOGGER.d("unsorting " + i + " " + unsorted[i].getCardTitle());
-//      LOGGER.d("confidence " + i + " " + sorted[i].getConfidence());
-//      LOGGER.d("unconfidence " + i + " " + unsorted[i].getConfidence());
-//
-//    }
-    for (int a = 0; a < sorted.length -1; a++){
-      for (int b = 0; b < sorted.length -1; b++){
-        if (sorted[b + 1].getConfidence() > sorted[b].getConfidence()){
-          tmp = sorted[b];
-          LOGGER.d("sorting " + b + " " + sorted[b].getCardTitle());
-          LOGGER.d("sorting " + b + " " + sorted[b+1].getCardTitle());
-          sorted[b] = sorted[b + 1];
-          sorted[b + 1] = tmp;
-          LOGGER.d("sorting " + b + " " + sorted[b].getCardTitle());
-          LOGGER.d("sorting " + b + " " + sorted[b+1].getCardTitle());
-        }
-      }
-    }
-    return sorted;
-  }
   //
   //
   //

@@ -133,7 +133,7 @@ public abstract class CameraActivity extends Activity
         if(canClick){
           LOGGER.d("Loading Validation" + this);
           
-          CardRecog[] sorted = sortCards(myCards);
+          CardRecog[] sorted = js.sortCards(myCards);
 
           Intent intent = new Intent(CameraActivity.this, ValidationActivity.class);
 
@@ -185,31 +185,7 @@ public abstract class CameraActivity extends Activity
     }
   }
 
-  private CardRecog[] sortCards(CardRecog[] sorted){ //The purpose of this method is to sort the Card array through putting those cards with a higher confidence first
 
-    CardRecog tmp;
-//    for(int i = 0; i < 36; i++){
-//      LOGGER.d("sorting " + i + " " + sorted[i].getCardTitle());
-//      LOGGER.d("unsorting " + i + " " + unsorted[i].getCardTitle());
-//      LOGGER.d("confidence " + i + " " + sorted[i].getConfidence());
-//      LOGGER.d("unconfidence " + i + " " + unsorted[i].getConfidence());
-//
-//    }
-    for (int a = 0; a < sorted.length -1; a++){
-      for (int b = 0; b < sorted.length -1; b++){
-        if (sorted[b + 1].getConfidence() > sorted[b].getConfidence()){
-          tmp = sorted[b];
-          LOGGER.d("sorting " + b + " " + sorted[b].getCardTitle());
-          LOGGER.d("sorting " + b + " " + sorted[b+1].getCardTitle());
-          sorted[b] = sorted[b + 1];
-          sorted[b + 1] = tmp;
-          LOGGER.d("sorting " + b + " " + sorted[b].getCardTitle());
-          LOGGER.d("sorting " + b + " " + sorted[b+1].getCardTitle());
-        }
-      }
-    }
-    return sorted;
-  }
   //
   //
   //
