@@ -16,6 +16,7 @@ public class TrumpActivity extends Activity {
 
     private ListView trumpView;
     public int trump;
+    public int[] myCards = new int[37];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +42,11 @@ public class TrumpActivity extends Activity {
                 trump = i;
 
                 Intent intent = new Intent(TrumpActivity.this, DetectorActivityGame.class);
-                intent.putExtra("myCardsNorm", getIntent().getIntArrayExtra("myCardsNorm"));
+                myCards = getIntent().getIntArrayExtra("myCardsNorm");
+                myCards[36] = trump;
+
+                intent.putExtra("myCardsNorm", myCards);
                 intent.putExtra("startingPlayer", getIntent().getIntExtra("startingPlayer", 0));
-                intent.putExtra("trump", trump);
 
                 startActivity(intent);
             }

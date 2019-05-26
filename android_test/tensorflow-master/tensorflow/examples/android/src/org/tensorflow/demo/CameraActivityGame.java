@@ -138,6 +138,7 @@ public abstract class CameraActivityGame extends Activity
     //get passed Data
     startingPlayer = getIntent().getIntExtra("startingPlayer", 0);
     myCardsNorm = getIntent().getIntArrayExtra("myCardsNorm");
+
     //Stage = getIntent().getIntExtra("Stage", 0); //this could be implemented down the road but it's not a priority
     //Points = getIntent().getIntArrayExtra("Points"); //this could be implemented down the road but it's not a priority
 
@@ -154,12 +155,9 @@ public abstract class CameraActivityGame extends Activity
 
     int activePlayer;
     for(int stage = Stage; stage < 1; stage++){
-      //select Trump if the AI starts
+      //select Trump if the AI starts, else the Trump will already be selected
       if(startingPlayer == 0){
         myCardsNorm[36] = js.ChooseTrump(myCardsNorm);
-      }
-      else{
-        myCardsNorm[36] = 0; //also needs to be changed except if you threaten the person choosing the trump to always choose 0
       }
 
       for(int turn = 0; turn < 9; turn++){
