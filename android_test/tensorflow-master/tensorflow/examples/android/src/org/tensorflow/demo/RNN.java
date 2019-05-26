@@ -44,8 +44,8 @@ import org.tensorflow.Tensor;
 import org.tensorflow.TensorFlow;
 import org.tensorflow.Tensors;
 import org.tensorflow.types.UInt8;
-//import android.content.res.AssetManager;
-import org.tensorflow.demo.AssetManager;
+import android.content.res.AssetManager;
+//import org.tensorflow.demo.AssetManager;
 public class RNN {
     //this crap was for DL4J:
 
