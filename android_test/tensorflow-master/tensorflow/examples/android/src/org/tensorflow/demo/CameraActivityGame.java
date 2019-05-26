@@ -114,7 +114,7 @@ public abstract class CameraActivityGame extends Activity
   public TextView recommendedView;
   public int activePlayer;
   public int round;
-  public String[] cardMemory;
+  public ArrayList<String> cardMemory = new ArrayList<>();
   //
   //
   //
@@ -178,7 +178,22 @@ public abstract class CameraActivityGame extends Activity
 
                 //get the recognized card from a human (or as I, the AI, like to call them: obsolete machines)
                 CardRecog[] sorted = js.sortCards(myCards);
-                recognizedCard[0] = sorted[0].getCardTitle();
+                //check for already recognized cards
+                int wanted = 0;
+                for(int i = 0; i < 36; i++){
+                  for(int b = 0; b < 36; b++){
+                    if(sorted[i].getCardTitle() == cardMemory.get(b)){
+                      break;
+                    }
+                    else{
+                      cardMemory.add(sorted[i].getCardTitle());
+                      wanted = i;
+                      i = 36;
+                      break;
+                    }
+                  }
+                }
+                recognizedCard[0] = sorted[wanted].getCardTitle();
                 int[] recognizedCardNorm = js.getNormArray(recognizedCard);
                 recognizedCardInt = js.Index(recognizedCardNorm, 1);
 
