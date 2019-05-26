@@ -17,16 +17,6 @@ public class RNN {
         catch(Exception e){
             System.out.println("Fuck this shit i'm out (also, cant be bothered to write a proper TAG thingy.");
         }
-        try {
-            interpret = new DenseLayer("android_asset/weights/",0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            output = new DenseLayer("android_asset/weights/",1);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
 //        String modelFile="DNN.tflite";
@@ -43,8 +33,7 @@ public class RNN {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        X = interpret.forwardStep(X);
-        X = output.forwardStep(X);
+
         double[] predictions = X.data;
         return predictions;
     }

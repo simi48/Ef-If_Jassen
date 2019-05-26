@@ -18,7 +18,8 @@ public class SimpleLSTMPropagator {
             boolean returnSequence = i == 0;
             layers.add(new LSTMLayer(path, i, returnSequence));
         }
-        layers.add(new DenseLayer(path));
+        layers.add(new DenseLayer(path,0));
+        layers.add(new DenseLayer(path,1));
     }
 
     public DoubleMatrix forward_propagate_full(DoubleMatrix X) throws IOException {

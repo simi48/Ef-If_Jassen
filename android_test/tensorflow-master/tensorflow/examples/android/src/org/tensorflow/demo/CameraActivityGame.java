@@ -55,6 +55,7 @@ import org.tensorflow.demo.env.Logger;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 //
 //
@@ -254,8 +255,15 @@ public abstract class CameraActivityGame extends Activity
     //if it's the AI's turn
     if(activePlayer == 0){
       //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
-      //double[] feed = double(mycardsNorm);
-      //float[] recommended = rnn.Predict(feed);
+//      double[] doubles = Arrays.stream(ints).asDoubleStream().toArray();
+      double[] feed = new double[myCardsNorm.length];
+      for (int i = 0; i < myCardsNorm.length; i++) {
+        feed[i] = myCardsNorm[i];
+      }
+      double[] tmp = rnn.Predict(feed);
+      for (int i = 0; i < suggestedMoves.length; i++) {
+        suggestedMoves[i] = (float) tmp[i];
+      }
       //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
 
       recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
