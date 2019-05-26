@@ -1,12 +1,15 @@
-package org.tensorflow.demo;
+package org.tensorflow.demo; /**
+ * Created by Alex on 09.06.2016.
+ * Class for activation functions used for forward propagation
+ */
 
 import org.jblas.DoubleMatrix;
 import org.jblas.MatrixFunctions;
 
+
 public class ActivationFunction {
 
     public static DoubleMatrix tanh(DoubleMatrix X) {
-
         return MatrixFunctions.tanh(X);
     }
 
@@ -37,3 +40,4 @@ public class ActivationFunction {
         return clippedX;
     }
 }
+

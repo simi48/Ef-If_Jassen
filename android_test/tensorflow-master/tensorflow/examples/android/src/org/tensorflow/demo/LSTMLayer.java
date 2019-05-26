@@ -1,10 +1,14 @@
 package org.tensorflow.demo;
 
-import org.jblas.*;
+import org.jblas.DoubleMatrix;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Created by Alex on 23.06.2016.
+ * Basic LSTM layer with forward propagation routine
+ */
 public class LSTMLayer implements AbstractLayer {
 
     private DoubleMatrix W_i;
@@ -122,5 +126,6 @@ public class LSTMLayer implements AbstractLayer {
         }
         return res;
     }
+
 
 }
