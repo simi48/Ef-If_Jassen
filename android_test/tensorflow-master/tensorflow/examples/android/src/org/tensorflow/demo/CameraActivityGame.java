@@ -111,6 +111,10 @@ public abstract class CameraActivityGame extends Activity
   public CardRecog[] myCards = js.fillCardNames();
   public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0"};
   public int MemoryInt = 0;
+  public TextView roundView;
+  public TextView recommendedView;
+  public int activePlayer;
+  public int round;
   //
   //
   //
@@ -145,8 +149,8 @@ public abstract class CameraActivityGame extends Activity
 
     //initialize Buttons and Textviews
     nextBtn = (Button) findViewById(R.id.btnNext);
-    TextView roundView = (TextView) findViewById(R.id.roundView);
-    TextView recommendedView = (TextView) findViewById(R.id.recommendedView);
+    roundView = (TextView) findViewById(R.id.roundView);
+    recommendedView = (TextView) findViewById(R.id.recommendedView);
 
     roundView.setText("Round: 0");
     recommendedView.setText("Recommended Move: Press Next to start");
@@ -154,7 +158,6 @@ public abstract class CameraActivityGame extends Activity
     // input array for RNN
     int[][][] local_pov = new int[1][1][37];
 
-    int activePlayer;
     int winner;
     for(int stage = Stage; stage < 1; stage++){
       //select Trump if the AI starts, else the Trump will already be selected
@@ -166,34 +169,58 @@ public abstract class CameraActivityGame extends Activity
 
         //reset called colour and playedCards
         called = null;
-//        for(int i = 0; i < 4; i++){ playedCards[i] = null; }
 
-        for(int round = 0; round < 4; round++){
-          roundView.setText("Round: " + round);
+        for(int rnd = 0; rnd < 4; rnd++){
+          round = rnd;
+          //Please Lord
+          nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+              if(canClick){
+                canClick = false;
+                nextBtn.setTextColor(Color.RED);
 
-          activePlayer = (startingPlayer + round)%4;
+                //get the recognized card from a human (or as I, the AI, like to call them: obsolete machines)
+                CardRecog[] sorted = js.sortCards(myCards);
+                recognizedCard[0] = sorted[0].getCardTitle();
+                int[] recognizedCardNorm = js.getNormArray(recognizedCard);
+                recognizedCardInt = js.Index(recognizedCardNorm, 1);
 
-          //if it's the AI's turn
-          if(activePlayer == 0){
-            //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
-            //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
 
-            recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
-            playedCards[round] = js.FancyMove(myCardsNorm, suggestedMoves)[0];
-          }
-          //if it's the players turn
-          else{
-            recommendedView.setText("My Observation: " + js.CTT(recognizedCardInt));
-            playedCards[round] = recognizedCardInt;
-          }
+                roundView.setText("Round: " + round);
 
-          //set called colour
-          if(round == 0){
-            called = js.Colour(playedCards[round]);
-          }
+                activePlayer = (startingPlayer + round)%4;
 
-          //update myCardsNorm
-          myCardsNorm[playedCards[round]] = activePlayer + 4;
+                //if it's the AI's turn
+                if(activePlayer == 0){
+                  //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
+                  //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
+
+                  recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
+                  playedCards[round] = js.FancyMove(myCardsNorm, suggestedMoves)[0];
+                }
+                //if it's the players turn
+                else{
+                  recommendedView.setText("My Observation: " + js.CTT(recognizedCardInt));
+                  playedCards[round] = recognizedCardInt;
+                }
+
+                //set called colour
+                if(round == 0){
+                  called = js.Colour(playedCards[round]);
+                }
+
+                //update myCardsNorm
+                myCardsNorm[playedCards[round]] = activePlayer + 4;
+
+              }
+              else{
+                Toast.makeText(CameraActivityGame.this, "You have to wait until the AI has succeeded in recognizing a card!", Toast.LENGTH_LONG).show();
+              }
+
+            }
+          });
+
         }
 
         //update points for each player;
@@ -215,28 +242,6 @@ public abstract class CameraActivityGame extends Activity
       winner = js.ArgMax(Points);
       recommendedView.setText("Player " + winner + " has won the game with his legendary amount of points (" + Points[winner] + ")");
     }
-
-    nextBtn.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-
-        if(canClick){
-          canClick = false;
-          nextBtn.setTextColor(Color.RED);
-
-          //get the recognized card from a human (or as I, the AI, like to call them: obsolete machines)
-          CardRecog[] sorted = js.sortCards(myCards);
-          recognizedCard[0] = sorted[0].getCardTitle();
-          int[] recognizedCardNorm = js.getNormArray(recognizedCard);
-          recognizedCardInt = js.Index(recognizedCardNorm, 1);
-
-
-        }
-        else{
-          Toast.makeText(CameraActivityGame.this, "You have to wait until the AI has succeeded in recognizing a card!", Toast.LENGTH_LONG).show();
-        }
-      }
-    });
 
     //
     //
