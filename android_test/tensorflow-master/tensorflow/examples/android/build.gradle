@@ -200,7 +200,6 @@ dependencies {
     if (nativeBuildSystem == 'cmake' || nativeBuildSystem == 'none') {
         implementation 'org.tensorflow:tensorflow-android:+'
     }
-    implementation files('libs/jblas-1.2.4.jar')
     implementation 'org.jblas:jblas:1.2.4'
 
 }
