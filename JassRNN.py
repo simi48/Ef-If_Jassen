@@ -669,36 +669,80 @@ if __name__ == '__main__':
 #    print('n1')
 #    TFLiteSess(q)
     
-    SaveWeights(model,'LSTMWeights')
-    lite = GetModel4TFL()
-    lite.get_layer('Interpret').set_weights(DenseWeightsA)
-    lite.get_layer('output').set_weights(DenseWeightsB)    
     
-    TFLite(lite)
+    
+    
+# =============================================================================
+#     This part is usefule for getting weights for the DNN layers.
+#     #######################################################################################
+#     for i in range(len(DenseWeightsA)):
+#         print('gotem')
+#         print(i)
+#         np.savetxt('weights/' '02param' + str(i) + '.txt', DenseWeightsA[i])
+#     print(DenseWeightsB)
+#     #######################################################################################
+#     
+# =============================================================================
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+# =============================================================================
+#     SaveWeights(model,'LSTMWeights')
+#     lite = GetModel4TFL()
+#     lite.get_layer('Interpret').set_weights(DenseWeightsA)
+#     lite.get_layer('output').set_weights(DenseWeightsB)    
+#     
+#     TFLite(lite)
+# =============================================================================
 #    pb_conversion(model,name='JassRNN',timestamp=True)
     
     
     
-    layers = []
-    f = h5py.File('models/JassRNN.h5','r')
-    for i, key in enumerate(f.keys()[:-1]):
-        layer_weights = {}
-    for value in f[key].values():
-        layer_weights[value.name.split('/')[-1]] = np.array(value)
-#        print(value.name, np.array(value).shape)
-    layers.append(layer_weights)
+# =============================================================================
+#     layers = []
+#     f = h5py.File('checkpoints/best.data-00000-of-00001','r')
+#     for i, key in enumerate(f.keys()[:-1]):
+#         layer_weights = {}
+#     for value in f[key].values():
+#         layer_weights[value.name.split('/')[-1]] = np.array(value)
+# #        print(value.name, np.array(value).shape)
+#     layers.append(layer_weights)
+# =============================================================================
+#    weights=[]
+#    for layers in model.layers:
+#        weights.append(layers.get_weights())
+#    
+#    layers = model.get_weights()
+#    for i, l in enumerate(layers):
+#        for a in range(len(l)):
     
     
-    layers = model.get_weights()
-    for i, l in enumerate(layers):
-        for key in l.keys():
-            np.savetxt('./weights/' + str(i) + '_' + key +'.txt', l[key])
-            
+    
             
 #    print(lstm_weights)
-    print(lstm_weights)
-    print(model.get_layer(None,0).get_config())
-    print(np.shape(lstm_weights))
+#    weights = model.get_weights()
+#    print(weights[6][0])
+    
+    
+#    print(lstm_weights)
+#    print(model.get_layer(None,0).get_config())
+#    print(np.shape(lstm_weights))
     
     
     

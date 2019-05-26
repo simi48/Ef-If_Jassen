@@ -14,10 +14,10 @@ public class DenseLayer implements AbstractLayer {
 
     private int realSize;
 
-    public DenseLayer(String path) throws IOException {
+    public DenseLayer(String path, int layernum) throws IOException {
 
-        this.W_dense = Utils.loadMatrixFromFile(path + "2_param_0.txt");
-        this.b_dense = Utils.loadMatrixFromFile(path + "2_param_1.txt");
+        this.W_dense = Utils.loadMatrixFromFile(path + layernum + "2_param_0.txt");
+        this.b_dense = Utils.loadMatrixFromFile(path + layernum + "2_param_1.txt");
     }
 
     public DoubleMatrix forwardStep(DoubleMatrix X) {
