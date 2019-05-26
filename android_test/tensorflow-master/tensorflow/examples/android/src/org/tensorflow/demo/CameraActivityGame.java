@@ -175,6 +175,7 @@ public abstract class CameraActivityGame extends Activity
               if(canClick){
                 canClick = false;
                 nextBtn.setTextColor(Color.RED);
+                count = 0;
 
                 //get the recognized card from a human (or as I, the AI, like to call them: obsolete machines)
                 CardRecog[] sorted = js.sortCards(myCards);
@@ -229,21 +230,23 @@ public abstract class CameraActivityGame extends Activity
 
         }
 
-        //update points for each player;
-        //player 0 = AI
-        //player 1 - 3 = Human, clockwise
-        for(int i = 0; i < 4; i++){
-          Points[(i + startingPlayer)%4] += js.CountPoints(playedCards)[i];
-        }
-        //get the winner of the round and thus define new starting player
-        startingPlayer = js.ArgMax(Points);
-
         //update myCardsNorm again because from this moment on, the cards were played in the last round ma Hillaries
         for(int i = 0; i < 36; i++){
           if(myCardsNorm[i] > 1 && myCardsNorm[i] < 5){
             myCardsNorm[i] += 4;
           }
         }
+        //update points for each player;
+        //player 0 = AI
+        //player 1 - 3 = Human, clockwise
+
+        //get the winner of the round and thus define new starting player
+        int[] tmp = js.CountPoints(myCardsNorm);
+        startingPlayer = js.ArgMax(tmp);
+        for(int i = 0; i < 4; i++){
+          Points[i] += tmp[i];
+        }
+
       }
       winner = js.ArgMax(Points);
       recommendedView.setText("Player " + winner + " has won the game with his legendary amount of points (" + Points[winner] + ")");
