@@ -249,7 +249,7 @@ public abstract class CameraActivityGame extends Activity
 
       }
       winner = js.ArgMax(Points);
-      recommendedView.setText("Player " + winner + " has won the game with his legendary amount of points (" + Points[winner] + ")");
+      recommendedView.setText("Player " + winner + " won (" + Points[winner] + ")");
     }
 
     //
