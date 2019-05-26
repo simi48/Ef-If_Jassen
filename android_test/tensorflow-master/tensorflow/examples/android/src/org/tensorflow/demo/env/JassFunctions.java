@@ -565,6 +565,69 @@ public class JassFunctions {
 
         return array;
     }
+
+    public String CTT(int c_nb) {
+        String c_name = "";
+        c_nb %= 9;
+        int colour = Colour(c_nb);
+
+        switch(colour) {
+            case 0:
+                c_name += "Rosen";
+                break;
+            case 1:
+                c_name += "Eichel";
+                break;
+            case 2:
+                c_name += "Schellen";
+                break;
+            case 3:
+                c_name += "Schilten";
+                break;
+        }
+
+        switch(c_nb) {
+            case 0:
+                c_name += "6";
+                break;
+            case 1:
+                c_name += "7";
+                break;
+            case 2:
+                c_name += "8";
+                break;
+            case 3:
+                c_name += "9";
+                break;
+            case 4:
+                c_name += "10";
+                break;
+            case 5:
+                c_name += "Under";
+                break;
+            case 6:
+                c_name += "Ober";
+                break;
+            case 7:
+                c_name += "König";
+                break;
+            case 8:
+                c_name += "Ass";
+                break;
+        }
+
+        return c_name;
+    }
+
+    public String[] CsTT(int[] c_nbs) {
+        String[] c_names = new String[36];
+
+        for (int i = 0; i < c_nbs.length; i++) {
+            c_names[i] = CTT(c_nbs[i]);
+        }
+
+        return c_names;
+    }
 }
 
 
