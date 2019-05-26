@@ -628,6 +628,21 @@ public class JassFunctions {
 
         return c_names;
     }
+
+    public CardRecog[] sortCards(CardRecog[] sorted){ //The purpose of this method is to sort the Card array through putting those cards with a higher confidence first
+
+        CardRecog tmp;
+        for (int a = 0; a < sorted.length -1; a++){
+            for (int b = 0; b < sorted.length -1; b++){
+                if (sorted[b + 1].getConfidence() > sorted[b].getConfidence()){
+                    tmp = sorted[b];
+                    sorted[b] = sorted[b + 1];
+                    sorted[b + 1] = tmp;
+                }
+            }
+        }
+        return sorted;
+    }
 }
 
 
