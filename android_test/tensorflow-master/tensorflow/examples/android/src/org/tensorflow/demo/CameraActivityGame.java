@@ -118,7 +118,7 @@ public abstract class CameraActivityGame extends Activity
   // input array for RNN
   public int[][][] local_pov = new int[1][1][37];
   public int winner;
-
+  private RNN rnn = new RNN();
   //
   //
   //
@@ -254,6 +254,8 @@ public abstract class CameraActivityGame extends Activity
     //if it's the AI's turn
     if(activePlayer == 0){
       //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
+      //double[] feed = double(mycardsNorm);
+      //float[] recommended = rnn.Predict(feed);
       //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
 
       recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
