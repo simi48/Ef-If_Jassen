@@ -134,7 +134,7 @@ public abstract class CameraActivityGame extends Activity
 
     nextBtn = (Button) findViewById(R.id.btnNext);
 
-    int rnd = 0;
+    int rnd = 1;
     String recCard =  "";
 
     TextView roundView = (TextView) findViewById(R.id.roundView);
