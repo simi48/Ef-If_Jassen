@@ -32,7 +32,7 @@ public class TrumpActivity extends Activity {
         trumpAL.add("Obenabe");
         trumpAL.add("Undenufe");
 
-        TextView startingPlayerText = (TextView) findViewById(R.id.selectTrump);
+        TextView trumpText = (TextView) findViewById(R.id.selectTrump);
 
         ArrayAdapter trumpAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, trumpAL);
         trumpView.setAdapter(trumpAdapter);
