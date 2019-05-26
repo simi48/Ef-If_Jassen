@@ -145,17 +145,28 @@ public abstract class CameraActivityGame extends Activity
     roundView.setText("Runde: 0");
     recommendedView.setText("Empfohlener Zug: " + recCard);
 
+    int activePlayer;
     for(int stage = 0; stage < 4; stage++){
-      //select Trump
+      //select Trump if the AI starts
       if(startingPlayer == 0){
-        myCardsNorm[37] = js.ChooseTrump(myCardsNorm);
+        myCardsNorm[36] = js.ChooseTrump(myCardsNorm);
       }
 
       for(int turn = 0; turn < 9; turn++){
+
         for(int round = 0; round < 4; round++){
+          roundView.setText("Runde: " + round);
+
+          activePlayer = (startingPlayer + round)%4;
+          //select Trump if some other player starts
+          if(startingPlayer != 0 && turn == 0 && round == 0 && stage == 0){
+            myCardsNorm[36] = playedCards[0];
+          }
           //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
         }
       }
+      startingPlayer++;
+      startingPlayer %= 4;
     }
 
     nextBtn.setOnClickListener(new View.OnClickListener() {
