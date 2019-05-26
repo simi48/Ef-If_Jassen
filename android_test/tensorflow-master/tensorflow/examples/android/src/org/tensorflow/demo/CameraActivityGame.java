@@ -99,7 +99,7 @@ public abstract class CameraActivityGame extends Activity
   public boolean canClick = false;
   public Button nextBtn;
   public int startingPlayer;
-  public float[] suggestedMoves = {0, 0.5f, 0.8f, 0.9f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2f, 0.3f, 0.4f, 0.95f, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  public float[] suggestedMoves = {0.11f, 0.5f, 0.8f, 0.9f, 0, 0, 0.53f, 0.23f, 0.67f, 0.45f, 0, 0, 0.78f, 0, 0, 0.64f, 0, 0, 0, 0, 0, 0, 0, 0.2f, 0.3f, 0.4f, 0.95f, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   public String[] recognizedCard = new String[1];
   public int recognizedCardInt;
   private int Stage = 0;
@@ -155,7 +155,7 @@ public abstract class CameraActivityGame extends Activity
     recommendedView = (TextView) findViewById(R.id.recommendedView);
 
     roundView.setText("Round: 0");
-    recommendedView.setText("Recommended Move: Press Next to start");
+    recommendedView.setText("Press Next to start");
 
     //if AI gets to choose Trump
     if(startingPlayer == 0){
@@ -187,6 +187,7 @@ public abstract class CameraActivityGame extends Activity
               }
             }
           }
+          LOGGER.d("mahomies" + sorted[wanted].getCardTitle());
           recognizedCard[0] = sorted[wanted].getCardTitle();
           int[] recognizedCardNorm = js.getNormArray(recognizedCard);
           recognizedCardInt = js.Index(recognizedCardNorm, 1);
@@ -240,7 +241,7 @@ public abstract class CameraActivityGame extends Activity
   }
 
   public void AdvanceRound(){
-    roundView.setText("Round: " + round);
+    roundView.setText("Round: " + (round + 1));
 
     activePlayer = (startingPlayer + round)%4;
 
@@ -249,6 +250,13 @@ public abstract class CameraActivityGame extends Activity
       //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
       //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
 
+//      int[] tmp = new int[37];
+//      tmp[36] = myCardsNorm[36];
+//      for(int i = 0; i < 36; i++){
+//        if(myCardsNorm[i] == 1){
+//          tmp[i] = 1;
+//        }
+//      }
       recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
       playedCards[round] = js.FancyMove(myCardsNorm, suggestedMoves)[0];
     }

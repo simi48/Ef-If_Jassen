@@ -573,16 +573,16 @@ public class JassFunctions {
 
         switch(colour) {
             case 0:
-                c_name += "Rosen";
+                c_name += "Rosen ";
                 break;
             case 1:
-                c_name += "Eichel";
+                c_name += "Eichel ";
                 break;
             case 2:
-                c_name += "Schellen";
+                c_name += "Schellen ";
                 break;
             case 3:
-                c_name += "Schilten";
+                c_name += "Schilten ";
                 break;
         }
 
