@@ -30,8 +30,6 @@ public class StartingPlayerActivity extends Activity {
         startingPlayerAL.add("Player 2");
         startingPlayerAL.add("Player 3");
 
-        TextView startingPlayerText = (TextView) findViewById(R.id.selectStartingPlayer);
-
         ArrayAdapter startingPlayerAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, startingPlayerAL);
         startingPlayerView.setAdapter(startingPlayerAdapter);
 

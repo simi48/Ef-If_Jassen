@@ -350,9 +350,9 @@ public class DetectorActivityGame extends CameraActivityGame implements OnImageA
                       DetectorActivityGame.super.MemoryInt++;
                     }
                   }
-                  if(DetectorActivityGame.super.count == 9){
+                  if(DetectorActivityGame.super.count == 1){
                     DetectorActivityGame.super.canClick = true;
-//                    DetectorActivityGame.super.nextBtn.setTextColor(Color.WHITE);
+                    DetectorActivityGame.super.nextBtn.setTextColor(Color.WHITE);
                   }
                 }
 

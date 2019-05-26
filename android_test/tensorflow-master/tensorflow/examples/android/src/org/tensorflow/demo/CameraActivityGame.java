@@ -96,12 +96,13 @@ public abstract class CameraActivityGame extends Activity
   //
   private boolean BackBtnAllowed = false;
   private JassFunctions js = new JassFunctions();
-  public boolean canClick = false;
+  public boolean canClick = true;
   public Button nextBtn;
   public int startingPlayer;
   public int recCard;
   public int recognizedCard;
-  private int[] points = {0,0,0,0};
+  private int[] Points = {0,0,0,0};
+  private int Stage = 0;
   private Integer called;
   public int[] myCardsNorm;
   private Integer[] playedCards;
@@ -137,6 +138,8 @@ public abstract class CameraActivityGame extends Activity
     //get passed Data
     startingPlayer = getIntent().getIntExtra("startingPlayer", 0);
     myCardsNorm = getIntent().getIntArrayExtra("myCardsNorm");
+    //Stage = getIntent().getIntExtra("Stage", 0); //this could be implemented down the road but it's not a priority
+    //Points = getIntent().getIntArrayExtra("Points"); //this could be implemented down the road but it's not a priority
 
     //initialize Buttons and Textviews
     nextBtn = (Button) findViewById(R.id.btnNext);
@@ -150,10 +153,13 @@ public abstract class CameraActivityGame extends Activity
     int[][][] local_pov = new int[1][1][37];
 
     int activePlayer;
-    for(int stage = 0; stage < 4; stage++){
+    for(int stage = Stage; stage < 1; stage++){
       //select Trump if the AI starts
       if(startingPlayer == 0){
         myCardsNorm[36] = js.ChooseTrump(myCardsNorm);
+      }
+      else{
+        myCardsNorm[36] = 0; //also needs to be changed except if you threaten the person choosing the trump to always choose 0
       }
 
       for(int turn = 0; turn < 9; turn++){
@@ -171,7 +177,7 @@ public abstract class CameraActivityGame extends Activity
           if(activePlayer == 0){
             //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
             recCard = 12; //this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
-            recommendedView.setText("Recommended Move: "/* + js.CtT(recCard)*/);
+            recommendedView.setText("Recommended Move: " + js.CTT(recCard));
             playedCards[round] = recCard;
           }
           else{
@@ -184,8 +190,8 @@ public abstract class CameraActivityGame extends Activity
           }
         }
       }
-      startingPlayer++;
-      startingPlayer %= 4;
+//      startingPlayer++; //this could be implemented down the road but it's not a priority
+//      startingPlayer %= 4; //this could be implemented down the road but it's not a priority
     }
 
     nextBtn.setOnClickListener(new View.OnClickListener() {
@@ -193,7 +199,8 @@ public abstract class CameraActivityGame extends Activity
       public void onClick(View view) {
 
         if(canClick){
-
+          canClick = false;
+          nextBtn.setTextColor(Color.RED);
         }
         else{
           Toast.makeText(CameraActivityGame.this, "You have to wait until the AI succeeded in recognizing a card!", Toast.LENGTH_LONG).show();
