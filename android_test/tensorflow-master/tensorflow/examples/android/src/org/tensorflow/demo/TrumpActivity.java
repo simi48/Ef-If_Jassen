@@ -32,8 +32,6 @@ public class TrumpActivity extends Activity {
         trumpAL.add("Obenabe");
         trumpAL.add("Undenufe");
 
-        TextView trumpText = (TextView) findViewById(R.id.selectTrump);
-
         ArrayAdapter trumpAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, trumpAL);
         trumpView.setAdapter(trumpAdapter);
 
@@ -44,6 +42,7 @@ public class TrumpActivity extends Activity {
 
                 Intent intent = new Intent(TrumpActivity.this, DetectorActivityGame.class);
                 intent.putExtra("myCardsNorm", getIntent().getIntArrayExtra("myCardsNorm"));
+                intent.putExtra("startingPlayer", getIntent().getIntExtra("startingPlayer", 0));
                 intent.putExtra("trump", trump);
 
                 startActivity(intent);

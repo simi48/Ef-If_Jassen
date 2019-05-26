@@ -38,7 +38,13 @@ public class StartingPlayerActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 startingPlayer = i;
 
-                Intent intent = new Intent(StartingPlayerActivity.this, DetectorActivityGame.class);
+                Intent intent;
+                if(i == 0){
+                    intent = new Intent(StartingPlayerActivity.this, DetectorActivityGame.class);
+                }
+                else{
+                    intent = new Intent(StartingPlayerActivity.this, TrumpActivity.class);
+                }
                 intent.putExtra("myCardsNorm", getIntent().getIntArrayExtra("myCardsNorm"));
                 intent.putExtra("startingPlayer", startingPlayer);
 
