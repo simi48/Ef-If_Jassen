@@ -16,9 +16,9 @@ public class Main {
 
         DoubleMatrix X = new DoubleMatrix(x);
 
-        SimpleLSTMPropagator propagator = new SimpleLSTMPropagator("C:\\Users\\Alex\\IdeaProjects\\LSTM\\src\\situation0\\", 50);
+        SimpleLSTMPropagator propagator = new SimpleLSTMPropagator("android_asset/weights/", 1);
         DoubleMatrix prediction = propagator.forward_propagate_full(X);
-        System.out.println(prediction);
+        //System.out.println(prediction);
 
     }
 }

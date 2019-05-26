@@ -84,6 +84,11 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
 
+    aaptOptions {
+        noCompress "tflite"
+        noCompress "lite"
+    }
+
     if (nativeBuildSystem == 'cmake') {
         defaultConfig {
             applicationId = 'org.tensorflow.demo'
@@ -199,4 +204,3 @@ dependencies {
     implementation 'org.jblas:jblas:1.2.4'
 
 }
-

@@ -18,6 +18,7 @@ import multiprocessing #*NOTE Multiprocessing ?usually? does not work in iPython
 from tqdm import tqdm  #using anaconda/pip: pip install tqdm
 from os import remove
 from time import time
+import h5py
 
 
 #Important: Makes sure that not all ge GPU memory is hogged. (noteworthy when Multiprocessing multiple RNNs)
@@ -232,6 +233,20 @@ def GetModelBasic():
     Model.add(tf.keras.layers.Dense(36, name='output'))
     return Model
 
+
+def GetModel4TFL():
+    '''
+    Used for acquiring the DNN Model (without LSTM Cells) with input size (1,1,37) and output size (1/1/36), without an optimizer or other learning oriented aspects.
+    Aim: TFLite conversion
+    Returns:
+        Uncompiled TensorFlow_Model
+    '''
+    Model = tf.keras.models.Sequential()
+#    Model.add(tf.keras.layers.InputLayer(batch_input_shape=(1,1,37),name='input'))
+#    Model.add(tf.keras.layers.LSTM(50,batch_input_shape=(1,1,37), name='LSTM1', return_sequences=True, stateful=True)) #Stateful = remember what happended last time
+    Model.add(tf.keras.layers.Dense(30, name='Interpret',batch_input_shape=(1,1,50)))
+    Model.add(tf.keras.layers.Dense(36, name='output'))
+    return Model
 # =============================================================================
 # 
 # def GetModelExperimental():
@@ -505,7 +520,7 @@ def TFLite(model,path = None):
         return None
 #    converter.target_ops = [tf.lite.OpsSet.TFLITE_BUILTINS, tf.lite.OpsSet.SELECT_TF_OPS]
     tflite_model = converter.convert()
-    open("converted_model.tflite", "wb").write(tflite_model)
+    open("DNN.tflite", "wb").write(tflite_model)
 #    remove(keras_file)
 #        print('didnt work huh...\nTFLite conversion, but we already knew it wouldn\'t, work so what gives')
     
@@ -645,12 +660,48 @@ if __name__ == '__main__':
     model = GetModelBasic()
     LoadWeights(model,'best')
     print(model.summary())
-    SaveRNN(model,'JassRNN')
-    q = LoadRNN(model,'250519')
-    print(q.summary())
+    lstm_weights = model.get_layer(None,0).get_weights()
+    DenseWeightsA = model.get_layer('Interpret').get_weights()
+    DenseWeightsB = model.get_layer('output').get_weights()
+#    SaveRNN(model,'JassRNN')
+#    q = LoadRNN(model,'250519')
+#    print(q.summary())
 #    print('n1')
 #    TFLiteSess(q)
-    pb_conversion(model,name='JassRNN',timestamp=True)
+    
+    SaveWeights(model,'LSTMWeights')
+    lite = GetModel4TFL()
+    lite.get_layer('Interpret').set_weights(DenseWeightsA)
+    lite.get_layer('output').set_weights(DenseWeightsB)    
+    
+    TFLite(lite)
+#    pb_conversion(model,name='JassRNN',timestamp=True)
+    
+    
+    
+    layers = []
+    f = h5py.File('models/JassRNN.h5','r')
+    for i, key in enumerate(f.keys()[:-1]):
+        layer_weights = {}
+    for value in f[key].values():
+        layer_weights[value.name.split('/')[-1]] = np.array(value)
+#        print(value.name, np.array(value).shape)
+    layers.append(layer_weights)
+    
+    
+    layers = model.get_weights()
+    for i, l in enumerate(layers):
+        for key in l.keys():
+            np.savetxt('./weights/' + str(i) + '_' + key +'.txt', l[key])
+            
+            
+#    print(lstm_weights)
+    print(lstm_weights)
+    print(model.get_layer(None,0).get_config())
+    print(np.shape(lstm_weights))
+    
+    
+    
 #    print(model.predict(PrepareInput(range(37))))
 #    pb_conv(model)
 #    pb_conversion_(model)
