@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
-import android.content.res.AssetManager;
 import android.os.Build.VERSION;
 import android.os.Trace;
 import android.text.TextUtils;
@@ -45,8 +44,8 @@ import org.tensorflow.Tensor;
 import org.tensorflow.TensorFlow;
 import org.tensorflow.Tensors;
 import org.tensorflow.types.UInt8;
-import android.content.res.AssetManager;
-
+//import android.content.res.AssetManager;
+import org.tensorflow.demo.AssetManager;
 public class RNN {
     //this crap was for DL4J:
 
@@ -61,12 +60,12 @@ public class RNN {
     private static final String MODEL_FILE = "file:///android_asset/JassRNN.pb";
     private static final int[] INPUT_SHAPE =  {1,1,37};
 
-    private static final int INPUT_SIZE = 37;
+    //private static final int INPUT_SIZE = 37; //?
 
     //int numClasses = (int) c.inferenceInterface.graph().operation(OUTPUT_NAME).output(0).shape().size(1); //dont know the point of this...
 
 
-    private float[] outputs = new float[1][1][36];
+    private float[][][] outputs = new float[1][1][36];
 
 
 
