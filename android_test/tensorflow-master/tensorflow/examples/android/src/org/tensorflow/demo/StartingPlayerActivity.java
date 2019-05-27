@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 public class StartingPlayerActivity extends Activity {
 
+    private boolean BackBtnAllowed = false;
     private ListView startingPlayerView;
     public int startingPlayer;
 
@@ -52,4 +53,24 @@ public class StartingPlayerActivity extends Activity {
             }
         });
     }
+
+    //
+    //
+    //
+    //
+    //method which can be used to disable BackButton
+    @Override
+    public void onBackPressed(){
+        if(!BackBtnAllowed){
+            //literally do nothing
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
+
+    //
+    //
+    //
+    //
 }

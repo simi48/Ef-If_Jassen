@@ -180,7 +180,7 @@ public abstract class CameraActivityGame extends Activity
     nextBtn.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        if(canClick && turn < 10 || (activePlayer + 1) == 0){
+        if(canClick && turn < 10 || (startingPlayer + round) == 0){
           canClick = false;
           nextBtn.setTextColor(Color.RED);
           count = 0;
@@ -217,12 +217,14 @@ public abstract class CameraActivityGame extends Activity
             AdvanceRound();
             round++;
           }
-          if(round == 4 && turn < 9){
+          else if(round == 4 && turn < 9){
             AdvanceTurn();
             round = 0;
             turn++;
+            playerView.setText("Player: " + (activePlayer + 1));
+            recommendedView.setText("Press Next to continue");
           }
-          if(turn == 9){
+          else if(turn == 9){
             for(int i = 0; i < 36; i++){
               myCardsNorm[i] -= 5;
             }

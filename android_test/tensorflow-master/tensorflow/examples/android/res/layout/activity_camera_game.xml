@@ -33,7 +33,7 @@
            android:layout_alignParentStart="true"
            android:layout_alignParentBottom="true"
            android:layout_marginStart="30dp"
-           android:layout_marginBottom="126dp"
+           android:layout_marginBottom="110dp"
            android:textColor="#FFFFFF"
            android:text="" />
 
@@ -56,8 +56,8 @@
            android:layout_alignParentBottom="true"
            android:layout_marginStart="30dp"
            android:layout_marginBottom="50dp"
-           android:textColor="#FFFFFF"
-           android:text="" />
+           android:text=""
+           android:textColor="#FFFFFF" />
 
        <Button
            android:id="@+id/btnNext"

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 public class TrumpActivity extends Activity {
 
+    private boolean BackBtnAllowed = false;
     private ListView trumpView;
     public int trump;
     public int[] myCards = new int[37];
@@ -52,4 +53,24 @@ public class TrumpActivity extends Activity {
             }
         });
     }
+
+    //
+    //
+    //
+    //
+    //method which can be used to disable BackButton
+    @Override
+    public void onBackPressed(){
+        if(!BackBtnAllowed){
+            //literally do nothing
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
+
+    //
+    //
+    //
+    //
 }
