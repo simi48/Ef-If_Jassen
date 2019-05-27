@@ -278,8 +278,8 @@ public abstract class CameraActivityGame extends Activity
       //making sure the "wrongly" scanned card can be scanned again
       for(int i = 0; i < 36; i++){
         if(Memory[i] == recognizedCard[0]){
-            Memory[i] = "0";
             Memory[i] = js.CTT(playedCards[round]);
+            break;
         }
       }
     }
