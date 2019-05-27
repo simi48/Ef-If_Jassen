@@ -111,6 +111,7 @@ public abstract class CameraActivityGame extends Activity
   public String[] Memory = {"0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0","0", "0", "0", "0", "0", "0", "0", "0", "0"};
   public int MemoryInt = 0;
   public TextView roundView;
+  public TextView playerView;
   public TextView recommendedView;
   public int activePlayer;
   public int round = 0;
@@ -152,7 +153,11 @@ public abstract class CameraActivityGame extends Activity
     //add cards to cardMemory which are already in the AI's possession
     for(int i = 0; i < 36; i++){
         if(myCardsNorm[i] == 1){
-            cardMemory.add(js.CTT(i));
+          cardMemory.add(js.CTT(i));
+        }
+        if(i < 9 && myCardsNorm[i] == 1){
+          Memory[i] = js.CTT(i);
+          MemoryInt = 9;
         }
     }
 
@@ -160,9 +165,11 @@ public abstract class CameraActivityGame extends Activity
     nextBtn = (Button) findViewById(R.id.btnNext);
     nextBtn.setTextColor(Color.RED);
     roundView = (TextView) findViewById(R.id.roundView);
+    playerView = (TextView) findViewById(R.id.playerView);
     recommendedView = (TextView) findViewById(R.id.recommendedView);
 
     roundView.setText("Round: 0");
+    playerView.setText("Player: unknown");
     recommendedView.setText("Press Next to start");
 
     //if AI gets to choose Trump
@@ -173,7 +180,7 @@ public abstract class CameraActivityGame extends Activity
     nextBtn.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        if(canClick && turn < 10){
+        if(canClick && turn < 10 || (activePlayer + 1) == 0){
           canClick = false;
           nextBtn.setTextColor(Color.RED);
           count = 0;
@@ -227,7 +234,7 @@ public abstract class CameraActivityGame extends Activity
 
 
         }
-        else if(!canClick && turn < 10){
+        else if(!canClick){
           Toast.makeText(CameraActivityGame.this, "You have to wait until the AI has succeeded in recognizing a card!", Toast.LENGTH_LONG).show();
         }
         else if(turn == 10){
@@ -257,19 +264,20 @@ public abstract class CameraActivityGame extends Activity
     roundView.setText("Round: " + (turn + 1));
 
     activePlayer = (startingPlayer + round)%4;
+    playerView.setText("Player: " + activePlayer);
 
     //if it's the AI's turn
     if(activePlayer == 0){
       //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
 //      double[] doubles = Arrays.stream(ints).asDoubleStream().toArray();
-      double[] feed = new double[myCardsNorm.length];
-      for (int i = 0; i < myCardsNorm.length; i++) {
-        feed[i] = myCardsNorm[i];
-      }
-      double[] tmp = rnn.Predict(feed);
-      for (int i = 0; i < suggestedMoves.length; i++) {
-        suggestedMoves[i] = (float) tmp[i];
-      }
+//      double[] feed = new double[myCardsNorm.length];
+//      for (int i = 0; i < myCardsNorm.length; i++) {
+//        feed[i] = myCardsNorm[i];
+//      }
+//      double[] tmp = rnn.Predict(feed);
+//      for (int i = 0; i < suggestedMoves.length; i++) {
+//        suggestedMoves[i] = (float) tmp[i];
+//      }
       //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
 
       recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
