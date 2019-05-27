@@ -148,6 +148,13 @@ public abstract class CameraActivityGame extends Activity
     //get passed Data
     startingPlayer = getIntent().getIntExtra("startingPlayer", 0);
     myCardsNorm = getIntent().getIntArrayExtra("myCardsNorm");
+    
+    //add cards to cardMemory which are already in the AI's possession
+    for(int i = 0; i < 36; i++){
+        if(myCardsNorm[i] == 1){
+            cardMemory.add(js.CTT(i));
+        }
+    }
 
     //initialize Buttons and Textviews
     nextBtn = (Button) findViewById(R.id.btnNext);
@@ -175,23 +182,22 @@ public abstract class CameraActivityGame extends Activity
           CardRecog[] sorted = js.sortCards(myCards);
           //check for already recognized cards
           int wanted = 0;
-          for(int i = 0; i < 36; i++){
-            if(cardMemory.size() == 0){
-              wanted = i;
-              break;
+          boolean quit = false;
+          boolean match = false;
+          for(int i = 0; i < 36 && !quit; i++){
+            for(int b = 0; b < cardMemory.size() && !quit; b++){
+              if(sorted[i].getCardTitle() == cardMemory.get(b)){
+                quit = true;
+                match = true;
+              }
+            }
+            quit = false;
+            if(!match){
+                wanted = i;
+                quit = true; 
             }
             else{
-              for(int b = 0; b < cardMemory.size(); b++){
-                if(sorted[i].getCardTitle() == cardMemory.get(b)){
-                  break;
-                }
-                else{
-                  LOGGER.d("mahomies hi");
-                  wanted = i;
-                  i = 36;
-                  break;
-                }
-              }
+                match = false;
             }
           }
           LOGGER.d("mahomies" + sorted[wanted].getCardTitle());
@@ -202,18 +208,19 @@ public abstract class CameraActivityGame extends Activity
 
           if(round < 4 && turn < 9){
             AdvanceRound();
+            round++;
           }
           if(round == 4 && turn < 9){
-            round = 0;
             AdvanceTurn();
-            AdvanceRound();
+            round = 0;
+            turn++;
           }
           if(turn == 9){
             for(int i = 0; i < 36; i++){
               myCardsNorm[i] -= 5;
             }
             winner = js.ArgMax(js.CountPoints(myCardsNorm));
-            recommendedView.setText("P " + winner + " won (" + js.ArgMax(js.CountPoints(myCardsNorm)) + " Points)");
+            recommendedView.setText("P " + winner + " won (" + js.CountPoints(myCardsNorm)[winner] + " Points)");
             nextBtn.setText("Play Again");
             turn++;
           }
@@ -244,7 +251,6 @@ public abstract class CameraActivityGame extends Activity
         myCardsNorm[i] += 4;
       }
     }
-    turn++;
   }
 
   public void AdvanceRound(){
@@ -277,14 +283,13 @@ public abstract class CameraActivityGame extends Activity
 
     //update myCardsNorm
     if(activePlayer == 0){
-      myCardsNorm[playedCards[round]] = activePlayer + 4;
+      myCardsNorm[playedCards[round]] = 5;
       cardMemory.add(js.CTT(playedCards[round]));
     }
     else{
       myCardsNorm[playedCards[round]] = activePlayer + 1;
       cardMemory.add(js.CTT(playedCards[round]));
     }
-    round++;
   }
 
 
