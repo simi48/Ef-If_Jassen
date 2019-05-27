@@ -274,6 +274,14 @@ public abstract class CameraActivityGame extends Activity
 
       recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
       playedCards[round] = js.FancyMove(myCardsNorm, suggestedMoves)[0];
+      
+      //making sure the "wrongly" scanned card can be scanned again
+      for(int i = 0; i < 36; i++){
+        if(Memory[i] == recognizedCard[0]){
+            Memory[i] = "0";
+            Memory[i] = js.CTT(playedCards[round]);
+        }
+      }
     }
     //if it's the players turn
     else{
