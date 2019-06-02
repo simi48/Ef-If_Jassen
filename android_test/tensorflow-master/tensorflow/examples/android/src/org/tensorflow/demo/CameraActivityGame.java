@@ -152,11 +152,13 @@ public abstract class CameraActivityGame extends Activity
     myCardsNorm = getIntent().getIntArrayExtra("myCardsNorm");
     
     //add cards to cardMemory which are already in the AI's possession
+    int check = 0;
     for(int i = 0; i < 36; i++){
         if(myCardsNorm[i] == 1){
           cardMemory.add(js.CTT(i));
-          Memory[i] = js.CTT(i);
-//          LOGGER.d("Cardmemory: " + cardMemory.get(i));
+          Memory[check] = js.CTT(i);
+//          LOGGER.d("Cardmemory: " + cardMemory.get(check));
+          check++;
         }
     }
     MemoryInt = 9;
@@ -188,14 +190,17 @@ public abstract class CameraActivityGame extends Activity
           //get the recognized card from a human (or as I, the AI, like to call them: obsolete machines)
           CardRecog[] sorted = js.sortCards(myCards);
           //check for already recognized cards
-          int wanted = 0;
+          Integer wanted = null;
           boolean quit = false;
           boolean match = false;
           for(int i = 0; i < 36 && !quit; i++){
             for(int b = 0; b < cardMemory.size() && !quit; b++){
-              if(sorted[i].getCardTitle() == cardMemory.get(b)){
-                quit = true;
-                match = true;
+              LOGGER.d("YoMyCard: " + sorted[i].getCardTitle());
+              LOGGER.d("YoMyCard1: " + cardMemory.get(b));
+              if(sorted[i].getCardTitle().equals(cardMemory.get(b))){
+                  LOGGER.d("Match found: " + cardMemory.get(b));
+                  quit = true;
+                  match = true;
               }
             }
             quit = false;
@@ -207,33 +212,37 @@ public abstract class CameraActivityGame extends Activity
                 match = false;
             }
           }
-          LOGGER.d("mahomies" + sorted[wanted].getCardTitle());
-          recognizedCard[0] = sorted[wanted].getCardTitle();
-          int[] recognizedCardNorm = js.getNormArray(recognizedCard);
-          recognizedCardInt = js.Index(recognizedCardNorm, 1);
-          LOGGER.d("mahomies1 " + recognizedCardInt);
+          if(wanted == null){
+            Toast.makeText(CameraActivityGame.this, "Sorry, no new card, try again", Toast.LENGTH_SHORT).show();
+          }
+          else{
+            LOGGER.d("mahomies" + sorted[wanted].getCardTitle());
+            recognizedCard[0] = sorted[wanted].getCardTitle();
+            int[] recognizedCardNorm = js.getNormArray(recognizedCard);
+            recognizedCardInt = js.Index(recognizedCardNorm, 1);
+            LOGGER.d("mahomies1 " + recognizedCardInt);
 
-          if(round < 4 && turn < 9){
-            AdvanceRound();
-            round++;
-          }
-          else if(round == 4 && turn < 9){
-            AdvanceTurn();
-            round = 0;
-            turn++;
-            playerView.setText("Player: unknown");
-            recommendedView.setText("Press Next to continue");
-          }
-          else if(turn == 9){
-            for(int i = 0; i < 36; i++){
-              myCardsNorm[i] -= 5;
+            if(round < 4 && turn < 9){
+              AdvanceRound();
+              round++;
             }
-            winner = js.ArgMax(js.CountPoints(myCardsNorm));
-            recommendedView.setText("P " + winner + " won (" + js.CountPoints(myCardsNorm)[winner] + " Points)");
-            nextBtn.setText("Play Again");
-            turn++;
+            else if(round == 4 && turn < 9){
+              AdvanceTurn();
+              round = 0;
+              turn++;
+              playerView.setText("Player: unknown");
+              recommendedView.setText("Press Next to continue");
+            }
+            else if(turn == 9){
+              for(int i = 0; i < 36; i++){
+                myCardsNorm[i] -= 5;
+              }
+              winner = js.ArgMax(js.CountPoints(myCardsNorm));
+              recommendedView.setText("P " + winner + " won (" + js.CountPoints(myCardsNorm)[winner] + " Points)");
+              nextBtn.setText("Play Again");
+              turn++;
+            }
           }
-
 
         }
         else if(!canClick){
@@ -246,7 +255,6 @@ public abstract class CameraActivityGame extends Activity
         myCards = js.fillCardNames();
       }
     });
-
   }
 
 
@@ -271,18 +279,18 @@ public abstract class CameraActivityGame extends Activity
     //if it's the AI's turn
     if(activePlayer == 0){
       //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
-      try{
-        double[] feed = new double[myCardsNorm.length];
-        for (int i = 0; i < myCardsNorm.length; i++) {
-          feed[i] = myCardsNorm[i];
-        }
-        double[] tmp = rnn.Predict(feed);
-        for (int i = 0; i < suggestedMoves.length; i++) {
-          suggestedMoves[i] = (float) tmp[i];
-        }
-      } catch (Exception e){
-        suggestedMoves = js.RNNEvaluate();
-      }
+//      try{
+//        double[] feed = new double[myCardsNorm.length];
+//        for (int i = 0; i < myCardsNorm.length; i++) {
+//          feed[i] = myCardsNorm[i];
+//        }
+//        double[] tmp = rnn.Predict(feed);
+//        for (int i = 0; i < suggestedMoves.length; i++) {
+//          suggestedMoves[i] = (float) tmp[i];
+//        }
+//      } catch (Exception e){
+      suggestedMoves = js.RNNEvaluate();
+//      }
       //double[] doubles = Arrays.stream(ints).asDoubleStream().toArray();
       //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
 
