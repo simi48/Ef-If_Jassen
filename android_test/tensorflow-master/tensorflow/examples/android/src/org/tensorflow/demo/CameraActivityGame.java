@@ -53,6 +53,7 @@ import org.tensorflow.demo.env.ImageUtils;
 import org.tensorflow.demo.env.JassFunctions;
 import org.tensorflow.demo.env.Logger;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,7 +101,7 @@ public abstract class CameraActivityGame extends Activity
   public boolean canClick = false;
   public Button nextBtn;
   public int startingPlayer;
-  public float[] suggestedMoves = {0.11f, 0.5f, 0.8f, 0.9f, 0, 0, 0.53f, 0.23f, 0.67f, 0.45f, 0, 0, 0.78f, 0, 0, 0.64f, 0, 0, 0, 0, 0, 0, 0, 0.2f, 0.3f, 0.4f, 0.95f, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  public float[] suggestedMoves;
   public String[] recognizedCard = new String[1];
   public int recognizedCardInt;
   private int Stage = 0;
@@ -154,12 +155,11 @@ public abstract class CameraActivityGame extends Activity
     for(int i = 0; i < 36; i++){
         if(myCardsNorm[i] == 1){
           cardMemory.add(js.CTT(i));
-        }
-        if(i < 9 && myCardsNorm[i] == 1){
           Memory[i] = js.CTT(i);
-          MemoryInt = 9;
+//          LOGGER.d("Cardmemory: " + cardMemory.get(i));
         }
     }
+    MemoryInt = 9;
 
     //initialize Buttons and Textviews
     nextBtn = (Button) findViewById(R.id.btnNext);
@@ -221,7 +221,7 @@ public abstract class CameraActivityGame extends Activity
             AdvanceTurn();
             round = 0;
             turn++;
-            playerView.setText("Player: " + (activePlayer + 1));
+            playerView.setText("Player: unknown");
             recommendedView.setText("Press Next to continue");
           }
           else if(turn == 9){
@@ -271,15 +271,19 @@ public abstract class CameraActivityGame extends Activity
     //if it's the AI's turn
     if(activePlayer == 0){
       //RNN.EvaluateMoves ma homies! This has priority! Load the RNN!
-//      double[] doubles = Arrays.stream(ints).asDoubleStream().toArray();
-//      double[] feed = new double[myCardsNorm.length];
-//      for (int i = 0; i < myCardsNorm.length; i++) {
-//        feed[i] = myCardsNorm[i];
-//      }
-//      double[] tmp = rnn.Predict(feed);
-//      for (int i = 0; i < suggestedMoves.length; i++) {
-//        suggestedMoves[i] = (float) tmp[i];
-//      }
+      try{
+        double[] feed = new double[myCardsNorm.length];
+        for (int i = 0; i < myCardsNorm.length; i++) {
+          feed[i] = myCardsNorm[i];
+        }
+        double[] tmp = rnn.Predict(feed);
+        for (int i = 0; i < suggestedMoves.length; i++) {
+          suggestedMoves[i] = (float) tmp[i];
+        }
+      } catch (Exception e){
+        suggestedMoves = js.RNNEvaluate();
+      }
+      //double[] doubles = Arrays.stream(ints).asDoubleStream().toArray();
       //suggestedMoves = RNNOutput; this needs to be changed, it should be whatever the AI recommends #Reality can be whatever I want
 
       recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));

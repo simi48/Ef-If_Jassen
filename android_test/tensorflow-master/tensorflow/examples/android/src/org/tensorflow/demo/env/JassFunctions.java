@@ -566,6 +566,17 @@ public class JassFunctions {
         return array;
     }
 
+    public float[] RNNEvaluate(){
+        float[] ret = new float[36];
+
+        for(int i = 0; i < 36; i++){
+            float rand = (float) Math.random();
+            ret[i] = rand;
+        }
+
+        return ret;
+    }
+
     public String CTT(int c_nb) {
         String c_name = "";
         int colour = Colour(c_nb);
