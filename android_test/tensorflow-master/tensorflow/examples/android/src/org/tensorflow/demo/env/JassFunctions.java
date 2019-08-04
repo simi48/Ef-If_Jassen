@@ -620,7 +620,7 @@ public class JassFunctions {
                 c_name += "Ober";
                 break;
             case 7:
-                c_name += "König";
+                c_name += "Koenig";
                 break;
             case 8:
                 c_name += "Ass";

@@ -392,6 +392,15 @@ public abstract class CameraActivityGame extends Activity
     }
   }
 
+  KeyguardManager myKM = (KeyguardManager) context.getSystemService(Context.KEYGUARD_SERVICE);
+if( myKM.inKeyguardRestrictedInputMode()) {
+    //it is locked
+  } 
+
+  public void closeApplication(View view) {
+    finish();
+    moveTaskToBack(true);
+  }
   //
   //
   //
