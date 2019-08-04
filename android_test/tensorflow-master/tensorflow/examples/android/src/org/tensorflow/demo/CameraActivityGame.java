@@ -280,6 +280,17 @@ public abstract class CameraActivityGame extends Activity
         myCardsNorm[i] += 4;
       }
     }
+
+    //making sure the "wrongly" scanned cards can be scanned again
+    for(int i = 0; i < 36; i++){
+      if(i < cardMemory.size()){
+        Memory[i] = cardMemory.get(i);
+      }
+      else{
+        Memory[i] = "0";
+      }
+    }
+    MemoryInt = cardMemory.size();
   }
 
   public void AdvanceRound(){
@@ -308,14 +319,7 @@ public abstract class CameraActivityGame extends Activity
 
       recommendedView.setText("Recommended Move: " + js.CTT(js.FancyMove(myCardsNorm, suggestedMoves)[0]));
       playedCards[round] = js.FancyMove(myCardsNorm, suggestedMoves)[0];
-      
-      //making sure the "wrongly" scanned card can be scanned again
-      for(int i = 0; i < 36; i++){
-        if(Memory[i] == recognizedCard[0]){
-            Memory[i] = js.CTT(playedCards[round]);
-            break;
-        }
-      }
+
     }
     //if it's the players turn
     else{
@@ -332,6 +336,17 @@ public abstract class CameraActivityGame extends Activity
       myCardsNorm[playedCards[round]] = activePlayer + 1;
       cardMemory.add(js.CTT(playedCards[round]));
     }
+
+    //making sure the "wrongly" scanned cards can be scanned again
+    for(int i = 0; i < 36; i++){
+      if(i < cardMemory.size()){
+        Memory[i] = cardMemory.get(i);
+      }
+      else{
+        Memory[i] = "0";
+      }
+    }
+    MemoryInt = cardMemory.size();
   }
 
 
