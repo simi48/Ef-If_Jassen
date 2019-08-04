@@ -240,7 +240,7 @@ public abstract class CameraActivityGame extends Activity
               AdvanceTurn();
               round = 0;
               turn++;
-              playerView.setText("Player: unknown");
+              playerView.setText("Player: " + activePlayer);
               recommendedView.setText("Press Next to continue");
             }
             else if(turn == 9){
