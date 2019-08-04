@@ -175,7 +175,7 @@ public abstract class CameraActivityGame extends Activity
     roundView.setText("Round: 0");
     playerView.setText("Player: unknown");
     recommendedView.setText("Press Next to start");
-
+    activePlayer = startingPlayer;
 
     //if AI gets to choose Trump
     if(startingPlayer == 0){
@@ -192,7 +192,7 @@ public abstract class CameraActivityGame extends Activity
           canClick = true;
         }
 
-        if(canClick && turn < 10 || (startingPlayer + round) == 0){
+        if(canClick && turn < 10 || activePlayer == 0){
           canClick = false;
           nextBtn.setTextColor(Color.RED);
           count = 0;
@@ -271,7 +271,8 @@ public abstract class CameraActivityGame extends Activity
   public void AdvanceTurn(){
     //get the winner of the round and thus define new starting player
     startingPlayer = js.RoundWinner(playedCards, myCardsNorm[36], startingPlayer);
-
+    activePlayer = startingPlayer;
+    LOGGER.d("the new activePlayer: " + activePlayer);
 
     //update myCardsNorm again because from this moment on, the cards were played in the last round ma Hillaries
     for(int i = 0; i < 36; i++){
