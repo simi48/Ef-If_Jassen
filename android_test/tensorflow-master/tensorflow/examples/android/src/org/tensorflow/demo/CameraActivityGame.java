@@ -181,8 +181,22 @@ public abstract class CameraActivityGame extends Activity
     if(startingPlayer == 0){
         myCardsNorm[36] = js.ChooseTrump(myCardsNorm);
       }
+    int tmp = 0;
+    switch(tmp){
+      case 0:
+        trumpView.setText("Trump: Rosen");
+        break;
+      case 1:
+        trumpView.setText("Trump: Eichel");
+        break;
+      case 2:
+        trumpView.setText("Trump: Schellen");
+        break;
+      case 3:
+        trumpView.setText("Trump: Schilten");
+        break;
+    }
 
-    trumpView.setText(js.Colour(myCardsNorm[36]));
 
     nextBtn.setOnClickListener(new View.OnClickListener() {
       @Override
