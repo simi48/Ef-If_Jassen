@@ -182,7 +182,7 @@ public abstract class CameraActivityGame extends Activity
         myCardsNorm[36] = js.ChooseTrump(myCardsNorm);
       }
 
-    trumpView.setText(js.CTT(myCardsNorm[36]));
+    trumpView.setText(js.Colour(myCardsNorm[36]));
 
     nextBtn.setOnClickListener(new View.OnClickListener() {
       @Override
