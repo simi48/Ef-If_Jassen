@@ -173,9 +173,13 @@ public abstract class CameraActivityGame extends Activity
     trumpView = (TextView) findViewById(R.id.trumpView);
 
     roundView.setText("Round: 0");
-    playerView.setText("Player: unknown");
+    playerView.setText("Player: " + startingPlayer);
     recommendedView.setText("Press Next to start");
     activePlayer = startingPlayer;
+
+    if(activePlayer == 0){
+      nextBtn.setTextColor(Color.WHITE);
+    }
 
     //if AI gets to choose Trump
     if(startingPlayer == 0){
@@ -203,11 +207,7 @@ public abstract class CameraActivityGame extends Activity
       @Override
       public void onClick(View view) {
 
-        if(round == 4){
-          canClick = true;
-        }
-
-        if(canClick && turn < 10 || activePlayer == 0){
+        if(canClick && turn < 10 || (startingPlayer + round)%4 == 0){
           canClick = false;
           nextBtn.setTextColor(Color.RED);
           count = 0;
@@ -250,6 +250,15 @@ public abstract class CameraActivityGame extends Activity
             if(round < 4 && turn < 9){
               AdvanceRound();
               round++;
+
+              if(round == 4){
+                canClick = true;
+                nextBtn.setTextColor(Color.WHITE);
+              }
+
+              if((startingPlayer + round)%4 == 0){
+                nextBtn.setTextColor(Color.WHITE);
+              }
             }
             else if(round == 4 && turn < 9){
               AdvanceTurn();
@@ -288,6 +297,9 @@ public abstract class CameraActivityGame extends Activity
     startingPlayer = js.RoundWinner(playedCards, myCardsNorm[36], startingPlayer);
     activePlayer = startingPlayer;
     LOGGER.d("the new activePlayer: " + activePlayer);
+    if(activePlayer == 0){
+      nextBtn.setTextColor(Color.WHITE);
+    }
 
     //update myCardsNorm again because from this moment on, the cards were played in the last round ma Hillaries
     for(int i = 0; i < 36; i++){

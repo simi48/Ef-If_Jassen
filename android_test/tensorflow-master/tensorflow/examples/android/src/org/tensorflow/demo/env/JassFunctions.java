@@ -41,7 +41,7 @@ public class JassFunctions {
                 myCards[i].setCardTitle(cardType + "Ober");
                 myCards[i].setConfidence(0);
             } else if (i % 9 == 7) {
-                myCards[i].setCardTitle(cardType + "König");
+                myCards[i].setCardTitle(cardType + "Koenig");
                 myCards[i].setConfidence(0);
             } else if (i % 9 == 8) {
                 myCards[i].setCardTitle(cardType + "Ass");
