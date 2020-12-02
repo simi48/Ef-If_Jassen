@@ -1,5 +1,5 @@
 # EF-IF_Jassen
-Ein Arbeit im Ergänzungsfach Informatik
+Eine Arbeit im Ergänzungsfach Informatik
 
 Jassbot, welcher
 - Jasskarten erkennt und
